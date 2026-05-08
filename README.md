@@ -4,9 +4,9 @@ This is a mod that allows you to make the game more difficult by buffing all the
 
 There are three difficulty modes:
 
-Easy: Vanilla
-Normal: Slight Buffs 
-Hard: Harder Buffs & possibly bonus changes
+- Easy: Vanilla
+- Normal: Slight Buffs 
+- Hard: Harder Buffs & possibly bonus changes
 
 ### Writing mods
 See [this document](https://hackmd.io/fMDiGEJ9TBSjomuZZOgzNg) for an explanation of the modding framework, including how to write function patches and perform interop between different mods.
