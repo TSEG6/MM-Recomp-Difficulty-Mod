@@ -188,9 +188,11 @@ RECOMP_PATCH void EnSlime_SetupJump(EnSlime* this) {
     }
 
     if (dist < 60.0f) {
-        this->actor.velocity.y = 6.0f;
-        this->actor.speed = 2.5f * Multiplier / 2;
-        this->actor.gravity = -1.0f;
+        if (Difficulty != 0) {
+            this->actor.velocity.y = 6.0f;
+            this->actor.speed = 2.5f * Multiplier / 2;
+            this->actor.gravity = -1.0f;
+        }
     }
     else if (dist < 120.0f) {
         this->actor.velocity.y = 11.0f;
