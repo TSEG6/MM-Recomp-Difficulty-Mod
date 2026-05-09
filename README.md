@@ -1,8 +1,12 @@
-# Majora's Mask: Recompiled Mod Template
+# Majora's Mask: Recompiled Difficulty Mod
 
-This is an example mod for Majora's Mask: Recompiled that can be used as a template for creating mods. It has a basic build system, headers, sample code, and a mod config toml.
+This is a mod that allows you to make the game more difficult by buffing all the enemies in the game.
 
-Example code for using the recompui API to build ingame UI can be found in the `ui-example` branch.
+There are three difficulty modes:
+
+- Easy: Vanilla
+- Normal: Slight Buffs 
+- Hard: Harder Buffs & possibly bonus changes
 
 ### Writing mods
 See [this document](https://hackmd.io/fMDiGEJ9TBSjomuZZOgzNg) for an explanation of the modding framework, including how to write function patches and perform interop between different mods.
