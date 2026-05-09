@@ -95,7 +95,11 @@ RECOMP_HOOK("EnSlime_SetupRevive") void ReviveBuff(EnSlime* this) {
 
 }
 
+RECOMP_HOOK("EnSlime_Revive") void ReviveBuff2(EnSlime* this) {
 
+    CanUseTimer = true;
+
+}
 
 RECOMP_HOOK("EnSlime_Update") void ReviveBuffFix(EnSlime* this) {
 
@@ -107,7 +111,7 @@ RECOMP_HOOK("EnSlime_Update") void ReviveBuffFix(EnSlime* this) {
 
         Timer++;
 
-        if (Timer >= 5) {
+        if (Timer >= 2) {
 
             switch (Difficulty) {
             case 1:

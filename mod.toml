@@ -8,14 +8,14 @@
 id = "mm_recomp_diff"
 
 # Version of this mod.
-version = "0.0.1"
+version = "0.0.2"
 
 # The name that will show up for this mod in the mod menu. This should be human readable.
 display_name = "Difficulty Mod"
 
 # The description that will show up when this mod is displayed in the mod menu. This should be human readable.
 description =  """
-Makes the enemies more difficult."""
+Makes enemies more difficult based on the current selected difficulty."""
 
 # A short description that will show up in this mod's entry in the mod list. This should be human readable and kept short
 # to prevent it from being cut off due to the limited space.
@@ -33,7 +33,7 @@ minimum_recomp_version = "1.2.2"
 # Dependency mods. Each entry is the mod's ID and then an optional minimum version of the dependency mod.
 dependencies = [
 # Example dependency:
-#    "modname:1.0.0"
+	"yazmt_mm_global_objects"
 ]
 
 # Optional dependency mods. This has the same format as `dependencies`, but the game will still start if dependencies in this
@@ -71,5 +71,5 @@ name = "Difficulty"
 description = "What should the difficulty be? (Easy is the vanilla game.)"
 type = "Enum"
 options = [ "Easy", "Normal", "Hard" ]
-default = "Normal"
+default = "Hard"
 
