@@ -6,6 +6,7 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 
 void func_80C1193C(EnThiefbird* this, PlayState* play);
+int killtimer = 0;
 
 RECOMP_HOOK_RETURN("EnThiefbird_Init") void InitalChanges(Actor* thisx, PlayState* play) {
 
@@ -14,11 +15,11 @@ RECOMP_HOOK_RETURN("EnThiefbird_Init") void InitalChanges(Actor* thisx, PlayStat
     u8 baseHealth = this->actor.colChkInfo.health;
 
     switch (Difficulty) {
-    case 1:
+    case 0:
         this->actor.colChkInfo.health = baseHealth * 2;
         break;
 
-    case 2: {
+    case 1: {
         this->actor.colChkInfo.health = baseHealth * 5;
         break;
     }
@@ -34,7 +35,7 @@ RECOMP_HOOK("EnThiefbird_Init") void InitalHome(Actor* thisx, PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
     u8 baseHealth = this->actor.colChkInfo.health;
 
-    if (Difficulty == 2) {
+    if (Difficulty == 1) {
 
         Vec3f checkPos;
         f32 floorHeight;
@@ -88,11 +89,11 @@ RECOMP_HOOK("EnThiefbird_Init") void InitalHome(Actor* thisx, PlayState* play) {
 
     // just in case the return doesn't work
     switch (Difficulty) {
-    case 1:
+    case 0:
         this->actor.colChkInfo.health = baseHealth * 2;
         break;
 
-    case 2: {
+    case 1: {
         this->actor.colChkInfo.health = baseHealth * 5;
         break;
     }
@@ -114,7 +115,7 @@ RECOMP_HOOK("EnThiefbird_Update") void movenearbyplayer(Actor* thisx, PlayState*
         f32 floorHeight;
         s32 bgId;
 
-        if (Difficulty == 2) {
+        if (Difficulty == 1) {
 
             if (Rand_ZeroOne() < 0.02f) {
 
@@ -144,7 +145,7 @@ RECOMP_HOOK("EnThiefbird_Update") void movenearbyplayer(Actor* thisx, PlayState*
         }
     }
 
-    if (Difficulty == 2) {
+    if (Difficulty == 1) {
 
         if (STOLEN_ITEM_1 != STOLEN_ITEM_NONE) {
 
@@ -152,6 +153,16 @@ RECOMP_HOOK("EnThiefbird_Update") void movenearbyplayer(Actor* thisx, PlayState*
 
             float dist = Actor_WorldDistXYZToActor(&this->actor, &player->actor);
 
+            if (killtimer >= 300) {
+                Actor_Kill(&this->actor);
+                return;
+
+            }
+            else {
+
+                killtimer++;
+
+            }
 
             if (dist > 2500.0f) {
                 Actor_Kill(&this->actor);
@@ -159,7 +170,7 @@ RECOMP_HOOK("EnThiefbird_Update") void movenearbyplayer(Actor* thisx, PlayState*
             }
             else {
 
-                this->actor.world.pos.y = this->actor.world.pos.y + 5;
+                this->actor.world.pos.y = this->actor.world.pos.y + 6;
 
             }
         }
@@ -175,11 +186,11 @@ RECOMP_PATCH void func_80C118E4(EnThiefbird* this) {
     this->actionFunc = func_80C1193C;
 
     switch (Difficulty) {
-    case 1:
+    case 0:
         this->actor.speed = 6.5f;
         break;
 
-    case 2: {
+    case 1: {
         this->actor.speed = 8.0f;
         break;
     }

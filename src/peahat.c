@@ -10,7 +10,8 @@
 
 
 static uintptr_t sPHEnemy;
-bool HasIncreasedHealth = false;
+
+// doing funnies with home rotation so I can skip doing global variables in case you were curious
 
 GLOBAL_OBJECTS_CALLBACK_ON_READY void onGlobalObjectsReady() {
     sPHEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_PH);
@@ -105,38 +106,34 @@ RECOMP_HOOK("Play_Update") void SpawnPeahats(PlayState* play) {
 }
 
 RECOMP_HOOK("EnPeehat_Update") void UpdateFun(Actor* thisx, PlayState* play2) {
-
     PlayState* play = play2;
     EnPeehat* this = (EnPeehat*)thisx;
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
     u8 baseHealth = this->actor.colChkInfo.health;
 
-
-    // testing new method to increase health, hopefully better
-    if (!HasIncreasedHealth) {
-
+    if (this->actor.home.rot.z == 0) {
         switch (Difficulty) {
-        case 1:
+        case 0:
             this->actor.colChkInfo.health = baseHealth * 1.5;
             break;
 
-        case 2:
+        case 1:
             this->actor.colChkInfo.health = baseHealth * 2;
             break;
 
         default:
             break;
         }
-        HasIncreasedHealth = true;
+        this->actor.home.rot.z = 1;
     }
 
     switch (Difficulty) {
-    case 1:
-        this->skelAnime.playSpeed = 2.0f;
+    case 0:
+        this->skelAnime.playSpeed = 1.5f;
         break;
 
-    case 2:
+    case 1:
         this->skelAnime.playSpeed = 2.0f;
         break;
 
@@ -146,17 +143,16 @@ RECOMP_HOOK("EnPeehat_Update") void UpdateFun(Actor* thisx, PlayState* play2) {
 }
 
 RECOMP_HOOK("func_80897F44") void IamSpeedPeahat(EnPeehat* this, PlayState* play) {
-
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
     switch (Difficulty) {
-    case 1:
+    case 0:
         this->actor.speed = Rand_ZeroFloat(0.75f) + 5.5f;
         this->actor.world.rot.y += this->unk_2B6;
         this->actor.shape.rot.y += 0x15E * 2;
         break;
 
-    case 2:
+    case 1:
         this->actor.speed = Rand_ZeroFloat(1.0f) + 7.5f;
         this->actor.world.rot.y += this->unk_2B6;
         this->actor.shape.rot.y += 0x15E * 6;

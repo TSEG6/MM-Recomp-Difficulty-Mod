@@ -68,8 +68,8 @@ additional_files = [ ]
 [[manifest.config_options]]
 id = "diff_option"
 name = "Difficulty"
-description = "What should the difficulty be? (Easy is the vanilla game.)"
+description = "What should the difficulty be?"
 type = "Enum"
-options = [ "Easy", "Normal", "Hard" ]
+options = [ "Normal", "Hard" ]
 default = "Hard"
 

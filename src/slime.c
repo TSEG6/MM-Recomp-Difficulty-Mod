@@ -7,6 +7,8 @@
 #include "z_en_slime.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
+// doing funnies with home rotation so I can skip doing global variables in case you were curious
+
 #define ICE_BLOCK_TIMER_MAX 254
 #define ICE_BLOCK_UNUSED (ICE_BLOCK_TIMER_MAX + 1)
 
@@ -16,9 +18,6 @@ void EnSlime_SetupTurnToPlayer(EnSlime* this);
 void ReviveBuffFix(EnSlime* this);
 void EnSlime_Jump(EnSlime* this, PlayState* play);
 void EnSlime_SetupMoveInDirection(EnSlime* this);
-
-int Timer = 0;
-bool CanUseTimer = false;
 
 extern Gfx gItemDropDL[];
 
@@ -47,36 +46,37 @@ typedef enum EnSlimeEyeTexture {
     /* 4 */ EN_SLIME_EYETEX_MAX
 } EnSlimeEyeTexture;
 
-
 RECOMP_HOOK_RETURN("EnSlime_Init")
 void SlimeBuff(Actor* thisx, PlayState* play) {
-
     EnSlime* this = (EnSlime*)thisx;
     s32 reviveTimeSeconds;
     float Distance = 30000.0f;
     int Difficulty = (int)recomp_get_config_double("diff_option");
-    u8 baseHealth = this->actor.colChkInfo.health;
+
+    this->actor.home.rot.x = 0;
+    this->actor.home.rot.y = 0;
+    this->actor.home.rot.z = this->actor.colChkInfo.health;
 
     switch (Difficulty) {
-    case 1: {
+    case 0: {
         Distance = 60000.0f;
         reviveTimeSeconds = 10;
         this->reviveTime = (reviveTimeSeconds * 10) + 100;
-        this->actor.colChkInfo.health = baseHealth * 2;
+        this->actor.colChkInfo.health = this->actor.home.rot.z * 2;
         break;
     }
 
-    case 2: {
+    case 1: {
         Distance = 90000.0f;
         reviveTimeSeconds = 5;
         this->reviveTime = (reviveTimeSeconds * 5);
-        this->actor.colChkInfo.health = baseHealth * 5;
+        this->actor.colChkInfo.health = this->actor.home.rot.z * 5;
         break;
     }
 
     default: {
         Distance = 30000.0f;
-        this->actor.colChkInfo.health = baseHealth;
+        this->actor.colChkInfo.health = this->actor.home.rot.z;
         break;
     }
     }
@@ -90,50 +90,41 @@ void SlimeBuff(Actor* thisx, PlayState* play) {
 }
 
 RECOMP_HOOK("EnSlime_SetupRevive") void ReviveBuff(EnSlime* this) {
-
-    CanUseTimer = true;
-
+    this->actor.home.rot.y = 1;
 }
 
 RECOMP_HOOK("EnSlime_Revive") void ReviveBuff2(EnSlime* this) {
-
-    CanUseTimer = true;
-
+    this->actor.home.rot.y = 1;
 }
 
 RECOMP_HOOK("EnSlime_Update") void ReviveBuffFix(EnSlime* this) {
-
     int Difficulty = (int)recomp_get_config_double("diff_option");
-    u8 baseHealth = this->actor.colChkInfo.health;
-    f32 sinFactor;
 
-    if (CanUseTimer) {
+    if (this->actor.home.rot.y) {
+        this->actor.home.rot.x++;
 
-        Timer++;
+        if (this->actor.home.rot.x >= 2) {
+            if (this->actor.colChkInfo.health > 0) {
+                switch (Difficulty) {
+                case 0:
+                    this->actor.colChkInfo.health = this->actor.home.rot.z * 2;
+                    break;
 
-        if (Timer >= 2) {
+                case 1:
+                    this->actor.colChkInfo.health = this->actor.home.rot.z * 5;
+                    break;
 
-            switch (Difficulty) {
-            case 1:
-                this->actor.colChkInfo.health = baseHealth * 2;
-                break;
-
-            case 2:
-                this->actor.colChkInfo.health = baseHealth * 5;
-                break;
-
-            default:
-                break;
+                default:
+                    break;
+                }
+                this->actor.home.rot.x = 0;
+                this->actor.home.rot.y = 0;
             }
-            Timer = 0;
-            CanUseTimer = false;
         }
     }
 
     if (Difficulty == 2) {
-
         if (Rand_ZeroOne() < 0.05f) {
-
             this->actor.home.pos.x =
                 this->actor.world.pos.x + Rand_CenteredFloat(300.0f);
 
@@ -147,38 +138,35 @@ RECOMP_HOOK("EnSlime_Update") void ReviveBuffFix(EnSlime* this) {
 }
 
 RECOMP_HOOK_RETURN("EnSlime_MoveInDirection") void SlimeMovement(EnSlime* this, PlayState* play) {
-
     int Difficulty = (int)recomp_get_config_double("diff_option");
     f32 sinFactor;
 
     sinFactor = fabsf(Math_SinF(this->timer * (M_PIf / 24)));
     switch (Difficulty) {
-    case 1:
+    case 0:
         this->actor.speed = (0.8f * sinFactor) + 0.2f * 1.5;
         break;
 
-    case 2:
+    case 1:
         this->actor.speed = (0.8f * sinFactor) + 0.2f * 3;
         break;
 
     default:
         break;
     }
-
 }
 
 RECOMP_PATCH void EnSlime_SetupJump(EnSlime* this) {
-
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float dist = this->actor.xzDistToPlayer;
     float Multiplier = 1;
 
     switch (Difficulty) {
-    case 1:
+    case 0:
         Multiplier = 2;
         break;
 
-    case 2:
+    case 1:
         Multiplier = 3;
         break;
 
@@ -215,16 +203,15 @@ RECOMP_PATCH void EnSlime_SetupJump(EnSlime* this) {
 }
 
 RECOMP_HOOK("EnSlime_Idle") void Sight(EnSlime* this, PlayState* play) {
-
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float Distance = 280.0f;
 
     switch (Difficulty) {
-    case 1:
+    case 0:
         Distance = 480.f;
         break;
 
-    case 2:
+    case 1:
         Distance = 690.f;
         break;
 
@@ -241,5 +228,4 @@ RECOMP_HOOK("EnSlime_Idle") void Sight(EnSlime* this, PlayState* play) {
         // Start moving (remaining idle)
         EnSlime_SetupMoveInDirection(this);
     }
-
 }

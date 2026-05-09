@@ -6,9 +6,8 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-int TimerBB = 0;
-bool CanUseTimerBB = false;
-bool finalStand = true;
+// doing funnies with home rotation so I can skip doing global variables in case you were curious
+
 void EnBb_SetupFlyIdle(EnBb* this);
 void EnBb_Attack(EnBb* this, PlayState* play);
 void EnBb_Down(EnBb* this, PlayState* play);
@@ -44,116 +43,102 @@ void EnBb_UpdateStateForFlying(EnBb* this) {
 }
 
 RECOMP_HOOK_RETURN("EnBb_Init") void BBBuff(Actor* thisx, PlayState* play) {
+    EnBb* this = (EnBb*)thisx;
+    int Difficulty = (int)recomp_get_config_double("diff_option");
 
-	EnBb* this = (EnBb*)thisx;
-	int Difficulty = (int)recomp_get_config_double("diff_option");
-    u8 baseHealth = this->actor.colChkInfo.health;
+    this->actor.home.rot.z = this->actor.colChkInfo.health;
+    this->actor.home.rot.x = 0;
+    this->actor.home.rot.y = 0;
 
     switch (Difficulty) {
-    case 1:
+    case 0:
         this->attackRange = 400.0f;
-        this->actor.colChkInfo.health = baseHealth * 2;
+        this->actor.colChkInfo.health = this->actor.home.rot.z * 2;
         break;
 
-    case 2:
+    case 1:
         this->attackRange = 800.0f;
-        this->actor.colChkInfo.health = baseHealth * 3;
+        this->actor.colChkInfo.health = this->actor.home.rot.z * 3;
         break;
 
     default:
         this->attackRange = 200.0f;
-        this->actor.colChkInfo.health = baseHealth;
+        this->actor.colChkInfo.health = this->actor.home.rot.z;
         break;
     }
 
-    CanUseTimerBB = true;
-
+    this->actor.home.rot.y |= 1;
 }
 
 RECOMP_HOOK("EnBb_SetupRevive") void Revival(EnBb* this) {
-
-    CanUseTimerBB = true;
-    finalStand = true;
-
     int Difficulty = (int)recomp_get_config_double("diff_option");
-    u8 baseHealth = this->actor.colChkInfo.health;
+
+    this->actor.home.rot.y |= 1;
+    this->actor.home.rot.y |= 2;
 
     switch (Difficulty) {
-    case 1:
-        this->actor.colChkInfo.health = baseHealth * 2;
+    case 0:
+        this->actor.colChkInfo.health = this->actor.home.rot.z * 2;
         break;
 
-    case 2:
-        this->actor.colChkInfo.health = baseHealth * 3;
+    case 1:
+        this->actor.colChkInfo.health = this->actor.home.rot.z * 3;
         break;
 
     default:
-        this->actor.colChkInfo.health = baseHealth;
+        this->actor.colChkInfo.health = this->actor.home.rot.z;
         break;
     }
-
 }
 
 RECOMP_HOOK("EnBb_Update") void Updating(Actor* thisx, PlayState* play) {
-
     EnBb* this = (EnBb*)thisx;
     int Difficulty = (int)recomp_get_config_double("diff_option");
-    u8 baseHealth = this->actor.colChkInfo.health;
 
-    if (Difficulty == 2) {
-
+    if (Difficulty == 1) {
         if (Rand_ZeroOne() < 0.05f) {
-
-            this->actor.home.pos.x =
-                this->actor.world.pos.x + Rand_CenteredFloat(300.0f);
-
-            this->actor.home.pos.z =
-                this->actor.world.pos.z + Rand_CenteredFloat(300.0f);
-
-            this->actor.home.pos.y =
-                this->actor.world.pos.y + Rand_CenteredFloat(50.0f);
+            this->actor.home.pos.x = this->actor.world.pos.x + Rand_CenteredFloat(300.0f);
+            this->actor.home.pos.z = this->actor.world.pos.z + Rand_CenteredFloat(300.0f);
+            this->actor.home.pos.y = this->actor.world.pos.y + Rand_CenteredFloat(50.0f);
         }
     }
 
-    if (CanUseTimerBB) {
+    if (this->actor.home.rot.y & 1) {
+        this->actor.home.rot.x++;
 
-        TimerBB++;
-
-        if (TimerBB >= 5) {
-
+        if (this->actor.home.rot.x >= 5) {
             switch (Difficulty) {
             case 1:
                 this->attackRange = 350.0f;
-                this->actor.colChkInfo.health = baseHealth * 2;
+                this->actor.colChkInfo.health = this->actor.home.rot.z * 2;
                 break;
 
             case 2:
                 this->attackRange = 500.0f;
-                this->actor.colChkInfo.health = baseHealth * 3;
+                this->actor.colChkInfo.health = this->actor.home.rot.z * 3;
                 break;
 
             default:
                 this->attackRange = 200.0f;
-                this->actor.colChkInfo.health = baseHealth;
+                this->actor.colChkInfo.health = this->actor.home.rot.z;
                 break;
             }
 
-            TimerBB = 0;
-            CanUseTimerBB = false;
+            this->actor.home.rot.x = 0;
+            this->actor.home.rot.y &= ~1;
         }
     }
 }
 
 RECOMP_HOOK("EnBb_SetupWaitForRevive") void Vive(EnBb* this) {
-
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
     switch (Difficulty) {
-    case 1:
+    case 0:
         this->timer = 100;
         break;
 
-    case 2:
+    case 1:
         this->timer = 50;
         break;
 
@@ -164,16 +149,15 @@ RECOMP_HOOK("EnBb_SetupWaitForRevive") void Vive(EnBb* this) {
 }
 
 RECOMP_HOOK("EnBb_UpdateDamage") void damagestuff(EnBb* this, PlayState* play) {
-
     int Difficulty = (int)recomp_get_config_double("diff_option");
     int newJinx = 1200;
 
     switch (Difficulty) {
-    case 1:
+    case 0:
         newJinx = 1400;
         break;
 
-    case 2:
+    case 1:
         newJinx = 1800;
         break;
 
@@ -183,43 +167,20 @@ RECOMP_HOOK("EnBb_UpdateDamage") void damagestuff(EnBb* this, PlayState* play) {
     }
 
     if (gSaveContext.jinxTimer == 1200) {
-
         gSaveContext.jinxTimer = newJinx;
-
     }
-}
-
-RECOMP_HOOK("EnBb_SetupAttack") void IamSpeed(EnBb* this) {
-
-    int Difficulty = (int)recomp_get_config_double("diff_option");
-
-    switch (Difficulty) {
-    case 1:
-        this->maxSpeed = Rand_ZeroFloat(2.0f) + 5.0f;
-        break;
-
-    case 2:
-        this->maxSpeed = Rand_ZeroFloat(3.0f) + 6.0f;
-        break;
-
-    default:
-        this->maxSpeed = Rand_ZeroFloat(1.5f) + 4.0f;
-        break;
-    }
-
 }
 
 RECOMP_PATCH void EnBb_SetupAttack(EnBb* this) {
-
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float diffbasedMaxSpeed = 1.0f;
 
     switch (Difficulty) {
-    case 1:
+    case 0:
         diffbasedMaxSpeed = 1.25f;
         break;
 
-    case 2:
+    case 1:
         diffbasedMaxSpeed = 1.5f;
         break;
 
@@ -237,18 +198,17 @@ RECOMP_PATCH void EnBb_SetupAttack(EnBb* this) {
 }
 
 RECOMP_PATCH void EnBb_Attack(EnBb* this, PlayState* play) {
-
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float sightDist = 120.f;
     float chaseDist = 400.0f;
 
     switch (Difficulty) {
-    case 1:
+    case 0:
         sightDist = 240.0f;
         chaseDist = 600.0f;
         break;
 
-    case 2:
+    case 1:
         sightDist = 360.0f;
         chaseDist = 800.0f;
         break;
@@ -282,16 +242,15 @@ RECOMP_PATCH void EnBb_Attack(EnBb* this, PlayState* play) {
 }
 
 RECOMP_PATCH void EnBb_FlyIdle(EnBb* this, PlayState* play) {
-
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float sightDist = 120.f;
 
     switch (Difficulty) {
-    case 1:
+    case 0:
         sightDist = 240.0f;
         break;
 
-    case 2:
+    case 1:
         sightDist = 360.0f;
         break;
 
@@ -317,7 +276,6 @@ RECOMP_PATCH void EnBb_FlyIdle(EnBb* this, PlayState* play) {
         EnBb_SetupAttack(this);
     }
     else if (this->timer == 0) {
-
-      if (Difficulty == 0)  EnBb_SetupFlyIdle(this);
+        if (Difficulty == 0) EnBb_SetupFlyIdle(this);
     }
 }
