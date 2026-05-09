@@ -2,9 +2,8 @@
 
 This is a mod that allows you to make the game more difficult by buffing all the enemies in the game.
 
-There are three difficulty modes:
+There are two difficulty modes:
 
-- Easy: Vanilla
 - Normal: Slight Buffs 
 - Hard: Harder Buffs & possibly bonus changes
 
