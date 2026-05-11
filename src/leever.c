@@ -156,11 +156,19 @@ RECOMP_HOOK("EnNeoReeba_ChooseAction") void IncreasedRange(EnNeoReeba* this, Pla
 
     switch (Difficulty) {
     case 0:
-        distanceCheck = 160.0f;
+        distanceCheck = 140.0f;
         break;
 
     case 1: {
-        distanceCheck = 240.0f;
+
+        if (this->actor.home.rot.x == 1) {
+
+            distanceCheck = 240.0f;
+        }
+        else {
+
+            distanceCheck = 180.0f;
+        }
         break;
     }
     default:
@@ -184,12 +192,25 @@ RECOMP_HOOK("EnNeoReeba_UpdatePosition") void leeverupdatething(EnNeoReeba* this
     case 0:
 
         if (this->actionTimer != 0) this->skelAnime.playSpeed = 1.1f;
-        else this->actor.speed = 18.0f;
+        else this->actor.speed = 15.0f;
         break;
 
     case 1: {
-        if (this->actionTimer != 0) this->skelAnime.playSpeed = 1.25f;
-        else this->actor.speed = 22.0f;
+        if (this->actionTimer != 0) {
+            this->skelAnime.playSpeed = 1.25f;
+        }
+        else {
+
+            if (this->actor.home.rot.x == 1) {
+
+                this->actor.speed = 22.0f;
+
+            }
+            else {
+
+                this->actor.speed = 18.0f;
+            }
+        }
         break;
     }
     default:
