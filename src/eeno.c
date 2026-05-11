@@ -304,11 +304,13 @@ RECOMP_HOOK("EnSnowman_Update") void SpeedupSnow(Actor* thisx, PlayState* play) 
     switch (Difficulty) {
     case 0:
         if (this->actor.colChkInfo.health != 0) this->skelAnime.playSpeed = 1.5f;
+        this->combineTimer = 2;
         break;
 
     case 1:
         if (this->actor.colChkInfo.health != 0) this->skelAnime.playSpeed = 2.25f;
         this->work.snowballsToThrowBeforeIdling = 0;
+        this->combineTimer = 2;
         break;
 
     default:
