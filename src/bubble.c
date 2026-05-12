@@ -44,30 +44,27 @@ void EnBb_UpdateStateForFlying(EnBb* this) {
 
 RECOMP_HOOK_RETURN("EnBb_Init") void BBBuff(Actor* thisx, PlayState* play) {
     EnBb* this = (EnBb*)thisx;
-    int Difficulty = (int)recomp_get_config_double("diff_option");
 
-    this->actor.home.rot.z = this->actor.colChkInfo.health;
-    this->actor.home.rot.x = 0;
-    this->actor.home.rot.y = 0;
+    int Difficulty = (int)recomp_get_config_double("diff_option");
+    s16 baseHealth = this->actor.colChkInfo.health;
 
     switch (Difficulty) {
     case 0:
         this->attackRange = 400.0f;
-        this->actor.colChkInfo.health = this->actor.home.rot.z * 2;
+        this->actor.colChkInfo.health = baseHealth * 2;
         break;
 
     case 1:
         this->attackRange = 800.0f;
-        this->actor.colChkInfo.health = this->actor.home.rot.z * 3;
+        this->actor.colChkInfo.health = baseHealth * 3;
         break;
 
     default:
         this->attackRange = 200.0f;
-        this->actor.colChkInfo.health = this->actor.home.rot.z;
+        this->actor.colChkInfo.health = baseHealth;
         break;
     }
 
-    this->actor.home.rot.y |= 1;
 }
 
 RECOMP_HOOK("EnBb_SetupRevive") void Revival(EnBb* this) {
