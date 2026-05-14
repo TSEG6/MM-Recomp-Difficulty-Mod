@@ -116,14 +116,14 @@ RECOMP_HOOK_RETURN("EnNeoReeba_Init") void InitStuffRETURN(Actor* thisx, PlaySta
 
     switch (Difficulty) {
     case 0:
-        this->actor.colChkInfo.health = baseHealth * 5;
+        this->actor.colChkInfo.health = baseHealth * 2.5;
         break;
 
     case 1: {
-        this->actor.colChkInfo.health = baseHealth * 10;
+        this->actor.colChkInfo.health = baseHealth * 5;
         if (Rand_ZeroOne() < 0.1f) {
 
-            this->actor.colChkInfo.health = baseHealth * 30;
+            this->actor.colChkInfo.health = baseHealth * 10;
             this->actor.home.rot.x = 1;
 
         }
