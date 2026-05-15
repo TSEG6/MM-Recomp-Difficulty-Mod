@@ -20,7 +20,7 @@ RECOMP_HOOK("EnMkk_Init") void YoureSeeingDouble(Actor* thisx, PlayState* play) 
 
     switch (Difficulty) {
     case 0:
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 1; i++) {
             Actor_Spawn(&play->actorCtx, play, ACTOR_EN_MKK,
                 this->actor.world.pos.x, this->actor.world.pos.y, this->actor.world.pos.z,
                 0, 0, 0, spawnParams);
@@ -28,7 +28,7 @@ RECOMP_HOOK("EnMkk_Init") void YoureSeeingDouble(Actor* thisx, PlayState* play) 
         break;
 
     case 1:
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             Actor_Spawn(&play->actorCtx, play, ACTOR_EN_MKK,
                 this->actor.world.pos.x, this->actor.world.pos.y, this->actor.world.pos.z,
                 0, 0, 0, spawnParams);
@@ -113,5 +113,4 @@ RECOMP_HOOK("func_80A4E58C") void JumpSpeedBoe(EnMkk* this) {
     default:
         break;
     }
-
 }
