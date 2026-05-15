@@ -10,6 +10,9 @@
 
 
 static uintptr_t sPHEnemy;
+static s32 hasSpawnedForThisPeriod = 0;
+static s32 lastScene = -1;
+static u16 lastDayTime = 0;
 
 // doing funnies with home rotation so I can skip doing global variables in case you were curious
 
@@ -53,9 +56,6 @@ RECOMP_HOOK("Play_Update") void SpawnPeahats(PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
     if (Difficulty != 0) {
-        static s32 lastScene = -1;
-        static u16 lastDayTime = 0;
-        static s32 hasSpawnedForThisPeriod = 0;
 
         if (gSaveContext.save.time < lastDayTime) {
             hasSpawnedForThisPeriod = 0;
@@ -162,4 +162,10 @@ RECOMP_HOOK("func_80897F44") void IamSpeedPeahat(EnPeehat* this, PlayState* play
         this->actor.speed = Rand_ZeroFloat(0.5f) + 2.5f;
         break;
     }
+}
+
+RECOMP_HOOK("EnPeehat_Destroy") void GO(Actor* thisx, PlayState* play) {
+
+        hasSpawnedForThisPeriod = 0;
+        lastScene = -1;
 }
