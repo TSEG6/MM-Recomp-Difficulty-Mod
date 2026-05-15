@@ -51,17 +51,13 @@ RECOMP_HOOK_RETURN("EnBb_Init") void BBBuff(Actor* thisx, PlayState* play) {
     switch (Difficulty) {
     case 0:
         this->attackRange = 400.0f;
-        this->actor.colChkInfo.health = baseHealth * 2;
         break;
 
     case 1:
         this->attackRange = 800.0f;
-        this->actor.colChkInfo.health = baseHealth * 3;
         break;
 
     default:
-        this->attackRange = 200.0f;
-        this->actor.colChkInfo.health = baseHealth;
         break;
     }
 
@@ -116,14 +112,24 @@ RECOMP_HOOK("EnBb_Update") void Updating(Actor* thisx, PlayState* play) {
                 break;
 
             default:
-                this->attackRange = 200.0f;
-                this->actor.colChkInfo.health = this->actor.home.rot.z;
                 break;
             }
 
             this->actor.home.rot.x = 0;
             this->actor.home.rot.y &= ~1;
         }
+    }
+    switch (Difficulty) {
+    case 1:
+        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        break;
+
+    case 2:
+        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage + 2) / 4;
+        break;
+
+    default:
+        break;
     }
 }
 
