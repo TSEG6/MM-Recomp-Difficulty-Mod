@@ -13,6 +13,7 @@ static uintptr_t sPHEnemy;
 static s32 hasSpawnedForThisPeriod = 0;
 static s32 lastScene = -1;
 static u16 lastDayTime = 0;
+static bool playerHasDied = false;
 
 // doing funnies with home rotation so I can skip doing global variables in case you were curious
 
@@ -164,8 +165,19 @@ RECOMP_HOOK("func_80897F44") void IamSpeedPeahat(EnPeehat* this, PlayState* play
     }
 }
 
+RECOMP_HOOK("Environment_InitGameOverLights") void HasDied(PlayState* play) {
+
+    playerHasDied = true;
+
+}
+
+
 RECOMP_HOOK("EnPeehat_Destroy") void GO(Actor* thisx, PlayState* play) {
+
+    if (playerHasDied) {
 
         hasSpawnedForThisPeriod = 0;
         lastScene = -1;
+        playerHasDied = false;
+    }
 }
