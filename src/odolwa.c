@@ -188,7 +188,7 @@ RECOMP_PATCH void Boss01_VerticalSlash(Boss01* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
     f32 predictFactor = (Difficulty == 1) ? 0.9f : 0.66f;
-    f32 distanceFactor = (Difficulty == 1) ? 2.5f : 1.75f;
+    f32 distanceFactor = (Difficulty == 1) ? 2.75f : 1.75f;
 
     if (this->skelAnime.curFrame < 7.0f) {
         Vec3f predictedPos;
