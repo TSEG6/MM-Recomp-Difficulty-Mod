@@ -56,52 +56,55 @@ void Torch_Draw(Actor* thisx, PlayState* play) {
 RECOMP_HOOK("Play_Update") void SpawnPeahats(PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
-    if (Difficulty != 0) {
+    if (INV_CONTENT(ITEM_OCARINA_OF_TIME) == ITEM_OCARINA_OF_TIME) {
 
-        if (gSaveContext.save.time < lastDayTime) {
-            hasSpawnedForThisPeriod = 0;
-        }
-        lastDayTime = gSaveContext.save.time;
+        if (Difficulty != 0) {
 
-        static const s16 validScenes[] = {
-            SCENE_00KEIKOKU,
-        };
-
-        s16 sceneId = play->sceneId;
-        s32 valid = 0;
-        for (u32 i = 0; i < sizeof(validScenes) / sizeof(validScenes[0]); i++) {
-            if (sceneId == validScenes[i]) {
-                valid = 1;
-                break;
+            if (gSaveContext.save.time < lastDayTime) {
+                hasSpawnedForThisPeriod = 0;
             }
-        }
+            lastDayTime = gSaveContext.save.time;
 
-        if (!valid || (lastScene == sceneId && hasSpawnedForThisPeriod)) {
+            static const s16 validScenes[] = {
+                SCENE_00KEIKOKU,
+            };
+
+            s16 sceneId = play->sceneId;
+            s32 valid = 0;
+            for (u32 i = 0; i < sizeof(validScenes) / sizeof(validScenes[0]); i++) {
+                if (sceneId == validScenes[i]) {
+                    valid = 1;
+                    break;
+                }
+            }
+
+            if (!valid || (lastScene == sceneId && hasSpawnedForThisPeriod)) {
+                lastScene = sceneId;
+                return;
+            }
+
             lastScene = sceneId;
-            return;
-        }
+            hasSpawnedForThisPeriod = 1;
 
-        lastScene = sceneId;
-        hasSpawnedForThisPeriod = 1;
+            struct {
+                f32 x, y, z;
+            } peahatSpawns[] = {
+                { 1087.20f, -89.48f, 1734.11f },
+                { 725.89f, -222.00f, 3645.10f },
+                { -1977.13f, -222.00f, 4232.04f },
+                { -2590.39f, -222.00f, 2852.47f },
+                { 3168.22f, 206.45f, 719.55f },
+            };
 
-        struct {
-            f32 x, y, z;
-        } peahatSpawns[] = {
-            { 1087.20f, -89.48f, 1734.11f },
-            { 725.89f, -222.00f, 3645.10f },
-            { -1977.13f, -222.00f, 4232.04f },
-            { -2590.39f, -222.00f, 2852.47f },
-            { 3168.22f, 206.45f, 719.55f },
-        };
-
-        for (u32 i = 0; i < sizeof(peahatSpawns) / sizeof(peahatSpawns[0]); i++) {
-            Actor_Spawn(&play->actorCtx,
-                play,
-                ACTOR_EN_PEEHAT,
-                peahatSpawns[i].x,
-                peahatSpawns[i].y,
-                peahatSpawns[i].z,
-                0, 0, 0, 0);
+            for (u32 i = 0; i < sizeof(peahatSpawns) / sizeof(peahatSpawns[0]); i++) {
+                Actor_Spawn(&play->actorCtx,
+                    play,
+                    ACTOR_EN_PEEHAT,
+                    peahatSpawns[i].x,
+                    peahatSpawns[i].y,
+                    peahatSpawns[i].z,
+                    0, 0, 0, 0);
+            }
         }
     }
 }
