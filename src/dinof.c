@@ -132,7 +132,8 @@ RECOMP_HOOK("EnDinofos_Update") void DinoFUpdate(Actor* thisx, PlayState* play2)
 
     EnDinofos* this = (EnDinofos*)thisx;
     int Difficulty = (int)recomp_get_config_double("diff_option");
-    bool healthIncreased = false;
+   
+    #define HEALTH_SCALED_FLAG 0x8000
 
     switch (Difficulty) {
     case 0:
@@ -159,7 +160,7 @@ RECOMP_HOOK("EnDinofos_Update") void DinoFUpdate(Actor* thisx, PlayState* play2)
         break;
     }
 
-    if (!healthIncreased) {
+    if (!(this->actor.params & HEALTH_SCALED_FLAG)) {
         switch (Difficulty) {
         case 0:
             this->actor.colChkInfo.health = (this->actor.colChkInfo.health * 1.5f);
@@ -170,6 +171,6 @@ RECOMP_HOOK("EnDinofos_Update") void DinoFUpdate(Actor* thisx, PlayState* play2)
         default:
             break;
         }
-        healthIncreased = true;
+        this->actor.params |= HEALTH_SCALED_FLAG;
     }
 }
