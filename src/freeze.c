@@ -37,7 +37,7 @@ RECOMP_HOOK("EnFz_Update") void FzUpdate(Actor* thisx, PlayState* play) {
         break;
 
     case 1:
-        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage + 2) / 4;
+        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage + 2) / 3;
         break;
 
     default:
