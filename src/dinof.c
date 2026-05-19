@@ -132,6 +132,7 @@ RECOMP_HOOK("EnDinofos_Update") void DinoFUpdate(Actor* thisx, PlayState* play2)
 
     EnDinofos* this = (EnDinofos*)thisx;
     int Difficulty = (int)recomp_get_config_double("diff_option");
+    bool healthIncreased = false;
 
     switch (Difficulty) {
     case 0:
@@ -149,12 +150,26 @@ RECOMP_HOOK("EnDinofos_Update") void DinoFUpdate(Actor* thisx, PlayState* play2)
             this->skelAnime.playSpeed = 2.0f;
         }
         if (this->actor.colChkInfo.damage > 0) {
-            int reducedDamage = this->actor.colChkInfo.damage / 3;
+            int reducedDamage = (this->actor.colChkInfo.damage + 2) / 3;
             this->actor.colChkInfo.damage = (reducedDamage > 1) ? reducedDamage : 1;
         }
         break;
 
     default:
         break;
+    }
+
+    if (!healthIncreased) {
+        switch (Difficulty) {
+        case 0:
+            this->actor.colChkInfo.health = (s512)(this->actor.colChkInfo.health * 1.5f);
+            break;
+        case 1:
+            this->actor.colChkInfo.health = (s512)(this->actor.colChkInfo.health * 2.0f);
+            break;
+        default:
+            break;
+        }
+        healthIncreased = true;
     }
 }
