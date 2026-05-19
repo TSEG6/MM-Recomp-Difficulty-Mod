@@ -135,18 +135,26 @@ RECOMP_HOOK("EnDinofos_Update") void DinoFUpdate(Actor* thisx, PlayState* play2)
 
     switch (Difficulty) {
     case 0:
-        if (this->actor.colChkInfo.health != 0) this->skelAnime.playSpeed = 1.5f;
-        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 3;
+        if (this->actor.colChkInfo.health != 0) {
+            this->skelAnime.playSpeed = 1.5f;
+        }
+        if (this->actor.colChkInfo.damage > 0) {
+            int reducedDamage = this->actor.colChkInfo.damage / 2;
+            this->actor.colChkInfo.damage = (reducedDamage > 1) ? reducedDamage : 1;
+        }
         break;
 
-    case 1: {
-        if (this->actor.colChkInfo.health != 0) this->skelAnime.playSpeed = 2.0f;
-        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage + 2) / 5;
+    case 1:
+        if (this->actor.colChkInfo.health != 0) {
+            this->skelAnime.playSpeed = 2.0f;
+        }
+        if (this->actor.colChkInfo.damage > 0) {
+            int reducedDamage = this->actor.colChkInfo.damage / 3;
+            this->actor.colChkInfo.damage = (reducedDamage > 1) ? reducedDamage : 1;
+        }
         break;
-    }
+
     default:
         break;
     }
-
-
 }
