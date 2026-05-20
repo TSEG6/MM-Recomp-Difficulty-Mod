@@ -206,11 +206,12 @@ RECOMP_HOOK("EnKaizoku_Update") void PirateBossUpdate(Actor* thisx, PlayState* p
 
     switch (Difficulty) {
     case 0:
+        speedMultiplier = 1.1f;
         this->picto.actor.colChkInfo.damage = (this->picto.actor.colChkInfo.damage) / 2;
         break;
 
     case 1:
-        speedMultiplier = 1.1f;
+        speedMultiplier = 1.5f;
         this->picto.actor.colChkInfo.damage = (this->picto.actor.colChkInfo.damage + 2) / 3;
         break;
 
@@ -218,7 +219,7 @@ RECOMP_HOOK("EnKaizoku_Update") void PirateBossUpdate(Actor* thisx, PlayState* p
         break;
     }
 
-    if (this->picto.actor.colChkInfo.health != 0) {
+    if (this->picto.actor.colChkInfo.health != 0 && this->actionFunc != EnKaizoku_Slash && this->actionFunc != (EnKaizokuActionFunc)EnKaizoku_SetupRollBack) {
         this->skelAnime.playSpeed = speedMultiplier;
     }
 
