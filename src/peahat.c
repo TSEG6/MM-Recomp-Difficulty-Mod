@@ -31,19 +31,19 @@ RECOMP_HOOK_RETURN("Actor_LoadOverlay") void on_return_Actor_LoadOverlay() {
 
 
 RECOMP_HOOK("EnPeehat_Init")
-void Torch_Init(Actor* thisx, PlayState* play) {
+void PH_Init(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sPHEnemy);
 }
 
 
 RECOMP_HOOK("EnPeehat_Update")
-void Torch_Update(Actor* thisx, PlayState* play) {
+void PH_Update(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sPHEnemy);
 }
 
 
 RECOMP_HOOK("EnPeehat_Draw")
-void Torch_Draw(Actor* thisx, PlayState* play) {
+void PH_Draw(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sPHEnemy);
 
     OPEN_DISPS(play->state.gfxCtx);
