@@ -188,16 +188,17 @@ RECOMP_HOOK("Boss03_Update") void FishUpdate(Actor* thisx, PlayState* play2) {
 
     switch (Difficulty) {
     case 0:
-        if (this->actor.colChkInfo.health != 0) {
-        }
+
         if (this->actor.colChkInfo.damage > 0) {
             int reducedDamage = this->actor.colChkInfo.damage / 2;
             this->actor.colChkInfo.damage = (reducedDamage > 1) ? reducedDamage : 1;
         }
+
         if (this->workTimer[WORK_TIMER_STUNNED] != 0 && (this->waterHeight < player->actor.world.pos.y)) {
 
             this->workTimer[WORK_TIMER_STUNNED] = this->workTimer[WORK_TIMER_STUNNED] - 2;
         }
+
         if (this->workTimer[WORK_TIMER_UNK1_A] != 0 && (this->waterHeight < player->actor.world.pos.y)) {
 
             this->workTimer[WORK_TIMER_UNK1_A] = this->workTimer[WORK_TIMER_UNK1_A] - 1;
@@ -205,12 +206,12 @@ RECOMP_HOOK("Boss03_Update") void FishUpdate(Actor* thisx, PlayState* play2) {
         break;
 
     case 1:
-        if (this->actor.colChkInfo.health != 0) {
-        }
+
         if (this->actor.colChkInfo.damage > 0) {
             int reducedDamage = (this->actor.colChkInfo.damage + 2) / 3;
             this->actor.colChkInfo.damage = (reducedDamage > 1) ? reducedDamage : 1;
         }
+
         if (this->workTimer[WORK_TIMER_STUNNED] != 0 && (this->waterHeight < player->actor.world.pos.y)) {
             this->workTimer[WORK_TIMER_STUNNED] = this->workTimer[WORK_TIMER_STUNNED] - 4;
         }
@@ -218,6 +219,7 @@ RECOMP_HOOK("Boss03_Update") void FishUpdate(Actor* thisx, PlayState* play2) {
 
             this->workTimer[WORK_TIMER_STUNNED] = this->workTimer[WORK_TIMER_STUNNED] - 1;
         }
+
         if (this->workTimer[WORK_TIMER_UNK1_A] != 0 && (this->waterHeight < player->actor.world.pos.y)) {
             this->workTimer[WORK_TIMER_UNK1_A] = this->workTimer[WORK_TIMER_UNK1_A] - 3;
         }
