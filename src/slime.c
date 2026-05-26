@@ -15,6 +15,7 @@
 void EnSlime_Damaged(EnSlime* this, PlayState* play);
 void EnSlime_Revive(EnSlime* this, PlayState* play);
 void EnSlime_SetupTurnToPlayer(EnSlime* this);
+void EnSlime_SetupJump(EnSlime* this);
 void ReviveBuffFix(EnSlime* this);
 void EnSlime_Jump(EnSlime* this, PlayState* play);
 void EnSlime_SetupMoveInDirection(EnSlime* this);
@@ -45,6 +46,18 @@ typedef enum EnSlimeEyeTexture {
     /* 3 */ EN_SLIME_EYETEX_HALF2,
     /* 4 */ EN_SLIME_EYETEX_MAX
 } EnSlimeEyeTexture;
+
+void EnSlime_Blink(EnSlime* this) {
+    if (this->eyeTexIndex != EN_SLIME_EYETEX_OPEN) {
+        this->eyeTexIndex++;
+        if (this->eyeTexIndex == EN_SLIME_EYETEX_MAX) {
+            this->eyeTexIndex = EN_SLIME_EYETEX_OPEN;
+        }
+    }
+    else if (Rand_ZeroOne() < 0.05f) {
+        this->eyeTexIndex = EN_SLIME_EYETEX_HALF;
+    }
+}
 
 RECOMP_HOOK_RETURN("EnSlime_Init")
 void SlimeBuff(Actor* thisx, PlayState* play) {
@@ -153,6 +166,81 @@ RECOMP_HOOK_RETURN("EnSlime_MoveInDirection") void SlimeMovement(EnSlime* this, 
 
     default:
         break;
+    }
+}
+
+RECOMP_PATCH void EnSlime_TurnToPlayer(EnSlime* this, PlayState* play) {
+    f32 factorY;
+    f32 scaleXZ;
+    Player* player = GET_PLAYER(play);
+    Vec3f predictedPos;
+    s16 targetYaw;
+    f32 dx, dz, distance, travelTime, predictFactor;
+
+    f32 JumpSpeed;
+    f32 multiplier = 1.0f;
+
+    int Difficulty = (int)recomp_get_config_double("diff_option");
+
+    dx = player->actor.world.pos.x - this->actor.world.pos.x;
+    dz = player->actor.world.pos.z - this->actor.world.pos.z;
+    distance = sqrtf(SQ(dx) + SQ(dz));
+
+    switch (Difficulty) {
+    case 0:
+        multiplier = 2.0f;
+        break;
+    case 1:
+        multiplier = 3.0f;
+        break;
+    default:
+        multiplier = 1.0f;
+        break;
+    }
+
+    if (distance < 60.0f) {
+        JumpSpeed = 2.5f * multiplier / 2.0f;
+    }
+    else if (distance < 120.0f) {
+        JumpSpeed = 4.5f * multiplier / 2.0f;
+    }
+    else {
+        JumpSpeed = 7.0f * multiplier / 2.0f;
+    }
+
+    if (JumpSpeed == 0.0f) {
+        JumpSpeed = 1.0f;
+    }
+
+    travelTime = distance / JumpSpeed;
+    travelTime = CLAMP(travelTime, 0.0f, 15.0f);
+
+    if (Difficulty == 1) {
+        predictFactor = 0.85f;
+    }
+    else {
+        predictFactor = 0.45f;
+    }
+
+    predictedPos.x = player->actor.world.pos.x + (player->actor.velocity.x * travelTime * predictFactor);
+    predictedPos.y = player->actor.world.pos.y;
+    predictedPos.z = player->actor.world.pos.z + (player->actor.velocity.z * travelTime * predictFactor);
+
+    targetYaw = Math_Vec3f_Yaw(&this->actor.world.pos, &predictedPos);
+
+    this->timer--;
+    EnSlime_Blink(this);
+    Math_ApproachS(&this->actor.shape.rot.y, targetYaw, 4, 0x1000);
+
+    if (this->timer >= 0) {
+        factorY = 8 - this->timer;
+        scaleXZ = ((factorY * 0.04f) + 1.0f) * 0.01f;
+        this->actor.scale.x = scaleXZ;
+        this->actor.scale.y = (1.0f - (factorY * 0.05f)) * 0.01f;
+        this->actor.scale.z = scaleXZ;
+    }
+    if (this->timer < -2) {
+        EnSlime_SetupJump(this);
     }
 }
 
