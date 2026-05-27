@@ -124,8 +124,7 @@ RECOMP_HOOK("EnWallmas_Walk") void WalkSpeedWM(EnWallmas* this, PlayState* play)
     }
 }
 
-RECOMP_PATCH void EnWallmas_Drop(EnWallmas* this, PlayState* play) {
-    Player* player = GET_PLAYER(play);
+RECOMP_HOOK("EnWallmas_Drop") void EnWallmas_DropHook(EnWallmas * this, PlayState * play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
     f32 speedMultiplier = 1.0f;
@@ -143,20 +142,6 @@ RECOMP_PATCH void EnWallmas_Drop(EnWallmas* this, PlayState* play) {
 
     if (this->actor.velocity.y < 0.0f) {
         this->actor.velocity.y *= speedMultiplier;
-    }
-
-    if ((player->stateFlags2 & PLAYER_STATE2_80) || (player->actor.freezeTimer > 0)) {
-        EnWallmas_SetupReturnToCeiling(this);
-    }
-    else if (!Play_InCsMode(play) && !(player->stateFlags2 & PLAYER_STATE2_10) && (player->invincibilityTimer >= 0) &&
-        (this->actor.xzDistToPlayer < 30.0f) && (this->actor.playerHeightRel < -5.0f) &&
-        (-(f32)(player->cylinder.dim.height + 10) < this->actor.playerHeightRel)) {
-        EnWallmas_SetupTakePlayer(this, play);
-    }
-    else if (this->actor.world.pos.y <= this->yTarget) {
-        this->actor.world.pos.y = this->yTarget;
-        this->actor.velocity.y = 0.0f;
-        EnWallmas_SetupLand(this, play);
     }
 }
 
