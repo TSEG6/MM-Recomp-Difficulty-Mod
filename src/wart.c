@@ -125,14 +125,34 @@ RECOMP_HOOK("Boss04_Update") void WartUpdate(Actor* thisx, PlayState* play2) {
 
     if (Bubbles < 82) {
 
-        if ((play->gameplayFrames % respawnTimer == 0) && (Rand_ZeroOne() < respawnChance)) {
+        if (this->unk_6F6 < 82 && (play->gameplayFrames % respawnTimer == 0) && (Rand_ZeroOne() < respawnChance)) {
 
-            Actor* child = Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_EN_TANRON2,
-                this->actor.world.pos.x, this->actor.world.pos.y,
-                this->actor.world.pos.z, 0, 0, 0, Bubbles);
-            Actor_PlaySfx(&this->actor, NA_SE_EN_IKURA_JUMP1);
+            int slotOccupied[82] = { 0 };
+            Actor* currentActor = play->actorCtx.actorLists[ACTORCAT_BOSS].first;
 
-            if (child != NULL) {
+            while (currentActor != NULL) {
+                if (currentActor->id == ACTOR_EN_TANRON2) {
+                    if (currentActor->params >= 0 && currentActor->params < 82) {
+                        slotOccupied[currentActor->params] = 1;
+                    }
+                }
+                currentActor = currentActor->next;
+            }
+
+            int targetSlot = -1;
+            for (int i = 0; i < 82; i++) {
+                if (slotOccupied[i] == 0) {
+                    targetSlot = i;
+                    break;
+                }
+            }
+
+            if (targetSlot != -1) {
+                Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_EN_TANRON2,
+                    this->actor.world.pos.x, this->actor.world.pos.y,
+                    this->actor.world.pos.z, 0, 0, 0, targetSlot);
+                Actor_PlaySfx(&this->actor, NA_SE_EN_IKURA_JUMP1);
+                this->unk_6F6++;
             }
         }
     }
