@@ -7,6 +7,8 @@
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
+// doing funnies with home rotation so I can skip doing global variables in case you were curious
+
 RECOMP_HOOK("EnDekubaba_Init") void InitChange(Actor* thisx, PlayState* play) {
     EnDekubaba* this = (EnDekubaba*)thisx;
 

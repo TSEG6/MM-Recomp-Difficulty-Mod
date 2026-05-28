@@ -10,7 +10,6 @@ RECOMP_HOOK_RETURN("EnCrow_SetupDiveAttack") void AttackGuay(EnCrow* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
-
     switch (Difficulty) {
     case 0:
         this->timer = 500;

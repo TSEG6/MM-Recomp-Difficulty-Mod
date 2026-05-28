@@ -12,7 +12,6 @@ void Boss05_WalkingHead_SetupCharge(Boss05* this, PlayState* arg1);
 
 #define TIMER_CURRENT_ACTION 0
 
-
 RECOMP_PATCH void Boss05_WalkingHead_SetupSpottedPlayer(Boss05* this, PlayState* play) {
     this->actionFunc = Boss05_WalkingHead_SpottedPlayer;
     Animation_MorphToPlayOnce(&this->headSkelAnime, &gBioDekuBabaHeadSpotAnim, 0.0f);
