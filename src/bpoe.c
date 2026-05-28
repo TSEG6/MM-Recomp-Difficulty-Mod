@@ -123,3 +123,14 @@ RECOMP_HOOK("EnBigpo_Update") void BPoeUpdate(Actor* thisx, PlayState* play) {
         break;
     }
 }
+
+RECOMP_HOOK("EnBigpo_SpawnCutsceneStage7") void forceminibossbgmBP(EnBigpo* this) {
+
+    Audio_PlayBgm_StorePrevBgm(NA_BGM_MINI_BOSS);
+
+}
+
+RECOMP_HOOK("EnBigpo_Destroy") void fixBPbgm(Actor* thisx, PlayState* play2) {
+
+    Audio_RestorePrevBgm();
+}
