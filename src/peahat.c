@@ -119,11 +119,11 @@ RECOMP_HOOK("EnPeehat_Update") void UpdateFun(Actor* thisx, PlayState* play2) {
     if (this->actor.home.rot.z == 0) {
         switch (Difficulty) {
         case 0:
-            this->actor.colChkInfo.health = baseHealth * 1.5;
+            this->actor.colChkInfo.health = baseHealth * 1.25;
             break;
 
         case 1:
-            this->actor.colChkInfo.health = baseHealth * 2;
+            this->actor.colChkInfo.health = baseHealth * 1.5;
             break;
 
         default:
