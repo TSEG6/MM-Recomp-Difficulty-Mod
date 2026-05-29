@@ -182,6 +182,7 @@ RECOMP_HOOK("EnTalkGibud_Talk") void GibdoTalk(EnTalkGibud* this, PlayState* pla
 
 RECOMP_HOOK("EnTalkGibud_Update") void GibdoTalkUpdate(Actor* thisx, PlayState* play) {
 
+    Player* player = GET_PLAYER(play);
     EnTalkGibud* this = (EnTalkGibud*)thisx;
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -224,4 +225,13 @@ RECOMP_HOOK("EnTalkGibud_Update") void GibdoTalkUpdate(Actor* thisx, PlayState* 
         this->actor.speed *= speedMultiplier;
     }
     if (this->actor.colChkInfo.health == 0) this->actor.speed = 0;
+
+    if (player->actor.freezeTimer > 0) {
+
+        Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
+    }
+    else {
+
+        Interface_SetHudVisibility(HUD_VISIBILITY_ALL);
+    }
 }
