@@ -11,7 +11,6 @@
 #define FZ_EFFECT_DISABLED 0
 #define FZ_EFFECT_BREATH 1
 
-// 2. Define the missing internal effect structure
 typedef struct EnFzEffect {
     u8 type;
     Vec3f pos;
