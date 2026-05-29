@@ -6,8 +6,14 @@
 #include "attributes.h"
 #include "assets/objects/object_rb/object_rb.h"
 
+static int LeeverKillCount = 0;
+static int LeeverKillTimer = 0;
+static bool SpawnPurpleOnNextInit = false;
+
+void EnNeoReeba_SetupSink(EnNeoReeba* this);
 void EnNeoReeba_Draw(Actor* thisx, PlayState* play);
 void EnNeoReeba_Move(EnNeoReeba* this, PlayState* play);
+void EnNeoReeba_SetupReturnHome(EnNeoReeba* this);
 
 void EnNeoReeba_DrawFrozenEffects(EnNeoReeba* this, PlayState* play) {
     s32 i;
@@ -88,9 +94,7 @@ RECOMP_PATCH void EnNeoReeba_Draw(Actor* thisx, PlayState* play) {
     else {
 
         gDPSetPrimColor(POLY_OPA_DISP++, 0, 0x01, 255, 255, 255, 255);
-
     }
-
 
     SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, EnNeoReeba_OverrideLimbDraw, NULL,
         &this->actor);
@@ -108,32 +112,27 @@ RECOMP_PATCH void EnNeoReeba_Draw(Actor* thisx, PlayState* play) {
 }
 
 RECOMP_HOOK_RETURN("EnNeoReeba_Init") void InitStuffRETURN(Actor* thisx, PlayState* play) {
-
     EnNeoReeba* this = (EnNeoReeba*)thisx;
     int Difficulty = (int)recomp_get_config_double("diff_option");
     u8 baseHealth = this->actor.colChkInfo.health;
 
+    if (SpawnPurpleOnNextInit) {
+        this->actor.home.rot.x = 1;
+        thisx->params |= 0x8000;
+        Actor_SetScale(&this->actor, 0.05f);
+        this->collider.dim.radius = 27;
+        this->collider.dim.height = 45;
+        this->actor.colChkInfo.health = 50;
+        SpawnPurpleOnNextInit = false;
+        return;
+    }
 
     switch (Difficulty) {
     case 0:
         this->actor.colChkInfo.health = baseHealth * 2.5;
         break;
-
-    case 1: {
+    case 1:
         this->actor.colChkInfo.health = baseHealth * 5;
-        if (Rand_ZeroOne() < 0.1f) {
-
-            this->actor.colChkInfo.health = baseHealth * 10;
-            this->actor.home.rot.x = 1;
-
-        }
-        thisx->params |= 0x8000;
-        Actor_SetScale(&this->actor, 0.05f);
-        this->collider.dim.radius = 27;
-        this->collider.dim.height = 45;
-        break;
-    }
-    default:
         break;
     }
 }
@@ -147,41 +146,54 @@ void EnNeoReeba_SetupMove(EnNeoReeba* this) {
     this->actor.speed = 14.0f;
 }
 
-RECOMP_HOOK("EnNeoReeba_ChooseAction") void IncreasedRange(EnNeoReeba* this, PlayState* play) {
-
+RECOMP_PATCH void EnNeoReeba_ChooseAction(EnNeoReeba* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     f32 distToPlayer = Actor_WorldDistXZToPoint(&player->actor, &this->actor.home.pos);
+
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float distanceCheck = 0.0f;
 
     switch (Difficulty) {
     case 0:
-        distanceCheck = 140.0f;
+        distanceCheck = 150.0f;
+        this->actionTimer--;
         break;
 
     case 1: {
-
         if (this->actor.home.rot.x == 1) {
 
             distanceCheck = 240.0f;
+            this->actionTimer = 0;
         }
         else {
-
-            distanceCheck = 180.0f;
+            distanceCheck = 200.0f;
+            this->actionTimer = this->actionTimer - 3;
         }
         break;
     }
     default:
         break;
     }
+    if (this->actionTimer <= 0) this->actionTimer = 0;
 
-    if ((distToPlayer < distanceCheck) && (fabsf(this->actor.playerHeightRel) < 100.0f)) {
-        this->targetPos = player->actor.world.pos;
-        this->targetPos.x += 10.0f * player->actor.speed * Math_SinS(player->actor.world.rot.y);
-        this->targetPos.z += 10.0f * player->actor.speed * Math_CosS(player->actor.world.rot.y);
-        EnNeoReeba_SetupMove(this);
+    if ((distToPlayer > distanceCheck - 60) || (fabsf(this->actor.playerHeightRel) > 100.0f)) {
+         if (this->actor.home.rot.x == 0) EnNeoReeba_SetupSink(this);
+    }
+    else if (this->actionTimer == 0) {
+        if ((distToPlayer < distanceCheck) && (fabsf(this->actor.playerHeightRel) < 100.0f)) {
+            this->targetPos = player->actor.world.pos;
+            this->targetPos.x += 10.0f * player->actor.speed * Math_SinS(player->actor.world.rot.y);
+            this->targetPos.z += 10.0f * player->actor.speed * Math_CosS(player->actor.world.rot.y);
+            EnNeoReeba_SetupMove(this);
+        }
+        else {
+            EnNeoReeba_SetupReturnHome(this);
+        }
     }
 
+    if (this->actionTimer != 0) {
+        this->actionTimer--;
+    }
 }
 
 RECOMP_HOOK("EnNeoReeba_UpdatePosition") void leeverupdatething(EnNeoReeba* this, PlayState* play) {
@@ -200,11 +212,9 @@ RECOMP_HOOK("EnNeoReeba_UpdatePosition") void leeverupdatething(EnNeoReeba* this
             this->skelAnime.playSpeed = 1.25f;
         }
         else {
-
             if (this->actor.home.rot.x == 1) {
 
                 this->actor.speed = 22.0f;
-
             }
             else {
 
@@ -216,5 +226,39 @@ RECOMP_HOOK("EnNeoReeba_UpdatePosition") void leeverupdatething(EnNeoReeba* this
     default:
         break;
     }
+}
 
+RECOMP_HOOK("EnNeoReeba_Update") void TrackLeeverKills(Actor* thisx, PlayState* play) {
+    EnNeoReeba* this = (EnNeoReeba*)thisx;
+
+    int Difficulty = (int)recomp_get_config_double("diff_option");
+    int KillsNeeded = 7;
+
+    if (Difficulty == 1) KillsNeeded = 5;
+
+    if (this->actor.colChkInfo.health == 0 && this->actor.home.rot.z == 0) {
+        this->actor.home.rot.z = 1;
+
+        if (LeeverKillTimer <= 0) {
+            LeeverKillCount = 0;
+            LeeverKillTimer = 7000;
+        }
+
+        LeeverKillCount++;
+
+        if (LeeverKillCount >= KillsNeeded) {
+            SpawnPurpleOnNextInit = true;
+
+            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_NEO_REEBA,
+                this->actor.world.pos.x, this->actor.world.pos.y, this->actor.world.pos.z,
+                0, 0, 0, 0);
+
+            LeeverKillCount = 0;
+            LeeverKillTimer = 0;
+        }
+
+    }
+
+    if (LeeverKillTimer > 0) LeeverKillTimer--;
+    else LeeverKillCount = 0;
 }
