@@ -111,6 +111,10 @@ RECOMP_HOOK("EnRailgibud_Update") void GibdoMBHUpdate(Actor* thisx, PlayState* p
         break;
     }
 
+    if (play->csCtx.state != 0) {
+        speedMultiplier = 1.0f;
+    }
+
     if (this->actor.parent != NULL) {
 
         if (this->actor.colChkInfo.health != 0 &&
