@@ -8,23 +8,6 @@
 #include "assets/objects/object_fz/object_fz.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-#define FZ_EFFECT_DISABLED 0
-#define FZ_EFFECT_BREATH 1
-
-// 2. Define the missing internal effect structure
-typedef struct EnFzEffect {
-    u8 type;
-    Vec3f pos;
-    Vec3f velocity;
-    Vec3f accel;
-    s16 primAlphaState;
-    f32 xyScale;
-    f32 xyScaleTarget;
-    s16 primAlpha;
-    s16 timer;
-    u8 damaging;
-} EnFzEffect;
-
 RECOMP_HOOK("EnFz_Update") void FzUpdate(Actor* thisx, PlayState* play) {
 
     EnFz* this = (EnFz*)thisx;
