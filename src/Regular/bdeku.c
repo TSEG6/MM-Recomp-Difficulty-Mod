@@ -4,11 +4,15 @@
 #include "recompconfig.h"
 #include "z_boss_05.h"
 #include "attributes.h"
+#include "eztr_api.h"
 
 void Boss05_WalkingHead_SetupIdle(Boss05* this, PlayState* play);
 void Boss05_WalkingHead_SetupSpottedPlayer(Boss05* this, PlayState* play);
 void Boss05_WalkingHead_SpottedPlayer(Boss05* this, PlayState* play);
 void Boss05_WalkingHead_SetupCharge(Boss05* this, PlayState* arg1);
+
+bool fixText = false;
+extern bool IsBig;
 
 #define TIMER_CURRENT_ACTION 0
 
@@ -88,6 +92,7 @@ RECOMP_PATCH void Boss05_WalkingHead_Walk(Boss05* this, PlayState* play) {
 
 RECOMP_HOOK("Boss05_Update") void BBabaUpdate(Actor* thisx, PlayState* play) {
 
+    Player* player = GET_PLAYER(play);
 	Boss05* this = (Boss05*)thisx;
 	int Difficulty = (int)recomp_get_config_double("diff_option");
     float speedMultiplier = 1.0f;
@@ -117,4 +122,8 @@ RECOMP_HOOK("Boss05_Update") void BBabaUpdate(Actor* thisx, PlayState* play) {
 
     if (this->dyna.actor.colChkInfo.health == 0) this->dyna.actor.speed = 0;
 
+    if (player->focusActor == &this->dyna.actor) {
+        fixText = true;
+        IsBig = false;
+    }
 }

@@ -228,7 +228,6 @@ RECOMP_HOOK("EnBb_Update") void Updating(Actor* thisx, PlayState* play) {
     if (player->focusActor == &this->actor) {
         CurrentVarient = this->variant;
     }
-    recomp_printf("Current Bubble Variant: %d\n", CurrentVarient);
 
     if (Difficulty == 1) {
         if (Rand_ZeroOne() < 0.05f) {
@@ -275,7 +274,7 @@ RECOMP_HOOK("EnBb_Update") void Updating(Actor* thisx, PlayState* play) {
     }
 }
 
-EZTR_MSG_CALLBACK(bubble_text_callback) {
+EZTR_MSG_CALLBACK(bb_text_callback) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
     if (Difficulty == 0) {
@@ -293,7 +292,7 @@ EZTR_MSG_CALLBACK(bubble_text_callback) {
     }
 }
 
-EZTR_ON_INIT void init_text_bb() {
+EZTR_ON_INIT void init_text_bubble() {
     EZTR_Basic_ReplaceText(
         0x191C,
         EZTR_BLUE_TEXT_BOX,
@@ -304,7 +303,7 @@ EZTR_ON_INIT void init_text_bb() {
         EZTR_NO_VALUE,
         true,
         "",
-        bubble_text_callback
+        bb_text_callback
     );
 }
 
@@ -323,29 +322,6 @@ RECOMP_HOOK("EnBb_SetupWaitForRevive") void Vive(EnBb* this) {
     default:
         this->timer = 200;
         break;
-    }
-}
-
-RECOMP_HOOK("EnBb_UpdateDamage") void damagestuff(EnBb* this, PlayState* play) {
-    int Difficulty = (int)recomp_get_config_double("diff_option");
-    int newJinx = 1200;
-
-    switch (Difficulty) {
-    case 0:
-        newJinx = 1400;
-        break;
-
-    case 1:
-        newJinx = 1800;
-        break;
-
-    default:
-        newJinx = 1200;
-        break;
-    }
-
-    if (gSaveContext.jinxTimer == 1200) {
-        gSaveContext.jinxTimer = newJinx;
     }
 }
 
