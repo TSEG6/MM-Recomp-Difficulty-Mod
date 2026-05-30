@@ -5,6 +5,7 @@
 #include "z_en_bb.h"
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
+#include "eztr_api.h"
 
 // doing funnies with home rotation so I can skip doing global variables in case you were curious
 
@@ -20,6 +21,8 @@ extern void EnBb_SetupDead(EnBb*, PlayState*);
 extern void EnBb_SetupFrozen(EnBb*);
 extern void EnBb_Freeze(EnBb*);
 extern void EnBb_Thaw(EnBb*, PlayState*);
+
+int CurrentVarient = 0;
 
 typedef enum {
     /* 0x0 */ EN_BB_DMGEFF_NONE,
@@ -137,7 +140,6 @@ RECOMP_HOOK("EnBb_Init") void SetType(Actor* thisx, PlayState* play) {
             this->actor.home.rot.x = 1;
         }
     }
-
 }
 
 RECOMP_PATCH void EnBb_UpdateDamage(EnBb* this, PlayState* play) {
@@ -221,6 +223,12 @@ RECOMP_PATCH void EnBb_UpdateDamage(EnBb* this, PlayState* play) {
 RECOMP_HOOK("EnBb_Update") void Updating(Actor* thisx, PlayState* play) {
     EnBb* this = (EnBb*)thisx;
     int Difficulty = (int)recomp_get_config_double("diff_option");
+    Player* player = GET_PLAYER(play);
+
+    if (player->focusActor == &this->actor) {
+        CurrentVarient = this->variant;
+    }
+    recomp_printf("Current Bubble Variant: %d\n", CurrentVarient);
 
     if (Difficulty == 1) {
         if (Rand_ZeroOne() < 0.05f) {
@@ -265,6 +273,39 @@ RECOMP_HOOK("EnBb_Update") void Updating(Actor* thisx, PlayState* play) {
     default:
         break;
     }
+}
+
+EZTR_MSG_CALLBACK(bubble_text_callback) {
+    int Difficulty = (int)recomp_get_config_double("diff_option");
+
+    if (Difficulty == 0) {
+        EZTR_MsgSContent_Sprintf(buf->data.content, "|05That's a |00Blue Bubble|05!|11Quick! Run! Don't let it curse|11you! If it comes after you, defend|11yourself to block it!|BF");
+        return;
+    }
+    if (CurrentVarient == 0) {
+        EZTR_MsgSContent_Sprintf(buf->data.content, "|05That's a |00Purple Bubble|05!|11Quick! Run! Don't let it curse|11you!|BF");
+    }
+    if (CurrentVarient == 1) {
+        EZTR_MsgSContent_Sprintf(buf->data.content, "|05That's a |00Blue Bubble|05!|11Quick! Run! Don't let it freeze|11you!|BF");
+    }
+    if (CurrentVarient == 2) {
+        EZTR_MsgSContent_Sprintf(buf->data.content, "|05That's a |00Yellow Bubble|05!|11Quick! Run! Don't let it shock|11you!|BF");
+    }
+}
+
+EZTR_ON_INIT void init_text_bb() {
+    EZTR_Basic_ReplaceText(
+        0x191C,
+        EZTR_BLUE_TEXT_BOX,
+        0,
+        EZTR_ICON_NO_ICON,
+        EZTR_NO_VALUE,
+        EZTR_NO_VALUE,
+        EZTR_NO_VALUE,
+        true,
+        "",
+        bubble_text_callback
+    );
 }
 
 RECOMP_HOOK("EnBb_SetupWaitForRevive") void Vive(EnBb* this) {
