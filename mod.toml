@@ -33,7 +33,8 @@ minimum_recomp_version = "1.2.2"
 # Dependency mods. Each entry is the mod's ID and then an optional minimum version of the dependency mod.
 dependencies = [
 # Example dependency:
-	"yazmt_mm_global_objects"
+	"yazmt_mm_global_objects",
+	"MM_EZ_Text_Replacer_API:2.0.0"
 #		"ProxyMM_CustomActor"
 ]
 
