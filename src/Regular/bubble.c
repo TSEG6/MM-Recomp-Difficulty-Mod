@@ -452,11 +452,13 @@ RECOMP_PATCH void EnBb_Draw(Actor* thisx, PlayState* play) {
                 break;
             case 0:
             default:
-                gDPSetEnvColor(POLY_XLU_DISP++, 255, 0, 255, 64);
+                gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 0, 255, 255);
+                gDPSetEnvColor(POLY_XLU_DISP++, 64, 0, 255, 255);
                 break;
             }
         }
         else {
+            gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 255, 255, 255);
             gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 255, 0);
         }
         gSPSegment(
