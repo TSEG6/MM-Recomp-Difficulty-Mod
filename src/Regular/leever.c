@@ -5,15 +5,42 @@
 #include "z_en_neo_reeba.h"
 #include "attributes.h"
 #include "assets/objects/object_rb/object_rb.h"
+#include "eztr_api.h"
 
 static int LeeverKillCount = 0;
 static int LeeverKillTimer = 0;
 static bool SpawnPurpleOnNextInit = false;
+static bool PurpleLeeverSpawned = false;
 
 void EnNeoReeba_SetupSink(EnNeoReeba* this);
 void EnNeoReeba_Draw(Actor* thisx, PlayState* play);
+void EnNeoReeba_RiseOutOfGround(EnNeoReeba* this, PlayState* play);
 void EnNeoReeba_Move(EnNeoReeba* this, PlayState* play);
 void EnNeoReeba_SetupReturnHome(EnNeoReeba* this);
+
+EZTR_MSG_CALLBACK(leever_text_callback) {
+    if (PurpleLeeverSpawned) {
+        EZTR_MsgSContent_Sprintf(buf->data.content, "|05That's the |00Blue Leever|05.|11It's stronger than any other Leever.|11That's not exactly good news,|11is it?|BF");
+    }
+    else {
+        EZTR_MsgSContent_Sprintf(buf->data.content, "|05You know about the |00Leever|05, right?|11It actually moves pretty fast.|11That's not exactly good news,|11is it?|BF");
+    }
+}
+
+EZTR_ON_INIT void init_text() {
+    EZTR_Basic_ReplaceText(
+        0x1947,
+        EZTR_BLUE_TEXT_BOX,
+        0,
+        EZTR_ICON_NO_ICON,
+        EZTR_NO_VALUE,
+        EZTR_NO_VALUE,
+        EZTR_NO_VALUE,
+        true,
+        "",
+        leever_text_callback
+    );
+}
 
 void EnNeoReeba_DrawFrozenEffects(EnNeoReeba* this, PlayState* play) {
     s32 i;
@@ -87,12 +114,9 @@ RECOMP_PATCH void EnNeoReeba_Draw(Actor* thisx, PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
     if (this->actor.home.rot.x == 1) {
-
         gDPSetPrimColor(POLY_OPA_DISP++, 0, 0x01, 155, 55, 255, 255);
-
     }
     else {
-
         gDPSetPrimColor(POLY_OPA_DISP++, 0, 0x01, 255, 255, 255, 255);
     }
 
@@ -115,6 +139,7 @@ RECOMP_HOOK_RETURN("EnNeoReeba_Init") void InitStuffRETURN(Actor* thisx, PlaySta
     EnNeoReeba* this = (EnNeoReeba*)thisx;
     int Difficulty = (int)recomp_get_config_double("diff_option");
     u8 baseHealth = this->actor.colChkInfo.health;
+    Player* player = GET_PLAYER(play);
 
     if (SpawnPurpleOnNextInit) {
         this->actor.home.rot.x = 1;
@@ -124,6 +149,7 @@ RECOMP_HOOK_RETURN("EnNeoReeba_Init") void InitStuffRETURN(Actor* thisx, PlaySta
         this->collider.dim.height = 45;
         this->actor.colChkInfo.health = 50;
         SpawnPurpleOnNextInit = false;
+        PurpleLeeverSpawned = true;
         return;
     }
 
@@ -151,7 +177,7 @@ RECOMP_PATCH void EnNeoReeba_ChooseAction(EnNeoReeba* this, PlayState* play) {
     f32 distToPlayer = Actor_WorldDistXZToPoint(&player->actor, &this->actor.home.pos);
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
-    float distanceCheck = 0.0f;
+    float distanceCheck = 140.0f;
 
     switch (Difficulty) {
     case 0:
@@ -161,23 +187,22 @@ RECOMP_PATCH void EnNeoReeba_ChooseAction(EnNeoReeba* this, PlayState* play) {
 
     case 1: {
         if (this->actor.home.rot.x == 1) {
-
             distanceCheck = 240.0f;
             this->actionTimer = 0;
         }
         else {
             distanceCheck = 200.0f;
             this->actionTimer = this->actionTimer - 3;
+            if (this->actionTimer <= 0) this->actionTimer = 0;
         }
         break;
     }
     default:
         break;
     }
-    if (this->actionTimer <= 0) this->actionTimer = 0;
 
-    if ((distToPlayer > distanceCheck - 60) || (fabsf(this->actor.playerHeightRel) > 100.0f)) {
-         if (this->actor.home.rot.x == 0) EnNeoReeba_SetupSink(this);
+    if ((distToPlayer > distanceCheck + 60.0f) || (fabsf(this->actor.playerHeightRel) > 100.0f)) {
+        if (this->actor.home.rot.x == 0) EnNeoReeba_SetupSink(this);
     }
     else if (this->actionTimer == 0) {
         if ((distToPlayer < distanceCheck) && (fabsf(this->actor.playerHeightRel) < 100.0f)) {
@@ -228,6 +253,30 @@ RECOMP_HOOK("EnNeoReeba_UpdatePosition") void leeverupdatething(EnNeoReeba* this
     }
 }
 
+
+RECOMP_PATCH void EnNeoReeba_SetupRise(EnNeoReeba* this) {
+
+    if (!PurpleLeeverSpawned) {
+        this->actor.draw = EnNeoReeba_Draw;
+        this->sinkRiseRate = 300.0f;
+        this->skelAnime.playSpeed = 2.0f;
+        Actor_PlaySfx(&this->actor, NA_SE_EN_STALKID_APPEAR);
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
+        this->actionFunc = EnNeoReeba_RiseOutOfGround;
+    }
+    else if (this->actor.home.rot.x == 1) {
+        this->actor.draw = EnNeoReeba_Draw;
+        this->sinkRiseRate = 300.0f;
+        this->skelAnime.playSpeed = 2.0f;
+        Actor_PlaySfx(&this->actor, NA_SE_EN_STALKID_APPEAR);
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
+        this->actionFunc = EnNeoReeba_RiseOutOfGround;
+        }
+    else {
+        return;
+    }
+}
+
 RECOMP_HOOK("EnNeoReeba_Update") void TrackLeeverKills(Actor* thisx, PlayState* play) {
     EnNeoReeba* this = (EnNeoReeba*)thisx;
 
@@ -236,6 +285,14 @@ RECOMP_HOOK("EnNeoReeba_Update") void TrackLeeverKills(Actor* thisx, PlayState* 
 
     if (Difficulty == 1) KillsNeeded = 5;
 
+    if (this->actor.home.rot.z != 1) {
+
+        if (this->actionFunc == EnNeoReeba_Move || this->actionFunc == EnNeoReeba_ChooseAction) {
+
+            if (PurpleLeeverSpawned && this->actor.home.rot.x != 1) EnNeoReeba_SetupSink(this);
+        }
+    }
+
     if (this->actor.colChkInfo.health == 0 && this->actor.home.rot.z == 0) {
         this->actor.home.rot.z = 1;
 
@@ -243,7 +300,7 @@ RECOMP_HOOK("EnNeoReeba_Update") void TrackLeeverKills(Actor* thisx, PlayState* 
             LeeverKillCount = 0;
             LeeverKillTimer = 7000;
         }
-
+        PurpleLeeverSpawned = false;
         LeeverKillCount++;
 
         if (LeeverKillCount >= KillsNeeded) {
@@ -258,7 +315,6 @@ RECOMP_HOOK("EnNeoReeba_Update") void TrackLeeverKills(Actor* thisx, PlayState* 
         }
 
     }
-
     if (LeeverKillTimer > 0) LeeverKillTimer--;
     else LeeverKillCount = 0;
 }
