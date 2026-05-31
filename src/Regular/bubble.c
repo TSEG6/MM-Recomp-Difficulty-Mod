@@ -143,6 +143,8 @@ RECOMP_HOOK("EnBb_Init") void SetType(Actor* thisx, PlayState* play) {
 }
 
 RECOMP_PATCH void EnBb_UpdateDamage(EnBb* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
     if (this->collider.base.acFlags & AC_HIT) {
         this->collider.base.acFlags &= ~AC_HIT;
         this->collider.base.atFlags &= ~(AT_HIT | AT_BOUNCED);
@@ -202,10 +204,10 @@ RECOMP_PATCH void EnBb_UpdateDamage(EnBb* this, PlayState* play) {
             Player* player = GET_PLAYER(play);
             switch (this->variant) {
             case 1:
-                func_80833B18(play, player, 3, 0.0f, 0.0f, 0, 20);
+                if (player->stateFlags1 != PLAYER_STATE1_800000) func_80833B18(play, player, 3, 0.0f, 0.0f, 0, 20);
                 break;
             case 2:
-                func_80833B18(play, player, 4, 0.0f, 0.0f, 0, 20);
+                if (player->stateFlags1 != PLAYER_STATE1_800000) func_80833B18(play, player, 4, 0.0f, 0.0f, 0, 20);
                 break;
             case 0:
             default:

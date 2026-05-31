@@ -157,11 +157,13 @@ RECOMP_PATCH void EnSyatekiDekunuts_SetupWaitToStart(EnSyatekiDekunuts* this) {
 
     switch (Difficulty) {
     case 0:
-        this->timeToBurrow = 93 - (syatekiMan->currentWave * 20);
+        if (this->timeToBurrow > 30) this->timeToBurrow = 93 - (syatekiMan->currentWave * 3);
+        if (this->timeToBurrow < 30) this->timeToBurrow = 30;
         break;
 
     case 1:
-        this->timeToBurrow = 70 - (syatekiMan->currentWave * 20);
+        if (this->timeToBurrow > 30) this->timeToBurrow = 70 - (syatekiMan->currentWave * 5);
+        if (this->timeToBurrow < 30) this->timeToBurrow = 30;
         break;
 
     default:
