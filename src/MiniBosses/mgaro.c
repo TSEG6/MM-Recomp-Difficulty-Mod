@@ -17,6 +17,8 @@ void EnJso2_SetupTeleport(EnJso2* this);
 void EnJso2_FallFromTeleport(EnJso2* this, PlayState* play);
 void EnJso2_SetupWaitAfterSlash(EnJso2* this);
 
+int TimesTPd = 0;
+
 typedef enum EnJso2Action {
     /*  0 */ EN_JSO2_ACTION_INTRO_CUTSCENE,
     /*  1 */ EN_JSO2_ACTION_UNK_1, // Checked in EnJso2_Update, but never actually used
@@ -203,7 +205,10 @@ RECOMP_HOOK("EnJso2_Slash") void TeleportFromSlash(EnJso2* this, PlayState* play
         if (curFrame >= this->animEndFrame) {
             this->actor.speed = 0.0f;
             this->disableBlure = true;
-            if (Rand_ZeroOne() < 0.05) EnJso2_SetupTeleport(this);
+            if (Rand_ZeroOne() < 0.05 && TimesTPd < 4) {
+                EnJso2_SetupTeleport(this);
+                TimesTPd++;
+            }
             else EnJso2_SetupWaitAfterSlash(this);
         }
         break;
@@ -212,7 +217,10 @@ RECOMP_HOOK("EnJso2_Slash") void TeleportFromSlash(EnJso2* this, PlayState* play
         if (curFrame >= this->animEndFrame) {
             this->actor.speed = 0.0f;
             this->disableBlure = true;
-            if (Rand_ZeroOne() < 0.2) EnJso2_SetupTeleport(this);
+            if (Rand_ZeroOne() < 0.2 && TimesTPd < 4) {
+                EnJso2_SetupTeleport(this);
+                TimesTPd++;
+            }
             else EnJso2_SetupWaitAfterSlash(this);
         }
         break;
@@ -220,7 +228,6 @@ RECOMP_HOOK("EnJso2_Slash") void TeleportFromSlash(EnJso2* this, PlayState* play
     default:
         break;
     }
-
 }
 
 RECOMP_PATCH void EnJso2_DashAttack(EnJso2* this, PlayState* play) {
@@ -322,6 +329,7 @@ RECOMP_HOOK_RETURN("EnJso2_SetupWaitAfterSlash") void LessCooldownGM(EnJso2* thi
         EnJso2_ChangeAnim(this, EN_JSO2_ANIM_LOOK_AROUND);
         this->timer = IdleTimer;
     }
+    TimesTPd = 0;
 }
 
 RECOMP_HOOK("EnJso2_Update") void GaroMUpdate(Actor* thisx, PlayState* play) {
