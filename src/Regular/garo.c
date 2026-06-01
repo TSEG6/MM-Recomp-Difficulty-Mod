@@ -11,13 +11,16 @@
 #include "z_en_encount3.h"
 #include "assets/objects/object_big_fwall/object_big_fwall.h"
 
-s32 D_809AD810 = false;
+extern s32 D_809AD810;
 
 void func_809AD194(EnEncount3* this, PlayState* play);
 
 void EnJso_SetupCower(EnJso* this);
 void EnJso_CirclePlayer(EnJso* this, PlayState* play);
 void EnJso_Stunned(EnJso* this, PlayState* play);
+
+bool PlayerUsingGaroMask = false;
+int TimesEncountered = 0;
 
 typedef enum EnJsoAnimation {
     /*  0 */ EN_JSO_ANIM_APPEAR,
@@ -268,10 +271,40 @@ RECOMP_HOOK("EnJso_Update") void GaroUpdate(Actor* thisx, PlayState* play) {
         break;
     }
     if (this->attackTimer < 0) this->attackTimer = 0;
+
+    if (Player_GetMask(play) == PLAYER_MASK_GARO) PlayerUsingGaroMask = true;
+    else PlayerUsingGaroMask = false;
+}
+
+RECOMP_HOOK("EnEncount3_Init") void CanAttackNoMask(Actor* thisx, PlayState* play) {
+
+    EnEncount3* this = (EnEncount3*)thisx;
+    #define CAN_ATTACK 0x8000
+
+    if (Rand_ZeroOne() < 0.2) {
+        this->actor.params |= CAN_ATTACK;
+    }
+}
+
+RECOMP_HOOK_RETURN("func_809AD058") void Attacking(EnEncount3* this) {
+    int Difficulty = (int)recomp_get_config_double("diff_option");
+
+    switch (Difficulty) {
+    case 0:
+        this->timer = 30;
+        break;
+
+    case 1:
+        if (this->actor.params & CAN_ATTACK) this->timer = 30 + (TimesEncountered * 10);
+        else this->timer = 20;
+        break;
+
+    default:
+        break;
+    }
 }
 
 RECOMP_PATCH void func_809AD084(EnEncount3* this, PlayState* play) {
-
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
     if ((this->switchFlag > SWITCH_FLAG_NONE) && Flags_GetSwitch(play, this->switchFlag)) {
@@ -280,7 +313,7 @@ RECOMP_PATCH void func_809AD084(EnEncount3* this, PlayState* play) {
     }
 
     if (!(this->unk16C < this->actor.xzDistToPlayer) &&
-        (Difficulty == 1 || Player_GetMask(play) == PLAYER_MASK_GARO) &&
+        (Player_GetMask(play) == PLAYER_MASK_GARO || (Difficulty == 1 && (this->actor.params & CAN_ATTACK))) &&
         !D_809AD810) {
 
         if (this->timer > 0) {
@@ -296,6 +329,20 @@ RECOMP_PATCH void func_809AD084(EnEncount3* this, PlayState* play) {
                 this->unk14E++;
                 D_809AD810 = true;
                 this->actionFunc = func_809AD194;
+                TimesEncountered++;
+
+                switch (Difficulty) {
+                case 0:
+                    this->timer = 30;
+                    break;
+
+                case 1:
+                    if (this->actor.params & CAN_ATTACK) this->timer = 30 + (TimesEncountered * 10);
+                    else this->timer = 20;
+                    break;
+                default:
+                    break;
+                }
             }
         }
     }
