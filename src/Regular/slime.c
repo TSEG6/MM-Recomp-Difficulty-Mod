@@ -83,7 +83,7 @@ void SlimeBuff(Actor* thisx, PlayState* play) {
         Distance = 90000.0f;
         reviveTimeSeconds = 5;
         this->reviveTime = (reviveTimeSeconds * 5);
-        this->actor.colChkInfo.health = this->actor.home.rot.z * 5;
+        this->actor.colChkInfo.health = this->actor.home.rot.z * 4;
         break;
     }
 
