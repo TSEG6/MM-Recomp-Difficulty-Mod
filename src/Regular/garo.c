@@ -295,7 +295,7 @@ RECOMP_HOOK_RETURN("func_809AD058") void Attacking(EnEncount3* this) {
         break;
 
     case 1:
-        if (this->actor.params & CAN_ATTACK) this->timer = 30 + (TimesEncountered * 10);
+        if (this->actor.params & CAN_ATTACK) this->timer = 30 + (TimesEncountered * 30);
         else this->timer = 20;
         break;
 
