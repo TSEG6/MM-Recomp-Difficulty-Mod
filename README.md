@@ -2,10 +2,19 @@
 
 This is a mod that allows you to make the game more difficult by buffing all the enemies in the game.
 
-There are two difficulty modes:
+# Difficulty Modes:
 
 - Normal: Slight Buffs 
-- Hard: Harder Buffs & possibly bonus changes
+- Hard: Harder Buffs & Possibly Bonus Changes
+
+# Future Features:
+
+- Additional enemy placements in the overworld and dungeons
+- Additional enemy variants for almost all enemies
+- Improved & new enemy behaviours
+- Additonal config settings for various behaviors and changes
+- Extreme difficulty mode for an even harder expirence
+- And more...
 
 ### Writing mods
 See [this document](https://hackmd.io/fMDiGEJ9TBSjomuZZOgzNg) for an explanation of the modding framework, including how to write function patches and perform interop between different mods.
