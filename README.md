@@ -2,12 +2,12 @@
 
 This is a mod that allows you to make the game more difficult by buffing all the enemies in the game.
 
-# Difficulty Modes:
+## Difficulty Modes:
 
 - Normal: Slight Buffs 
 - Hard: Harder Buffs & Possibly Bonus Changes
 
-# Future Features:
+## Future Features:
 
 - Additional enemy placements in the overworld and dungeons
 - Additional enemy variants for almost all enemies
