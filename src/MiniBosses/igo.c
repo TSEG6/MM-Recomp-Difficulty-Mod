@@ -26,6 +26,7 @@ void EnKnight_CaptainsHatCS(EnKnight* this, PlayState* play);
 
 void EnKnight_SetupTelegraphHeavyAttack(EnKnight* this, PlayState* play, s32 noTelegraph);
 void EnKnight_SetupStrafe(EnKnight* this, PlayState* play, s16 strafeAngle);
+void EnKnight_SetupRetreat(EnKnight* this, PlayState* play, u8 shielding);
 
 extern void EnKnight_SetupJumpAttack(EnKnight*, PlayState*);
 extern void EnKnight_SetupBlocking(EnKnight*, PlayState*);
@@ -509,6 +510,48 @@ RECOMP_PATCH void EnKnight_SetupLookAtOther(EnKnight* this, PlayState* play) {
 
     this->actionFunc = EnKnight_LookAtOther;
     Animation_MorphToLoop(&this->skelAnime, &gKnightIdleAnim, -5.0f);
+}
+
+RECOMP_PATCH void EnKnight_CheckRetreat(EnKnight* this, PlayState* play) {
+    Player* player;
+    Actor* explosive;
+    f32 px;
+    f32 pz;
+    f32 dx;
+    f32 dz;
+
+    int Difficulty = (int)recomp_get_config_double("diff_option");
+
+    if (this->isHeadless) {
+        return;
+    }
+
+    player = GET_PLAYER(play);
+
+    for (explosive = play->actorCtx.actorLists[ACTORCAT_EXPLOSIVES].first; explosive != NULL;
+        explosive = explosive->next) {
+        px = this->actor.world.pos.x;
+        pz = this->actor.world.pos.z;
+        dx = explosive->world.pos.x - px;
+        dz = explosive->world.pos.z - pz;
+        if (sqrtf(SQ(dx) + SQ(dz)) < 100.0f) {
+            this->retreatTowards.x = px - dx * 100.0f;
+            this->retreatTowards.z = pz - dz * 100.0f;
+            EnKnight_SetupRetreat(this, play, false);
+        }
+    }
+    if (Difficulty == 0) {
+        if ((sMirRayInstance != NULL) && (sMirRayInstance->unk_214 > 0.1f) &&
+            (this->actor.xzDistToPlayer <= (BREG(70) + 300.0f))) {
+            px = this->actor.world.pos.x;
+            pz = this->actor.world.pos.z;
+            dx = player->actor.world.pos.x - px;
+            dz = player->actor.world.pos.z - pz;
+            this->retreatTowards.x = px - dx * 100.0f;
+            this->retreatTowards.z = pz - dz * 100.0f;
+            EnKnight_SetupRetreat(this, play, true);
+        }
+    }
 }
 
 RECOMP_HOOK("EnKnight_Update") void KniUpd(Actor* thisx, PlayState* play) {
