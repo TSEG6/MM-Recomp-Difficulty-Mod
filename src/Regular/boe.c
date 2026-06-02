@@ -49,30 +49,14 @@ RECOMP_HOOK("EnMkk_Update") void BoeUpdate(Actor* thisx, PlayState* play) {
     switch (Difficulty) {
     case 0:
         speedMultiplier = 1.25f;
+        if (Rand_ZeroOne() < 0.02f) this->collider.base.atFlags |= AT_ON;
+        else this->collider.base.atFlags &= ~AT_ON;
         break;
-
-    case 1: {
-        speedMultiplier = 1.75f;
-        break;
-    }
-    default:
-        break;
-    }
-
-    switch (Difficulty) {
-    case 0:
-        if (this->actor.speed < 2.0f) {
-            this->collider.base.atFlags |= AT_ON;
-        }
-        else {
-            this->collider.base.atFlags &= ~AT_ON;
-        }
-        break;
-
     case 1:
-        this->collider.base.atFlags |= AT_ON;
+        speedMultiplier = 1.75f;
+        if (Rand_ZeroOne() < 0.075f) this->collider.base.atFlags |= AT_ON;
+        else this->collider.base.atFlags &= ~AT_ON;
         break;
-
     default:
         break;
     }
