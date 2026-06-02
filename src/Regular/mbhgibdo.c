@@ -6,36 +6,50 @@
 #include "z64rumble.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 
+void EnRailgibud_SetupWalkInCircles(EnRailgibud* this);
 void EnRailgibud_SetupAttemptPlayerFreeze(EnRailgibud* this);
 void EnRailgibud_SetupWalkToPlayer(EnRailgibud* this);
 void EnRailgibud_WalkToPlayer(EnRailgibud* this, PlayState* play);
 void EnRailgibud_TurnTowardsPlayer(EnRailgibud* this, PlayState* play);
 
 RECOMP_PATCH void EnRailgibud_AttemptPlayerFreeze(EnRailgibud* this, PlayState* play) {
+
+    if (this->freezeCooldown > 0) {
+        this->freezeCooldown--;
+    }
+
     Player* player = GET_PLAYER(play);
     s16 rot = this->actor.shape.rot.y + this->headRot.y + this->torsoRot.y;
     s16 yaw = BINANG_SUB(this->actor.yawTowardsPlayer, rot);
+
     s16 visionCone = 0x2008;
     s16 freezeDuration = 60;
+    s16 cooldownDuration = 120;
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
     if (Difficulty == 0) {
         visionCone = 0x2800;
-        freezeDuration = 70;
+        freezeDuration = 65;
+        cooldownDuration = 100;
     }
     else if (Difficulty >= 1) {
         visionCone = 0x3000;
-        freezeDuration = 80;
+        freezeDuration = 70;
+        cooldownDuration = 80;
     }
 
-    if (ABS_ALT(yaw) < visionCone) {
+    if (this->freezeCooldown == 0 && ABS_ALT(yaw) < visionCone) {
         player->actor.freezeTimer = freezeDuration;
+
+        this->freezeCooldown = freezeDuration + cooldownDuration;
+
         Rumble_Request(this->actor.xzDistToPlayer, 255, 20, 150);
         Player_SetAutoLockOnActor(play, &this->actor);
         Actor_PlaySfx(&this->actor, NA_SE_EN_REDEAD_AIM);
         EnRailgibud_SetupWalkToPlayer(this);
     }
+    else EnRailgibud_SetupWalkInCircles(this);
 
     EnRailgibud_TurnTowardsPlayer(this, play);
 }

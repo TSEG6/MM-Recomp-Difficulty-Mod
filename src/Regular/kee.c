@@ -50,7 +50,7 @@ RECOMP_HOOK("EnFirefly_DiveAttack") void mcqueenbat(Actor* thisx, PlayState* pla
         break;
     }
 
-    if (this->actor.speed <= 6.0f) {
+    if (this->actor.speed <= 4.0f) {
         this->actor.speed *= speedMultiplier;
     }
 
