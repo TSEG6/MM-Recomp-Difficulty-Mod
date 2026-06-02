@@ -143,6 +143,7 @@ RECOMP_HOOK("EnBb_Init") void SetType(Actor* thisx, PlayState* play) {
 }
 
 RECOMP_PATCH void EnBb_UpdateDamage(EnBb* this, PlayState* play) {
+    int LastEffectFrame = 0;
     Player* player = GET_PLAYER(play);
 
     if (this->collider.base.acFlags & AC_HIT) {
@@ -204,10 +205,16 @@ RECOMP_PATCH void EnBb_UpdateDamage(EnBb* this, PlayState* play) {
             Player* player = GET_PLAYER(play);
             switch (this->variant) {
             case 1:
-                if (player->stateFlags1 != PLAYER_STATE1_800000) func_80833B18(play, player, 3, 0.0f, 0.0f, 0, 20);
+                if (player->stateFlags1 != PLAYER_STATE1_800000 && (play->state.frames - LastEffectFrame >= 80)) {
+                    func_80833B18(play, player, 3, 0.0f, 0.0f, 0, 20);
+                    LastEffectFrame = play->state.frames;
+                }
                 break;
             case 2:
-                if (player->stateFlags1 != PLAYER_STATE1_800000) func_80833B18(play, player, 4, 0.0f, 0.0f, 0, 20);
+                if (player->stateFlags1 != PLAYER_STATE1_800000 && (play->state.frames - LastEffectFrame >= 80)) {
+                    func_80833B18(play, player, 4, 0.0f, 0.0f, 0, 20);
+                    LastEffectFrame = play->state.frames;
+                }
                 break;
             case 0:
             default:
@@ -333,11 +340,11 @@ RECOMP_PATCH void EnBb_SetupAttack(EnBb* this) {
 
     switch (Difficulty) {
     case 0:
-        diffbasedMaxSpeed = 1.25f;
+        diffbasedMaxSpeed = 1.15f;
         break;
 
     case 1:
-        diffbasedMaxSpeed = 1.5f;
+        diffbasedMaxSpeed = 1.3f;
         break;
 
     default:
