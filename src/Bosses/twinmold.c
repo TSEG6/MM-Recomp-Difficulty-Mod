@@ -104,10 +104,10 @@ RECOMP_PATCH void func_809DAB78(Boss02* this, PlayState* play) {
 		}
 
 		if (this->unk_0195 != 0) {
-			Math_ApproachF(&this->unk_0164, this->unk_0168 * 1.5f, 1.0f, 62.5f * diffSpeedMult);
+			Math_ApproachF(&this->unk_0164, this->unk_0168 * 1.5f, 1.0f, 62.5f * (diffSpeedMult * 2));
 		}
 		else {
-			Math_ApproachF(&this->unk_0164, this->unk_0168, 1.0f, 50.0f * diffSpeedMult);
+			Math_ApproachF(&this->unk_0164, this->unk_0168, 1.0f, 50.0f * (diffSpeedMult * 2));
 		}
 
 		this->unk_0168 = 2000.0f;
@@ -177,6 +177,9 @@ RECOMP_PATCH void func_809DAB78(Boss02* this, PlayState* play) {
 		if (otherTwinmold->unk_0144 < 10) {
 			myHealth = this->actor.colChkInfo.health;
 			otherHealth = otherTwinmold->actor.colChkInfo.health;
+
+			//recomp_printf("Twinmold Health - Current: %d, Other Twinmold: %d, Task : % d\n", myHealth, otherHealth, this->unk_0144);
+
 			distToOther = sqrtf(SQ(this->actor.world.pos.x - otherTwinmold->actor.world.pos.x) + SQ(this->actor.world.pos.z - otherTwinmold->actor.world.pos.z));
 
 			if (this->unk_0144 != 5 && distToOther < (2000.0f * sGiantModeScaleFactor)) {
@@ -189,11 +192,15 @@ RECOMP_PATCH void func_809DAB78(Boss02* this, PlayState* play) {
 				}
 			}
 
-			if (foreveralone || myHealth > otherHealth || (myHealth == otherHealth && this->unk_0144 == 5)) {
+			if (foreveralone || myHealth > otherHealth || (myHealth == otherHealth && TWINMOLD_GET_TYPE(&this->actor) == TWINMOLD_TYPE_RED)) {
 				if (this->unk_0144 != 5) {
 					this->unk_0144 = 5;
 					this->unk_0146[0] = 150;
 				}
+			}
+			else if (myHealth == otherHealth && TWINMOLD_GET_TYPE(&this->actor) != TWINMOLD_TYPE_RED && this->unk_0144 == 5) {
+				this->unk_0144 = 2;
+				this->unk_0146[0] = 150;
 			}
 			else if (myHealth <= otherHealth - 3) {
 				if (this->unk_0144 == 5) {
@@ -302,14 +309,28 @@ RECOMP_PATCH void func_809DAB78(Boss02* this, PlayState* play) {
 		}
 		return;
 
-	case 5:
+	case 5: {
 
-		this->unk_01B0.x = player->actor.world.pos.x + (player->actor.velocity.x * 20.0f);
-		this->unk_01B0.z = player->actor.world.pos.z + (player->actor.velocity.z * 20.0f);
-		this->unk_01B0.x += Math_SinS(this->unk_014C * 0x1500) * 500.0f * sGiantModeScaleFactor;
-		this->unk_01B0.z += Math_CosS(this->unk_014C * 0x1500) * 500.0f * sGiantModeScaleFactor;
+		if (this->unk_0146[0] > 70) {
+			f32 flyOutDist = 3000.0f * sGiantModeScaleFactor;
+			this->unk_01B0.x = this->actor.world.pos.x + (Math_SinS(this->actor.world.rot.y) * flyOutDist);
+			this->unk_01B0.z = this->actor.world.pos.z + (Math_CosS(this->actor.world.rot.y) * flyOutDist);
+			this->unk_01B0.y = player->actor.world.pos.y + (1000.0f * sGiantModeScaleFactor);
+		}
+		else {
+			f32 playerSpeed = sqrtf(SQ(player->actor.velocity.x) + SQ(player->actor.velocity.z));
 
-		this->unk_01B0.y = player->actor.world.pos.y + (100.0f * sGiantModeScaleFactor);
+			if (playerSpeed < 0.2f) {
+				this->unk_01B0.x = player->actor.world.pos.x;
+				this->unk_01B0.z = player->actor.world.pos.z;
+			}
+			else {
+				this->unk_01B0.x = player->actor.world.pos.x + (player->actor.velocity.x * 20.0f);
+				this->unk_01B0.z = player->actor.world.pos.z + (player->actor.velocity.z * 20.0f);
+			}
+
+			this->unk_01B0.y = player->actor.world.pos.y + (100.0f * sGiantModeScaleFactor);
+		}
 
 		if (this->unk_0146[0] == 0) {
 			this->unk_0144 = 3;
@@ -323,6 +344,7 @@ RECOMP_PATCH void func_809DAB78(Boss02* this, PlayState* play) {
 			this->unk_0164 = 0.0f;
 		}
 		return;
+	}
 
 	case 10:
 		if (this->unk_1678 != 0) {
@@ -534,5 +556,6 @@ RECOMP_HOOK("Boss02_Twinmold_Update") void TwinUpdate(Actor* thisx, PlayState* p
 
 	Boss02* this = (Boss02*)thisx;
     sCanSkipMaskOnCs = true;
+	if (this->actor.colChkInfo.damage < 3) this->actor.colChkInfo.damage = 3;
 	// winning
 }
