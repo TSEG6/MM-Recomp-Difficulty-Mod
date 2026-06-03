@@ -6,6 +6,7 @@
 #include "overlays/actors/ovl_En_Encount1/z_en_encount1.h"
 
 
+
 RECOMP_HOOK("EnPr2_Update") void nodefensecansaveanenemywithonehp(Actor* thisx, PlayState* play) {
 
 	EnPr2* this = (EnPr2*)thisx;
@@ -39,6 +40,7 @@ RECOMP_HOOK("EnPr2_Update") void nodefensecansaveanenemywithonehp(Actor* thisx, 
 
     case 1:
         speedMultiplier = 2.5f;
+        this->unk_1F4 = 255;
         break;
 
     default:
@@ -53,5 +55,32 @@ RECOMP_HOOK("EnPr2_Update") void nodefensecansaveanenemywithonehp(Actor* thisx, 
     }
 
     if (this->actor.colChkInfo.health == 0) this->actor.speed = 0;
+}
 
+s32 func_80A7429C(EnPr2* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+    s16 screenPosX;
+    s16 screenPosY;
+
+    Actor_GetScreenPos(play, &this->actor, &screenPosX, &screenPosY);
+
+    int Difficulty = (int)recomp_get_config_double("diff_option");
+
+    if (Difficulty == 1) {
+        return true;
+    }
+
+    if ((fabsf(player->actor.world.pos.y - this->actor.world.pos.y) > 160.0f) ||
+        (this->actor.projectedPos.z < -40.0f) ||
+        (screenPosX < 0) || (screenPosX > SCREEN_WIDTH) ||
+        (screenPosY < 0) || (screenPosY > SCREEN_HEIGHT)) {
+        return false;
+    }
+
+    if (!(player->stateFlags1 & PLAYER_STATE1_8000000)) {
+        return false;
+    }
+    else {
+        return true;
+    }
 }
