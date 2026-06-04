@@ -16,6 +16,7 @@ extern bool IsBig;
 
 #define TIMER_CURRENT_ACTION 0
 
+// Lowers the time it takes to begin an attack when spotted
 RECOMP_PATCH void Boss05_WalkingHead_SetupSpottedPlayer(Boss05* this, PlayState* play) {
     this->actionFunc = Boss05_WalkingHead_SpottedPlayer;
     Animation_MorphToPlayOnce(&this->headSkelAnime, &gBioDekuBabaHeadSpotAnim, 0.0f);
@@ -53,14 +54,15 @@ void Boss05_WalkingHead_TrySpottingPlayer(Boss05* this, PlayState* play) {
     }
 }
 
+// Makes it so on Hard it'll wander closer to the player
 RECOMP_PATCH void Boss05_WalkingHead_Walk(Boss05* this, PlayState* play) {
     f32 diffX;
     f32 diffZ;
     s16 targetYaw;
     f32 stopDistance = 50.0f;
-    int difficulty = (int)recomp_get_config_double("diff_option");
+    int Difficulty = (int)recomp_get_config_double("diff_option");
 
-    if (difficulty == 1) {
+    if (Difficulty == 1) {
         Player* player = GET_PLAYER(play);
         this->walkTargetPos.x = player->actor.world.pos.x;
         this->walkTargetPos.z = player->actor.world.pos.z;
@@ -90,6 +92,7 @@ RECOMP_PATCH void Boss05_WalkingHead_Walk(Boss05* this, PlayState* play) {
     Boss05_WalkingHead_TrySpottingPlayer(this, play);
 }
 
+// Defense & Speed & text replacement helper
 RECOMP_HOOK("Boss05_Update") void BBabaUpdate(Actor* thisx, PlayState* play) {
 
     Player* player = GET_PLAYER(play);

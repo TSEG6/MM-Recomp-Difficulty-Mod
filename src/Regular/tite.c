@@ -58,6 +58,7 @@ void func_80893B70(EnTite* this) {
     }
 }
 
+// Attack/sight distance
 RECOMP_HOOK("func_80893F30") void RangeTite(EnTite* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -83,6 +84,7 @@ RECOMP_HOOK("func_80893F30") void RangeTite(EnTite* this, PlayState* play) {
 
 }
 
+// Faster roation and jump
 RECOMP_PATCH void func_80894638(EnTite* this, PlayState* play) {
     s16 temp_v0;
     s16 temp_v1;
@@ -149,6 +151,7 @@ RECOMP_PATCH void func_80894638(EnTite* this, PlayState* play) {
     }
 }
 
+// Part 2 of faster rotation but before it can jump
 RECOMP_PATCH void func_80894024(EnTite* this, PlayState* play) {
     if (SkelAnime_Update(&this->skelAnime)) {
         func_8089408C(this, play);
@@ -171,6 +174,7 @@ RECOMP_PATCH void func_80894024(EnTite* this, PlayState* play) {
     }
 }
 
+// Jumping prediction and speed
 RECOMP_PATCH void func_8089408C(EnTite* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -258,6 +262,7 @@ RECOMP_PATCH void func_8089408C(EnTite* this, PlayState* play) {
     this->actionFunc = func_808942B4;
 }
 
+// Defense
 RECOMP_HOOK("EnTite_Update") void TiteDmgRed(Actor* thisx, PlayState* play) {
 
     EnTite* this = (EnTite*)thisx;

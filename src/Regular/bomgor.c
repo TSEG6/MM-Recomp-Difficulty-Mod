@@ -34,6 +34,8 @@ typedef enum {
 
 extern void EnBaguo_PostDetonation(EnBaguo*, PlayState*);
 
+
+// Allows it to turn faster and predict player movement
 RECOMP_PATCH void EnBaguo_Idle(EnBaguo* this, PlayState* play) {
     s16 absoluteYaw;
     s16 yaw;
@@ -129,6 +131,7 @@ RECOMP_PATCH void EnBaguo_Idle(EnBaguo* this, PlayState* play) {
     }
 }
 
+// More prediction and actually rolling
 RECOMP_PATCH void EnBaguo_Roll(EnBaguo* this, PlayState* play) {
     f32 xDistanceFromHome = this->actor.home.pos.x - this->actor.world.pos.x;
     f32 zDistanceFromHome = this->actor.home.pos.z - this->actor.world.pos.z;
@@ -182,6 +185,7 @@ RECOMP_PATCH void EnBaguo_Roll(EnBaguo* this, PlayState* play) {
     }
 }
 
+// Fixes a bug where you could see the legs still after going back underground
 RECOMP_PATCH void EnBaguo_RetreatUnderground(EnBaguo* this, PlayState* play) {
 
     this->actor.world.rot.y -= 0x1518;
@@ -205,6 +209,7 @@ RECOMP_PATCH void EnBaguo_RetreatUnderground(EnBaguo* this, PlayState* play) {
     }
 }
 
+// Appear from the depths
 RECOMP_PATCH void EnBaguo_EmergeFromUnderground(EnBaguo* this, PlayState* play) {
     this->actor.draw = EnBaguo_DrawBody;
 
@@ -224,6 +229,7 @@ RECOMP_PATCH void EnBaguo_EmergeFromUnderground(EnBaguo* this, PlayState* play) 
     }
 }
 
+// Actually spawn a bomb when exploding instead of using a fake explosion (useful for destorying the rocks nearby on the way to ikana)
 RECOMP_PATCH void EnBaguo_CheckForDetonation(EnBaguo* this, PlayState* play) {
     EnBom* bomb;
     s32 i;

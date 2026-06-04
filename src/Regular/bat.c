@@ -12,6 +12,7 @@ s32 sNumberAttacking;
 
 void EnBat_SetupDiveAttack(EnBat* this);
 
+// Increases attack time and speed
 RECOMP_HOOK_RETURN("EnBat_SetupDiveAttack") void AttackPlayerBat(EnBat* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -33,6 +34,7 @@ RECOMP_HOOK_RETURN("EnBat_SetupDiveAttack") void AttackPlayerBat(EnBat* this) {
     }
 }
 
+// Increases sight range when flying
 RECOMP_HOOK("EnBat_FlyIdle") void Flying(EnBat* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");

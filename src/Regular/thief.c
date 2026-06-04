@@ -8,6 +8,7 @@
 void func_80C1193C(EnThiefbird* this, PlayState* play);
 int killtimer = 0;
 
+// Increases health
 RECOMP_HOOK_RETURN("EnThiefbird_Init") void InitalChanges(Actor* thisx, PlayState* play) {
 
     EnThiefbird* this = (EnThiefbird*)thisx;
@@ -20,7 +21,7 @@ RECOMP_HOOK_RETURN("EnThiefbird_Init") void InitalChanges(Actor* thisx, PlayStat
         break;
 
     case 1: {
-        this->actor.colChkInfo.health = baseHealth * 5;
+        this->actor.colChkInfo.health = baseHealth * 4;
         break;
     }
 
@@ -29,6 +30,7 @@ RECOMP_HOOK_RETURN("EnThiefbird_Init") void InitalChanges(Actor* thisx, PlayStat
     }
 }
 
+// If on Hard it'll set it's home to a random valid location and teleport there
 RECOMP_HOOK("EnThiefbird_Init") void InitalHome(Actor* thisx, PlayState* play) {
 
     EnThiefbird* this = (EnThiefbird*)thisx;
@@ -104,6 +106,7 @@ RECOMP_HOOK("EnThiefbird_Init") void InitalHome(Actor* thisx, PlayState* play) {
 
 }
 
+// Randomly adjust home location so it feels like it's moving around the map
 RECOMP_HOOK("EnThiefbird_Update") void movenearbyplayer(Actor* thisx, PlayState* play) {
 
     EnThiefbird* this = (EnThiefbird*)thisx;
@@ -177,6 +180,7 @@ RECOMP_HOOK("EnThiefbird_Update") void movenearbyplayer(Actor* thisx, PlayState*
     }
 }
 
+// Makes the bird faster when chasing
 RECOMP_PATCH void func_80C118E4(EnThiefbird* this) {
     
     int Difficulty = (int)recomp_get_config_double("diff_option");

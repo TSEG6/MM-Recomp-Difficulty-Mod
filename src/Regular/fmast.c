@@ -79,6 +79,7 @@ void EnFloormas_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s*
     }
 }
 
+// This makes it so there's no cooldown animation on Hard
 RECOMP_HOOK("func_808D17EC") void InstaReset(EnFloormas* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -93,6 +94,7 @@ RECOMP_HOOK("func_808D17EC") void InstaReset(EnFloormas* this, PlayState* play) 
     }
 }
 
+// This makes attacking faster 
 RECOMP_PATCH void func_808D1650(EnFloormas* this, PlayState* play) {
     f32 temp_f0_2;
 
@@ -136,6 +138,7 @@ RECOMP_PATCH void func_808D1650(EnFloormas* this, PlayState* play) {
     }
 }
 
+// And this makes the attack prep faster iirc (it looks like it)
 RECOMP_PATCH void func_808D1458(EnFloormas* this, PlayState* play) {
     if (SkelAnime_Update(&this->skelAnime)) {
         func_808D161C(this);
@@ -175,6 +178,7 @@ RECOMP_PATCH void func_808D1458(EnFloormas* this, PlayState* play) {
     Math_StepToS(&this->unk_192, 1200, (s16)(100 * speedMult));
 }
 
+// Handling attacking types and their effects as well as defense boosts
 RECOMP_HOOK("EnFloormas_Update") void FMUpdate(Actor* thisx, PlayState* play) {
     EnFloormas* this = (EnFloormas*)thisx;
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -219,6 +223,7 @@ static Color_RGBA8 D_808D3958_Blue = { 100, 200, 255, 0 };
 static Color_RGBA8 D_808D3958_Yellow = { 255, 255, 0, 0 };
 static Color_RGBA8 D_808D3958_Purple = { 200, 0, 255, 0 };
 
+// Handling the color of the attack types when attacking
 RECOMP_PATCH void EnFloormas_Draw(Actor* thisx, PlayState* play) {
     EnFloormas* this = (EnFloormas*)thisx;
     int Difficulty = (int)recomp_get_config_double("diff_option");

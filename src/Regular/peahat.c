@@ -17,6 +17,7 @@ static bool playerHasDied = false;
 
 // doing funnies with home rotation so I can skip doing global variables in case you were curious
 
+// Handles global objects
 GLOBAL_OBJECTS_CALLBACK_ON_READY void onGlobalObjectsReady() {
     sPHEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_PH);
 }
@@ -52,7 +53,7 @@ void PH_Draw(Actor* thisx, PlayState* play) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-
+// Spawns peahats in termina field on hard
 RECOMP_HOOK("Play_Update") void SpawnPeahats(PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
@@ -109,6 +110,7 @@ RECOMP_HOOK("Play_Update") void SpawnPeahats(PlayState* play) {
     }
 }
 
+// Increases health and animation speed
 RECOMP_HOOK("EnPeehat_Update") void UpdateFun(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnPeehat* this = (EnPeehat*)thisx;
@@ -146,6 +148,7 @@ RECOMP_HOOK("EnPeehat_Update") void UpdateFun(Actor* thisx, PlayState* play2) {
     }
 }
 
+// Increases actor speed
 RECOMP_HOOK("func_80897F44") void IamSpeedPeahat(EnPeehat* this, PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
@@ -168,13 +171,14 @@ RECOMP_HOOK("func_80897F44") void IamSpeedPeahat(EnPeehat* this, PlayState* play
     }
 }
 
+// Did the player die?
 RECOMP_HOOK("Environment_InitGameOverLights") void HasDied(PlayState* play) {
 
     playerHasDied = true;
 
 }
 
-
+// If the player died make it so the peahats can respawn
 RECOMP_HOOK("EnPeehat_Destroy") void GO(Actor* thisx, PlayState* play) {
 
     if (playerHasDied) {

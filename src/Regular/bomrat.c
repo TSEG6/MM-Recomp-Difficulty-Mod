@@ -10,6 +10,7 @@ float atkRange;
 
 void EnRat_SetupSpottedPlayer(EnRat* this);
 
+// Increases attack range
 RECOMP_HOOK("EnRat_Init") void RatStart(Actor* thisx, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -26,10 +27,9 @@ RECOMP_HOOK("EnRat_Init") void RatStart(Actor* thisx, PlayState* play) {
     default:
         break;
     }
-
 }
 
-
+// Rare chance for the home to move around on Hard
 RECOMP_HOOK("EnRat_Update") void RatUpdate(Actor* thisx, PlayState* play) {
 
     EnRat* this = (EnRat*)thisx;
@@ -46,6 +46,7 @@ RECOMP_HOOK("EnRat_Update") void RatUpdate(Actor* thisx, PlayState* play) {
     }
 }
 
+// Sight increase and faster idle movement
 RECOMP_HOOK("EnRat_Idle") void RatIdle(Actor* thisx, PlayState* play) {
 
     EnRat* this = (EnRat*)thisx;
@@ -78,6 +79,7 @@ RECOMP_HOOK("EnRat_Idle") void RatIdle(Actor* thisx, PlayState* play) {
 
 }
 
+// Faster chase animation
 RECOMP_HOOK("EnRat_ChasePlayer") void RatChase(EnRat* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -96,6 +98,7 @@ RECOMP_HOOK("EnRat_ChasePlayer") void RatChase(EnRat* this, PlayState* play) {
     }
 }
 
+// Faster chase speed
 RECOMP_HOOK_RETURN("EnRat_ChasePlayer") void RatChase2(EnRat* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");

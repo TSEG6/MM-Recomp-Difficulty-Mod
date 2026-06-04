@@ -18,6 +18,7 @@ void EnNeoReeba_RiseOutOfGround(EnNeoReeba* this, PlayState* play);
 void EnNeoReeba_Move(EnNeoReeba* this, PlayState* play);
 void EnNeoReeba_SetupReturnHome(EnNeoReeba* this);
 
+// Custom hint for blue leever
 EZTR_MSG_CALLBACK(leever_text_callback) {
     if (PurpleLeeverSpawned) {
         EZTR_MsgSContent_Sprintf(buf->data.content, "|05That's the |00Blue Leever|05.|11It's stronger than any other Leever.|11That's not exactly good news,|11is it?|BF");
@@ -104,6 +105,7 @@ void EnNeoReeba_DrawEffects(EnNeoReeba* this, PlayState* play) {
     }
 }
 
+// Adds the blue leever colors back into the game from OOT
 RECOMP_PATCH void EnNeoReeba_Draw(Actor* thisx, PlayState* play) {
     EnNeoReeba* this = (EnNeoReeba*)thisx;
 
@@ -135,6 +137,7 @@ RECOMP_PATCH void EnNeoReeba_Draw(Actor* thisx, PlayState* play) {
     }
 }
 
+// Handles spawning of blue leever and health increase
 RECOMP_HOOK_RETURN("EnNeoReeba_Init") void InitStuffRETURN(Actor* thisx, PlayState* play) {
     EnNeoReeba* this = (EnNeoReeba*)thisx;
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -172,6 +175,7 @@ void EnNeoReeba_SetupMove(EnNeoReeba* this) {
     this->actor.speed = 14.0f;
 }
 
+// What the leever wants to do, attack, hide, go home, etc
 RECOMP_PATCH void EnNeoReeba_ChooseAction(EnNeoReeba* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     f32 distToPlayer = Actor_WorldDistXZToPoint(&player->actor, &this->actor.home.pos);
@@ -221,6 +225,7 @@ RECOMP_PATCH void EnNeoReeba_ChooseAction(EnNeoReeba* this, PlayState* play) {
     }
 }
 
+// Speed increases
 RECOMP_HOOK("EnNeoReeba_UpdatePosition") void leeverupdatething(EnNeoReeba* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -253,7 +258,7 @@ RECOMP_HOOK("EnNeoReeba_UpdatePosition") void leeverupdatething(EnNeoReeba* this
     }
 }
 
-
+// Whether leevers should appear if a blue(purple I guess) leever exists
 RECOMP_PATCH void EnNeoReeba_SetupRise(EnNeoReeba* this) {
 
     if (!PurpleLeeverSpawned) {
@@ -277,6 +282,7 @@ RECOMP_PATCH void EnNeoReeba_SetupRise(EnNeoReeba* this) {
     }
 }
 
+// Kill counts if it reaches it's target a blue leever is spawned if the timer didn't run out
 RECOMP_HOOK("EnNeoReeba_Update") void TrackLeeverKills(Actor* thisx, PlayState* play) {
     EnNeoReeba* this = (EnNeoReeba*)thisx;
 

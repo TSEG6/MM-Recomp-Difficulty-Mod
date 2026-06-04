@@ -14,6 +14,7 @@ void func_808B03C0(EnAm* this, PlayState* play);
 
 extern void func_808B0208(EnAm*, PlayState*);
 
+// If on Hard it'll wake up by proximity
 RECOMP_HOOK("EnAm_Update") void ArmosUpdate(Actor* thisx, PlayState* play) {
     EnAm* this = (EnAm*)thisx;
     Player* player = GET_PLAYER(play);
@@ -28,6 +29,7 @@ RECOMP_HOOK("EnAm_Update") void ArmosUpdate(Actor* thisx, PlayState* play) {
     }
 }
 
+// Speed increases
 RECOMP_PATCH void func_808B0358(EnAm* this) {
     Animation_PlayLoopSetSpeed(&this->skelAnime, &gArmosHopAnim, 4.0f);
     this->explodeTimer = 3;
@@ -50,6 +52,7 @@ RECOMP_PATCH void func_808B0358(EnAm* this) {
     this->actionFunc = func_808B03C0;
 }
 
+// Changes how far away it can go before going back to home
 RECOMP_PATCH void func_808B03C0(EnAm* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");

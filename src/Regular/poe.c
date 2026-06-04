@@ -23,6 +23,7 @@ extern void func_80B2E55C(EnPoh*);
 extern void func_80B2D76C(EnPoh*);
 extern void func_80B2CA4C(EnPoh*);
 
+// Increases attack chance and distance
 RECOMP_PATCH void func_80B2CBBC(EnPoh* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -77,6 +78,7 @@ RECOMP_PATCH void func_80B2CBBC(EnPoh* this, PlayState* play) {
     }
 }
 
+// Attacking adjustments & "unused" multiple attack system
 RECOMP_PATCH void func_80B2CF28(EnPoh* this, PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
     Player* player = GET_PLAYER(play);
@@ -137,6 +139,7 @@ RECOMP_PATCH void func_80B2CF28(EnPoh* this, PlayState* play) {
     }
 }
 
+// Defense increases
 RECOMP_HOOK("EnPoh_Update") void PoeDefense(Actor* thisx, PlayState* play2) {
 
     EnPoh* this = (EnPoh*)thisx;

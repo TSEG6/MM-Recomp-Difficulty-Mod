@@ -55,6 +55,7 @@ void EnBbfall_PlaySfx(EnBbfall* this) {
     Actor_PlaySfx_Flagged(&this->actor, NA_SE_EN_BUBLEFALL_FIRE - SFX_FLAG);
 }
 
+// If on Hard they'll try and bounce twards the player a bit more
 RECOMP_PATCH void EnBbfall_Fly(EnBbfall* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     Math_StepToF(&this->flameScaleY, 0.8f, 0.1f);
@@ -90,6 +91,7 @@ RECOMP_PATCH void EnBbfall_Fly(EnBbfall* this, PlayState* play) {
     EnBbfall_PlaySfx(this);
 }
 
+// Speed increases and defense
 RECOMP_HOOK("EnBbfall_Update") void FallUpdate(Actor* thisx, PlayState* play) {
 
 	EnBbfall* this = (EnBbfall*)thisx;

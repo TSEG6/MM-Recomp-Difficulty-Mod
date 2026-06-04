@@ -9,6 +9,7 @@
 void EnGrasshopper_SetupApproachPlayer(EnGrasshopper* this, PlayState* play);
 void EnGrasshopper_Attack(EnGrasshopper* this, PlayState* play);
 
+// Health Boosting
 RECOMP_HOOK_RETURN("EnGrasshopper_Init") void DFlyHealthBoost(Actor* thisx, PlayState* play) {
 
 	EnGrasshopper* this = (EnGrasshopper*)thisx;
@@ -18,11 +19,11 @@ RECOMP_HOOK_RETURN("EnGrasshopper_Init") void DFlyHealthBoost(Actor* thisx, Play
 
     switch (Difficulty) {
     case 0:
-        this->actor.colChkInfo.health = baseHealth * 3;
+        this->actor.colChkInfo.health = baseHealth * 2;
         break;
 
     case 1: {
-        this->actor.colChkInfo.health = baseHealth * 6;
+        this->actor.colChkInfo.health = baseHealth * 4;
         break;
     }
     default:
@@ -30,6 +31,7 @@ RECOMP_HOOK_RETURN("EnGrasshopper_Init") void DFlyHealthBoost(Actor* thisx, Play
     }
 }
 
+// Changes the attack animation speed to slow down when attacking (the rare instance of slowing down an animation making something harder)
 RECOMP_HOOK("EnGrasshopper_Update") void DFlyUpdate(Actor* thisx, PlayState* play) {
 
     EnGrasshopper* this = (EnGrasshopper*)thisx;
@@ -51,6 +53,7 @@ RECOMP_HOOK("EnGrasshopper_Update") void DFlyUpdate(Actor* thisx, PlayState* pla
         }
 }
 
+// Speeding up the grasshopper for an attack
 RECOMP_HOOK("EnGrasshopper_SetupAttack") void SpeedupAttackDFly(EnGrasshopper* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -70,6 +73,7 @@ RECOMP_HOOK("EnGrasshopper_SetupAttack") void SpeedupAttackDFly(EnGrasshopper* t
     }
 }
 
+// Approaching the player speedup
 RECOMP_HOOK("EnGrasshopper_ApproachPlayer") void DFlyApproachSpeed(EnGrasshopper* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -89,6 +93,7 @@ RECOMP_HOOK("EnGrasshopper_ApproachPlayer") void DFlyApproachSpeed(EnGrasshopper
     }
 }
 
+// Increasing the attack/sight distance when flying around
 RECOMP_HOOK("EnGrasshopper_Fly") void DFlyFlying(EnGrasshopper* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -112,5 +117,4 @@ RECOMP_HOOK("EnGrasshopper_Fly") void DFlyFlying(EnGrasshopper* this, PlayState*
         EnGrasshopper_SetupApproachPlayer(this, play);
 
     }
-
 }

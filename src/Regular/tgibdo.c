@@ -107,6 +107,7 @@ void EnTalkGibud_SetupPassiveIdle(EnTalkGibud* this) {
     this->actionFunc = EnTalkGibud_PassiveIdle;
 }
 
+// If you failed to give an item for a duration of time it'll act like you aren't wearing the gibdo mask
 RECOMP_PATCH void EnTalkGibud_CheckForGibdoMask(EnTalkGibud* this, PlayState* play) {
     if ((this->actionFunc != EnTalkGibud_Grab) && (this->actionFunc != EnTalkGibud_Dead) &&
         (this->actionFunc != EnTalkGibud_Disappear) && (this->actionFunc != EnTalkGibud_Revive) &&
@@ -150,6 +151,7 @@ RECOMP_PATCH void EnTalkGibud_CheckForGibdoMask(EnTalkGibud* this, PlayState* pl
     }
 }
 
+// Set the failed to give item to true
 RECOMP_HOOK("EnTalkGibud_Talk") void GibdoTalk(EnTalkGibud* this, PlayState* play) {
 
     Player* player = GET_PLAYER(play);
@@ -180,6 +182,7 @@ RECOMP_HOOK("EnTalkGibud_Talk") void GibdoTalk(EnTalkGibud* this, PlayState* pla
     }
 }
 
+// Timer to go back to normal if you failed to give an item & hides HUD if player is frozen
 RECOMP_HOOK("EnTalkGibud_Update") void GibdoTalkUpdate(Actor* thisx, PlayState* play) {
 
     Player* player = GET_PLAYER(play);

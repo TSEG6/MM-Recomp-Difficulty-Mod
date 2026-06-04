@@ -35,6 +35,7 @@ void EnEgol_SpawnEffect(EnEgol* this, Vec3f* pos, Vec3s* rot, s16 lifetime, f32 
 
 extern void EnEgol_DestroyBlocks(EnEgol*, PlayState*, Vec3f, Vec3f);
 
+// Slam animation speed increases
 RECOMP_HOOK_RETURN("EnEgol_SlamWait") void WaitLess(EnEgol* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -54,6 +55,7 @@ RECOMP_HOOK_RETURN("EnEgol_SlamWait") void WaitLess(EnEgol* this) {
 
 }
 
+// Decreases stun time
 RECOMP_HOOK("EnEgol_Stunned") void StunLessPre(EnEgol* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -77,6 +79,7 @@ RECOMP_HOOK("EnEgol_Stunned") void StunLessPre(EnEgol* this) {
     }
 }
 
+// Pre slamp animation speed increases
 RECOMP_HOOK_RETURN("EnEgol_SetupSlam") void WaitLessPre(EnEgol* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -95,6 +98,7 @@ RECOMP_HOOK_RETURN("EnEgol_SetupSlam") void WaitLessPre(EnEgol* this) {
     }
 }
 
+// Lazer difficulty adjustments
 RECOMP_PATCH void EnEgol_Laser(EnEgol* this, PlayState* play) {
     static s16 sLaserAngles[3] = { 0x1F40, 0xBB8, 0x7D0 };
     s32 pad1;
@@ -273,6 +277,7 @@ RECOMP_PATCH void EnEgol_Laser(EnEgol* this, PlayState* play) {
     }
 }
 
+// Increases defense on Hard
 RECOMP_HOOK("EnEgol_Update") void EyegoreUpdate(Actor* thisx, PlayState* play) {
 	EnEgol* this = (EnEgol*)thisx;
 

@@ -14,6 +14,7 @@ void EnWallmas_SetupJumpToCeiling(EnWallmas* this);
 void EnWallmas_SetupReturnToCeiling(EnWallmas* this);
 void EnWallmas_SetupTakePlayer(EnWallmas* this, PlayState* play);
 
+// Faster recovery time when attacked
 RECOMP_HOOK("EnWallmas_Damage") void WMDamaged(EnWallmas* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -32,6 +33,7 @@ RECOMP_HOOK("EnWallmas_Damage") void WMDamaged(EnWallmas* this, PlayState* play)
     }
 }
 
+// Takes away items when grabbed (on hard it takes magic and most of your health)
 RECOMP_HOOK("EnWallmas_TakePlayer") void Taken(EnWallmas* this, PlayState* play) {
 
     Player* player = GET_PLAYER(play);
@@ -79,6 +81,7 @@ RECOMP_HOOK("EnWallmas_TakePlayer") void Taken(EnWallmas* this, PlayState* play)
     }
 }
 
+// Faster cooldown
 RECOMP_HOOK("EnWallmas_Cooldown") void SmallerCD(EnWallmas* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -98,6 +101,7 @@ RECOMP_HOOK("EnWallmas_Cooldown") void SmallerCD(EnWallmas* this, PlayState* pla
 
 }
 
+// Walking speed increases & faster rise
 RECOMP_HOOK("EnWallmas_Walk") void WalkSpeedWM(EnWallmas* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -124,6 +128,7 @@ RECOMP_HOOK("EnWallmas_Walk") void WalkSpeedWM(EnWallmas* this, PlayState* play)
     }
 }
 
+// Faster drop
 RECOMP_HOOK("EnWallmas_Drop") void EnWallmas_DropHook(EnWallmas * this, PlayState * play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -145,6 +150,7 @@ RECOMP_HOOK("EnWallmas_Drop") void EnWallmas_DropHook(EnWallmas * this, PlayStat
     }
 }
 
+// Faster waiting to drop & range increases
 RECOMP_PATCH void EnWallmas_WaitToDrop(EnWallmas* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     Vec3f* playerPos = &player->actor.world.pos;
@@ -196,6 +202,7 @@ RECOMP_PATCH void EnWallmas_WaitToDrop(EnWallmas* this, PlayState* play) {
     }
 }
 
+// Defense
 RECOMP_HOOK("EnWallmas_Update") void WMUpdate(Actor* thisx, PlayState* play) {
 
     EnWallmas* this = (EnWallmas*)thisx;

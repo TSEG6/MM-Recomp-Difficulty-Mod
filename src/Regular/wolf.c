@@ -17,7 +17,7 @@ void func_80992068(EnWf* this, PlayState* play);
 extern s32 func_80990948(PlayState*, EnWf*, s16);
 extern void func_80990C6C(EnWf*, PlayState*, s32);
 
-
+// Speed and defense
 RECOMP_HOOK("EnWf_Update") void WolfUpdate(Actor* thisx, PlayState* play) {
     EnWf* this = (EnWf*)thisx;
 
@@ -48,9 +48,9 @@ RECOMP_HOOK("EnWf_Update") void WolfUpdate(Actor* thisx, PlayState* play) {
     if (this->actor.speed <= 6.0f && this->actionFunc != func_809922B4) {
         this->actor.speed *= speedMultiplier;
     }
-
 }
 
+// Lower timer for attacking (seems useless)
 RECOMP_HOOK("func_809928CC") void LessTimer2(EnWf* this, PlayState* play) {
 
     Player* player = GET_PLAYER(play);
@@ -86,6 +86,7 @@ RECOMP_HOOK("func_809928CC") void LessTimer2(EnWf* this, PlayState* play) {
     }
 }
 
+// Attacking lunge & removal of turn around on Hard
 RECOMP_PATCH void func_80991C80(EnWf* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s32 sp30;

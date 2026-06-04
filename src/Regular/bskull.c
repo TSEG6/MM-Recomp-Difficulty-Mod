@@ -6,7 +6,7 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-
+// Slightly more rare turn around and much faster turn back to player
 RECOMP_PATCH s16 func_808A5BEC(EnSt* this) {
     s16 ret;
 

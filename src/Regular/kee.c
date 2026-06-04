@@ -28,6 +28,7 @@ void EnFirefly_Extinguish(EnFirefly* this) {
     this->actor.hintId = TATL_HINT_ID_KEESE;
 }
 
+// Increases attack speed and defense (defense is useless)
 RECOMP_HOOK("EnFirefly_DiveAttack") void mcqueenbat(Actor* thisx, PlayState* play2) {
 
 	EnFirefly* this = (EnFirefly*)thisx;
@@ -57,6 +58,7 @@ RECOMP_HOOK("EnFirefly_DiveAttack") void mcqueenbat(Actor* thisx, PlayState* pla
     if (this->actor.colChkInfo.health == 0) this->actor.speed = 0;
 }
 
+// Increases the sight range when flying around
 RECOMP_HOOK("EnFirefly_FlyIdle") void greaterattackkee(EnFirefly* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -80,6 +82,7 @@ RECOMP_HOOK("EnFirefly_FlyIdle") void greaterattackkee(EnFirefly* this, PlayStat
     }
 }
 
+// Applies Jinx when a player is hit
 RECOMP_HOOK("EnFirefly_Update") void lean(Actor* thisx, PlayState* play2) {
 
     EnFirefly* this = (EnFirefly*)thisx;
@@ -107,6 +110,7 @@ RECOMP_HOOK("EnFirefly_Update") void lean(Actor* thisx, PlayState* play2) {
     }
 }
 
+// Gives the keese custom aura
 RECOMP_PATCH void EnFirefly_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, Actor* thisx, Gfx** gfx) {
 
     static Color_RGBA8 sFireAuraPrimColor = { 230, 100, 255, 255 };

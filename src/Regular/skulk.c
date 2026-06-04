@@ -74,6 +74,7 @@ void func_809958F4(EnSkb* this) {
     this->actionFunc = func_8099599C;
 }
 
+// Speed increases
 RECOMP_HOOK("func_80995C24") void PrepAtk(EnSkb* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -83,6 +84,7 @@ RECOMP_HOOK("func_80995C24") void PrepAtk(EnSkb* this) {
 
 }
 
+// When attacking it'll lunge forward
 RECOMP_PATCH void func_80995C84(EnSkb* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -116,6 +118,7 @@ RECOMP_PATCH void func_80995C84(EnSkb* this, PlayState* play) {
     }
 }
 
+// Handles the sight range and speed it moves
 RECOMP_PATCH void func_80995A8C(EnSkb* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -159,6 +162,7 @@ RECOMP_PATCH void func_80995A8C(EnSkb* this, PlayState* play) {
     }
 }
 
+// Defense
 RECOMP_HOOK("EnSkb_Update") void SkullKidsUpdate(Actor* thisx, PlayState* play) {
 
 	EnSkb* this = (EnSkb*)thisx;

@@ -7,6 +7,7 @@
 
 void func_80A4E58C(EnMkk* this);
 
+// Spawns in friends based on difficulty (1 on normal and 2 on hard)
 RECOMP_HOOK("EnMkk_Init") void YoureSeeingDouble(Actor* thisx, PlayState* play) {
     EnMkk* this = (EnMkk*)thisx;
 
@@ -40,6 +41,7 @@ RECOMP_HOOK("EnMkk_Init") void YoureSeeingDouble(Actor* thisx, PlayState* play) 
     }
 }
 
+// Increases speed and randomly enables the hitbox
 RECOMP_HOOK("EnMkk_Update") void BoeUpdate(Actor* thisx, PlayState* play) {
     EnMkk* this = (EnMkk*)thisx;
 
@@ -66,6 +68,7 @@ RECOMP_HOOK("EnMkk_Update") void BoeUpdate(Actor* thisx, PlayState* play) {
     }
 }
 
+// Jumping adjustments
 RECOMP_HOOK("func_80A4E2E8") void JumpMoreBoe(EnMkk* this, PlayState* play) {
 
     Player* player = GET_PLAYER(play);
@@ -79,6 +82,7 @@ RECOMP_HOOK("func_80A4E2E8") void JumpMoreBoe(EnMkk* this, PlayState* play) {
     }
 }
 
+// Speed increases
 RECOMP_HOOK("func_80A4E58C") void JumpSpeedBoe(EnMkk* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");

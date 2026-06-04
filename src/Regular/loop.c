@@ -8,6 +8,7 @@
 
 void EnPp_SetupCharge(EnPp* this);
 
+// Defense & Speed
 RECOMP_HOOK("EnPp_Update") void LoopUpdate(Actor* thisx, PlayState* play) {
 
     EnPp* this = (EnPp*)thisx;
@@ -39,6 +40,7 @@ RECOMP_HOOK("EnPp_Update") void LoopUpdate(Actor* thisx, PlayState* play) {
         }
 }
 
+// Increases attack range
 RECOMP_HOOK("EnPp_Idle") void LoopIdle(EnPp* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");

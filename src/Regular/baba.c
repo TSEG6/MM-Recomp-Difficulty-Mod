@@ -13,6 +13,7 @@
 bool IsBig = false;
 extern bool fixText;
 
+// Changes health & makes it a big deku baba if on Hard
 RECOMP_HOOK("EnDekubaba_Init") void InitChange(Actor* thisx, PlayState* play) {
     EnDekubaba* this = (EnDekubaba*)thisx;
 
@@ -27,7 +28,7 @@ RECOMP_HOOK("EnDekubaba_Init") void InitChange(Actor* thisx, PlayState* play) {
 
         case 1:
             this->actor.params = DEKUBABA_BIG;
-            this->actor.colChkInfo.health = baseHealth * 6;
+            this->actor.colChkInfo.health = baseHealth * 4;
             break;
 
         default:
@@ -37,6 +38,7 @@ RECOMP_HOOK("EnDekubaba_Init") void InitChange(Actor* thisx, PlayState* play) {
     }
 }
 
+// The exact same thing as above but without the big part (this is a just in case it didn't work before)
 RECOMP_HOOK_RETURN("EnDekubaba_Init") void InitChange2(Actor* thisx, PlayState* play) {
     EnDekubaba* this = (EnDekubaba*)thisx;
         Player* player = GET_PLAYER(play);
@@ -51,7 +53,7 @@ RECOMP_HOOK_RETURN("EnDekubaba_Init") void InitChange2(Actor* thisx, PlayState* 
             break;
 
         case 1:
-            this->actor.colChkInfo.health = baseHealth * 3;
+            this->actor.colChkInfo.health = baseHealth * 4;
             break;
 
         default:
@@ -61,6 +63,7 @@ RECOMP_HOOK_RETURN("EnDekubaba_Init") void InitChange2(Actor* thisx, PlayState* 
     }
 }
 
+// Helps text replacement by when locked on
 RECOMP_HOOK("EnDekubaba_Update") void BabaUpdate(Actor* thisx, PlayState* play) {
 
     EnDekubaba* this = (EnDekubaba*)thisx;
@@ -86,6 +89,7 @@ RECOMP_HOOK("EnDekubaba_Update") void BabaUpdate(Actor* thisx, PlayState* play) 
 
 }
 
+// Handles custom tatl hint for this and bio deku baba
 EZTR_MSG_CALLBACK(bbaba_text_callback) {
     if (IsBig) {
         EZTR_MsgSContent_Sprintf(buf->data.content, "|05That's the |00Big Deku Baba|05...|11Don't you already know how|11to deal with them!?|BF");

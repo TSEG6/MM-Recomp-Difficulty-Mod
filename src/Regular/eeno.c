@@ -104,6 +104,7 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_F32_DIV1000(gravity, -1000, ICHAIN_STOP),
 };
 
+// Snowball predictive movement & speed
 RECOMP_PATCH void EnSnowman_Init(Actor* thisx, PlayState* play) {
     s32 pad;
     EnSnowman* this = (EnSnowman*)thisx;
@@ -294,6 +295,7 @@ RECOMP_PATCH void EnSnowman_Init(Actor* thisx, PlayState* play) {
     }
 }
 
+// Faster animations and never allow combine
 RECOMP_HOOK("EnSnowman_Update") void SpeedupSnow(Actor* thisx, PlayState* play) {
 
     EnSnowman* this = (EnSnowman*)thisx;
@@ -318,6 +320,7 @@ RECOMP_HOOK("EnSnowman_Update") void SpeedupSnow(Actor* thisx, PlayState* play) 
     }
 }
 
+// Attack range increase
 RECOMP_HOOK("EnSnowman_MoveSnowPile") void SnowMovement(EnSnowman* this, PlayState* play) {
 
     Player* player = GET_PLAYER(play);
@@ -351,6 +354,7 @@ RECOMP_HOOK("EnSnowman_MoveSnowPile") void SnowMovement(EnSnowman* this, PlaySta
     }
 }
 
+// Lower timer for attacking
 RECOMP_HOOK("EnSnowman_SetupIdle") void IdleChanges(EnSnowman* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -367,5 +371,4 @@ RECOMP_HOOK("EnSnowman_SetupIdle") void IdleChanges(EnSnowman* this) {
     default:
         break;
     }
-
 }

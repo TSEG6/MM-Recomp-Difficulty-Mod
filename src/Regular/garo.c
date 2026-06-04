@@ -89,6 +89,7 @@ typedef enum EnJsoAction {
 
 extern void EnJso_ChangeAnim(EnJso*, s32);
 
+// Custom dialogue when on Hard when appearing
 EZTR_MSG_CALLBACK(garo_text_callback_1) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -141,6 +142,7 @@ EZTR_ON_INIT void init_text_garo() {
     );
 }
 
+// Faster dashing based on difficulty
 RECOMP_HOOK_RETURN("EnJso_SetupDashAttack") void IncreaseSpeedForAttack(EnJso* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -159,6 +161,7 @@ RECOMP_HOOK_RETURN("EnJso_SetupDashAttack") void IncreaseSpeedForAttack(EnJso* t
     }
 }
 
+// Quicker cower time based on difficulty
 RECOMP_HOOK_RETURN("EnJso_SetupCower") void WhatABaby(EnJso* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -177,6 +180,7 @@ RECOMP_HOOK_RETURN("EnJso_SetupCower") void WhatABaby(EnJso* this) {
     }
 }
 
+// Less time waiting after an attack based on difficulty
 RECOMP_HOOK_RETURN("EnJso_SetupWaitAfterSlash") void LessCooldown(EnJso* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -208,6 +212,7 @@ RECOMP_HOOK_RETURN("EnJso_SetupWaitAfterSlash") void LessCooldown(EnJso* this) {
     }
 }
 
+// Less stun time
 RECOMP_PATCH void EnJso_SetupStunned(EnJso* this) {
     Vec3f knockbackVelocity;
 
@@ -238,10 +243,8 @@ RECOMP_PATCH void EnJso_SetupStunned(EnJso* this) {
         this->drawDmgEffAlpha = 0;
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FIRE;
     }
-
     this->timer = StunTimer;
     this->actor.colorFilterTimer = StunTimer;
-
     Matrix_RotateYS(this->actor.yawTowardsPlayer, MTXMODE_NEW);
     Matrix_MultVecZ(-10.0f, &knockbackVelocity);
     Math_Vec3f_Copy(&this->knockbackVelocity, &knockbackVelocity);
@@ -250,6 +253,7 @@ RECOMP_PATCH void EnJso_SetupStunned(EnJso* this) {
     this->actionFunc = EnJso_Stunned;
 }
 
+// More defense and quicker attacks
 RECOMP_HOOK("EnJso_Update") void GaroUpdate(Actor* thisx, PlayState* play) {
 
 	EnJso* this = (EnJso*)thisx;
@@ -276,16 +280,23 @@ RECOMP_HOOK("EnJso_Update") void GaroUpdate(Actor* thisx, PlayState* play) {
     else PlayerUsingGaroMask = false;
 }
 
+// Randomly selects if the Garo can attack without the garo mask if on Hard
 RECOMP_HOOK("EnEncount3_Init") void CanAttackNoMask(Actor* thisx, PlayState* play) {
 
     EnEncount3* this = (EnEncount3*)thisx;
+
+    int Difficulty = (int)recomp_get_config_double("diff_option");
+
     #define CAN_ATTACK 0x8000
 
-    if (Rand_ZeroOne() < 0.2) {
-        this->actor.params |= CAN_ATTACK;
+    if (Difficulty == 1) {
+        if (Rand_ZeroOne() < 0.2) {
+            this->actor.params |= CAN_ATTACK;
+        }
     }
 }
 
+// Encounter time, it increases by 30 each time you get attacked without the garo mask
 RECOMP_HOOK_RETURN("func_809AD058") void Attacking(EnEncount3* this) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
@@ -304,6 +315,7 @@ RECOMP_HOOK_RETURN("func_809AD058") void Attacking(EnEncount3* this) {
     }
 }
 
+// Actually handles encounters
 RECOMP_PATCH void func_809AD084(EnEncount3* this, PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
@@ -337,7 +349,7 @@ RECOMP_PATCH void func_809AD084(EnEncount3* this, PlayState* play) {
                     break;
 
                 case 1:
-                    if (this->actor.params & CAN_ATTACK) this->timer = 30 + (TimesEncountered * 10);
+                    if (this->actor.params & CAN_ATTACK) this->timer = 30 + (TimesEncountered * 30);
                     else this->timer = 20;
                     break;
                 default:

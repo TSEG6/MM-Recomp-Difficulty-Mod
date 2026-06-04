@@ -11,6 +11,7 @@ void func_808CC788(EnVm* this);
 
 void func_80833B18(PlayState* play, Player* this, s32 arg2, f32 speed, f32 velocityY, s16 arg5, s32 invincibilityTimer);
 
+// Player prediction based on difficulty
 RECOMP_PATCH void func_808CC610(EnVm* this, PlayState* play) {
     static Color_RGBA8 sPrimColor = { 0, 0, 255, 0 };
     static Color_RGBA8 sEnvColor = { 255, 255, 255, 255 };
@@ -66,6 +67,7 @@ RECOMP_PATCH void func_808CC610(EnVm* this, PlayState* play) {
     }
 }
 
+// Applies a shock to the player on hard if attacked
 RECOMP_HOOK("EnVm_Update") void electricgrave(Actor* thisx, PlayState* play) {
 
     EnVm* this = (EnVm*)thisx;

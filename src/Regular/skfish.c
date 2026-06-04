@@ -5,8 +5,7 @@
 #include "z_en_pr2.h"
 #include "overlays/actors/ovl_En_Encount1/z_en_encount1.h"
 
-
-
+// Increases health and speed
 RECOMP_HOOK("EnPr2_Update") void nodefensecansaveanenemywithonehp(Actor* thisx, PlayState* play) {
 
 	EnPr2* this = (EnPr2*)thisx;
@@ -57,6 +56,7 @@ RECOMP_HOOK("EnPr2_Update") void nodefensecansaveanenemywithonehp(Actor* thisx, 
     if (this->actor.colChkInfo.health == 0) this->actor.speed = 0;
 }
 
+// Is on screen (on Hard it's always true)
 s32 func_80A7429C(EnPr2* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s16 screenPosX;

@@ -13,7 +13,7 @@ void EnOkuta_SpawnSmoke(Vec3f* pos, Vec3f* velocity, s16 scaleStep, PlayState* p
     func_800B0DE0(play, pos, velocity, &gZeroVec3f, &sSmokePrimColor, &sSmokeEnvColor, 400, scaleStep);
 }
 
-
+// Health boost
 RECOMP_HOOK_RETURN("EnOkuta_Init") void OctoInit(Actor* thisx, PlayState* play2) {
 
 	PlayState* play = play2;
@@ -25,11 +25,11 @@ RECOMP_HOOK_RETURN("EnOkuta_Init") void OctoInit(Actor* thisx, PlayState* play2)
 
     switch (Difficulty) {
     case 0:
-        this->actor.colChkInfo.health = baseHealth * 3;
+        this->actor.colChkInfo.health = baseHealth * 2;
         break;
 
     case 1: {
-        this->actor.colChkInfo.health = baseHealth * 5;
+        this->actor.colChkInfo.health = baseHealth * 4;
         break;
     }
     default:
@@ -38,6 +38,7 @@ RECOMP_HOOK_RETURN("EnOkuta_Init") void OctoInit(Actor* thisx, PlayState* play2)
 
 }
 
+// Lower timer for attacking on Hard
 RECOMP_HOOK("EnOkuta_Update") void OctoUpdate(Actor* thisx, PlayState* play2) {
 
     PlayState* play = play2;
@@ -58,6 +59,7 @@ RECOMP_HOOK("EnOkuta_Update") void OctoUpdate(Actor* thisx, PlayState* play2) {
     }
 }
 
+// Rock speed & prediction
 RECOMP_PATCH void EnOkuta_SpawnProjectile(EnOkuta* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     Vec3f pos;

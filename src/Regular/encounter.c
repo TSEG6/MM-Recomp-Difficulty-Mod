@@ -9,6 +9,7 @@
 
 void EnEncount1_SpawnActor(EnEncount1* this, PlayState* play);
 
+// Spawning adjustments making things slightly faster
 RECOMP_PATCH void EnEncount1_Init(Actor* thisx, PlayState* play) {
     EnEncount1* this = (EnEncount1*)thisx;
 

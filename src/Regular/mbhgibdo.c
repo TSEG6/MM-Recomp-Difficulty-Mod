@@ -12,6 +12,7 @@ void EnRailgibud_SetupWalkToPlayer(EnRailgibud* this);
 void EnRailgibud_WalkToPlayer(EnRailgibud* this, PlayState* play);
 void EnRailgibud_TurnTowardsPlayer(EnRailgibud* this, PlayState* play);
 
+// Gibdo wanting to freeze the player (originally bugged and could softlock the player by freezing every frame)
 RECOMP_PATCH void EnRailgibud_AttemptPlayerFreeze(EnRailgibud* this, PlayState* play) {
 
     if (this->freezeCooldown > 0) {
@@ -54,6 +55,7 @@ RECOMP_PATCH void EnRailgibud_AttemptPlayerFreeze(EnRailgibud* this, PlayState* 
     EnRailgibud_TurnTowardsPlayer(this, play);
 }
 
+// Rare chance for the gibdo to freeze the player if attacked
 RECOMP_HOOK("EnRailgibud_Damage") void FunnyDamageGibdoMBH(EnRailgibud* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -72,6 +74,7 @@ RECOMP_HOOK("EnRailgibud_Damage") void FunnyDamageGibdoMBH(EnRailgibud* this, Pl
     }
 }
 
+// Increases the range for freezing the player
 RECOMP_HOOK("EnRailgibud_WalkInCircles") void WalkingMBHG(EnRailgibud* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -97,6 +100,7 @@ RECOMP_HOOK("EnRailgibud_WalkInCircles") void WalkingMBHG(EnRailgibud* this, Pla
     }
 }
 
+// Increases the walking speed when moving to a player & hides the HUD when the player is frozen
 RECOMP_HOOK("EnRailgibud_Update") void GibdoMBHUpdate(Actor* thisx, PlayState* play) {
     Player* player = GET_PLAYER(play);
 

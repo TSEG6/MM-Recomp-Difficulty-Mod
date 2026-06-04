@@ -14,12 +14,14 @@ void func_80877E60(EnDodongo* this, PlayState* play);
 
 #define Health_Buffed 0x20000000
 
+// Health buffs
 RECOMP_HOOK("EnDodongo_Init") void InitDino(Actor* thisx, PlayState* play) {
     EnDodongo* this = (EnDodongo*)thisx;
 
     this->actor.flags &= ~Health_Buffed;
 }
 
+// Applies health buffs & increases animation speed
 RECOMP_HOOK("EnDodongo_Update") void DinoUpdate(Actor* thisx, PlayState* play2) {
     PlayState* play = play2;
     EnDodongo* this = (EnDodongo*)thisx;
@@ -61,6 +63,7 @@ RECOMP_HOOK("EnDodongo_Update") void DinoUpdate(Actor* thisx, PlayState* play2) 
     }
 }
 
+// Increases actor speed
 RECOMP_HOOK("func_80877494") void MovementSpeed(EnDodongo* this) {
     int difficulty = (int)recomp_get_config_double("diff_option");
 
@@ -76,12 +79,13 @@ RECOMP_HOOK("func_80877494") void MovementSpeed(EnDodongo* this) {
         break;
     }
 }
-
+// Resets animation speed
 RECOMP_HOOK("func_80877DE0") void NoSpeed(EnDodongo* this) {
 
     this->skelAnime.playSpeed = 1.0f;
 }
 
+// Can never eat a bomb (it caused a bug)
 RECOMP_PATCH s32 func_80877278(EnDodongo* this, PlayState* play) {
 
     return false;

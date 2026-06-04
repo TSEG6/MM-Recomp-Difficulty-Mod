@@ -11,6 +11,7 @@ void EnKame_SetupPrepareToAttack(EnKame* this);
 void EnKame_SetupEmergeFromShell(EnKame* this);
 void EnKame_Struggle(EnKame* this, PlayState* play);
 
+// Defense & faster recovery
 RECOMP_HOOK("EnKame_Update") void SnapUpdate(Actor* thisx, PlayState* play) {
 
     EnKame* this = (EnKame*)thisx;
@@ -34,6 +35,7 @@ RECOMP_HOOK("EnKame_Update") void SnapUpdate(Actor* thisx, PlayState* play) {
     }
 }
 
+// Attack speed
 RECOMP_HOOK_RETURN("EnKame_SetAttackSpeed") void SnapAtkSpd(EnKame* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -52,6 +54,7 @@ RECOMP_HOOK_RETURN("EnKame_SetAttackSpeed") void SnapAtkSpd(EnKame* this) {
     }
 }
 
+// Attacking distance
 RECOMP_PATCH void EnKame_Walk(EnKame* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
@@ -96,6 +99,7 @@ RECOMP_PATCH void EnKame_Walk(EnKame* this, PlayState* play) {
     }
 }
 
+// More attacking distance but when it's inside it's shell
 RECOMP_PATCH void EnKame_RetreatIntoShell(EnKame* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 

@@ -48,6 +48,7 @@ void EnSb_SetupWaitOpen(EnSb* this) {
     this->actionFunc = EnSb_WaitOpen;
 }
 
+// Decreases vulnerable time & increases attacking range
 RECOMP_PATCH void EnSb_Open(EnSb* this, PlayState* play) {
     f32 curFrame = this->skelAnime.curFrame;
     f32 endFrame = Animation_GetLastFrame(&object_sb_Anim_000194);
@@ -81,6 +82,7 @@ RECOMP_PATCH void EnSb_Open(EnSb* this, PlayState* play) {
     }
 }
 
+// Speed adjustments
 RECOMP_PATCH void EnSb_TurnAround(EnSb* this, PlayState* play) {
     s16 invertedYaw = BINANG_ROT180(this->yawAngle);
     float waterSpeed;
@@ -116,6 +118,7 @@ RECOMP_PATCH void EnSb_TurnAround(EnSb* this, PlayState* play) {
     }
 }
 
+// Makes it attack the player better by actually turning towards the player when attacking instead of in a straight line
 RECOMP_PATCH void EnSb_Bounce(EnSb* this, PlayState* play) {
     s32 pad;
     f32 curFrame = this->skelAnime.curFrame;

@@ -27,6 +27,7 @@ RECOMP_HOOK("EnRd_Damage") void DamageRD(EnRd* this, PlayState* play) {
     AnyRedeadAttacked = true;
 }
 
+// On Hard redeads do not dance & if any were attacked on Normal dancing will be disabled
 RECOMP_PATCH s32 EnRd_ShouldNotDance(PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
@@ -46,6 +47,7 @@ RECOMP_PATCH s32 EnRd_ShouldNotDance(PlayState* play) {
     return true;
 }
 
+// Increases walking movement speed
 RECOMP_PATCH void EnRd_WalkToPlayer(EnRd* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s32 pad;
@@ -154,6 +156,7 @@ RECOMP_PATCH void EnRd_WalkToPlayer(EnRd* this, PlayState* play) {
     }
 }
 
+// Player freezing adjustments
 RECOMP_PATCH void EnRd_AttemptPlayerFreeze(EnRd* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s16 yaw = this->actor.yawTowardsPlayer - this->actor.shape.rot.y - this->headRotY - this->torsoRotY;
@@ -182,6 +185,7 @@ RECOMP_PATCH void EnRd_AttemptPlayerFreeze(EnRd* this, PlayState* play) {
     }
 }
 
+// Defense & disables HUD when the player is frozen
 RECOMP_HOOK("EnRd_Update") void RDUpdate(Actor* thisx, PlayState* play) {
     Player* player = GET_PLAYER(play);
 

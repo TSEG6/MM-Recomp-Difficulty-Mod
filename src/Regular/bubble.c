@@ -100,6 +100,7 @@ void EnBb_UpdateStateForFlying(EnBb* this) {
     this->actor.world.rot.y = this->actor.shape.rot.y;
 }
 
+// Increases sight/attack range
 RECOMP_HOOK_RETURN("EnBb_Init") void BBBuff(Actor* thisx, PlayState* play) {
     EnBb* this = (EnBb*)thisx;
 
@@ -120,6 +121,7 @@ RECOMP_HOOK_RETURN("EnBb_Init") void BBBuff(Actor* thisx, PlayState* play) {
     }
 }
 
+// Randomly selects a variant to use
 RECOMP_HOOK("EnBb_Init") void SetType(Actor* thisx, PlayState* play) {
 
     EnBb* this = (EnBb*)thisx;
@@ -142,6 +144,7 @@ RECOMP_HOOK("EnBb_Init") void SetType(Actor* thisx, PlayState* play) {
     }
 }
 
+// Applies the variant effects when the player is damaged
 RECOMP_PATCH void EnBb_UpdateDamage(EnBb* this, PlayState* play) {
     int LastEffectFrame = 0;
     Player* player = GET_PLAYER(play);
@@ -229,6 +232,7 @@ RECOMP_PATCH void EnBb_UpdateDamage(EnBb* this, PlayState* play) {
     }
 }
 
+// Health increase & defense & home movement
 RECOMP_HOOK("EnBb_Update") void Updating(Actor* thisx, PlayState* play) {
     EnBb* this = (EnBb*)thisx;
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -283,6 +287,7 @@ RECOMP_HOOK("EnBb_Update") void Updating(Actor* thisx, PlayState* play) {
     }
 }
 
+// Handles variant text replacement
 EZTR_MSG_CALLBACK(bb_text_callback) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
@@ -316,6 +321,7 @@ EZTR_ON_INIT void init_text_bubble() {
     );
 }
 
+// Revive timer decreases
 RECOMP_HOOK("EnBb_SetupWaitForRevive") void Vive(EnBb* this) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
@@ -334,6 +340,7 @@ RECOMP_HOOK("EnBb_SetupWaitForRevive") void Vive(EnBb* this) {
     }
 }
 
+// Attack movement speed
 RECOMP_PATCH void EnBb_SetupAttack(EnBb* this) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float diffbasedMaxSpeed = 1.0f;
@@ -360,6 +367,7 @@ RECOMP_PATCH void EnBb_SetupAttack(EnBb* this) {
     this->actionFunc = EnBb_Attack;
 }
 
+// Attack/chase distance 
 RECOMP_PATCH void EnBb_Attack(EnBb* this, PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float sightDist = 120.f;
@@ -404,6 +412,7 @@ RECOMP_PATCH void EnBb_Attack(EnBb* this, PlayState* play) {
     }
 }
 
+// Increases wandering sight range
 RECOMP_PATCH void EnBb_FlyIdle(EnBb* this, PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float sightDist = 120.f;
@@ -445,6 +454,7 @@ RECOMP_PATCH void EnBb_FlyIdle(EnBb* this, PlayState* play) {
 
 extern Gfx gEffFire1DL[];
 
+// Adds the variant colors
 RECOMP_PATCH void EnBb_Draw(Actor* thisx, PlayState* play) {
     s32 pad;
     EnBb* this = (EnBb*)thisx;

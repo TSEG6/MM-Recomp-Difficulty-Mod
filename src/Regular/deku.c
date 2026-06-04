@@ -9,6 +9,7 @@
 
 void func_808BD870(EnDekunuts* this);
 
+// Sight distance increase
 RECOMP_HOOK("func_808BD49C") void AtkDistanceD(EnDekunuts* this, PlayState* play) {
 
     s32 phi_v1 = false;
@@ -39,6 +40,7 @@ RECOMP_HOOK("func_808BD49C") void AtkDistanceD(EnDekunuts* this, PlayState* play
 
 }
 
+// Projectile prediction & speed
 RECOMP_PATCH void func_808BDA4C(EnDekunuts* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     Vec3f targetPos;

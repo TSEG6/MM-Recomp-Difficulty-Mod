@@ -21,6 +21,7 @@ typedef enum {
 extern void EnFamos_UpdateBobbingHeight(EnFamos*);
 extern void EnFamos_SetupAttackDebris(EnFamos*);
 
+// Predictive chase and speed increases
 RECOMP_PATCH void EnFamos_Chase(EnFamos* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
     Vec3f targetPos;
@@ -77,6 +78,7 @@ RECOMP_PATCH void EnFamos_Chase(EnFamos* this, PlayState* play) {
     }
 }
 
+// More prediction and speed when actually attacking
 RECOMP_PATCH void EnFamos_Attack(EnFamos* this, PlayState* play) {
     s32 hitFloor;
     u32 surfaceType;
@@ -159,6 +161,7 @@ RECOMP_PATCH void EnFamos_Attack(EnFamos* this, PlayState* play) {
     }
 }
 
+// Animation speed increase when attacking
 RECOMP_HOOK("EnFamos_AttackAim") void DAAttackAnim(EnFamos* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");

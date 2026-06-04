@@ -59,6 +59,7 @@ void EnSlime_Blink(EnSlime* this) {
     }
 }
 
+// Health and revive changes
 RECOMP_HOOK_RETURN("EnSlime_Init")
 void SlimeBuff(Actor* thisx, PlayState* play) {
     EnSlime* this = (EnSlime*)thisx;
@@ -102,6 +103,7 @@ void SlimeBuff(Actor* thisx, PlayState* play) {
     }
 }
 
+// Weirdly done health related fixes
 RECOMP_HOOK("EnSlime_SetupRevive") void ReviveBuff(EnSlime* this) {
     this->actor.home.rot.y = 1;
 }
@@ -110,6 +112,7 @@ RECOMP_HOOK("EnSlime_Revive") void ReviveBuff2(EnSlime* this) {
     this->actor.home.rot.y = 1;
 }
 
+// Random chance for it's home to move around & health buffs
 RECOMP_HOOK("EnSlime_Update") void ReviveBuffFix(EnSlime* this) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
@@ -150,6 +153,7 @@ RECOMP_HOOK("EnSlime_Update") void ReviveBuffFix(EnSlime* this) {
     }
 }
 
+// Speed increases
 RECOMP_HOOK_RETURN("EnSlime_MoveInDirection") void SlimeMovement(EnSlime* this, PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
     f32 sinFactor;
@@ -169,6 +173,7 @@ RECOMP_HOOK_RETURN("EnSlime_MoveInDirection") void SlimeMovement(EnSlime* this, 
     }
 }
 
+// Jumping speed and prediction
 RECOMP_PATCH void EnSlime_TurnToPlayer(EnSlime* this, PlayState* play) {
     f32 factorY;
     f32 scaleXZ;
@@ -244,6 +249,7 @@ RECOMP_PATCH void EnSlime_TurnToPlayer(EnSlime* this, PlayState* play) {
     }
 }
 
+// Based on distance how to handle jumping
 RECOMP_PATCH void EnSlime_SetupJump(EnSlime* this) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float dist = this->actor.xzDistToPlayer;
@@ -290,6 +296,7 @@ RECOMP_PATCH void EnSlime_SetupJump(EnSlime* this) {
     this->actionFunc = EnSlime_Jump;
 }
 
+// Attacking distance
 RECOMP_HOOK("EnSlime_Idle") void Sight(EnSlime* this, PlayState* play) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float Distance = 280.0f;
@@ -308,6 +315,8 @@ RECOMP_HOOK("EnSlime_Idle") void Sight(EnSlime* this, PlayState* play) {
         break;
     }
 
+    // If player is not wearing the stone mask, is within 280 units of the chuchu,
+    // and the chuchu is facing the player, initialize chase/attack cycle.
     if ((Player_GetMask(play) != PLAYER_MASK_STONE) && (this->actor.xzDistToPlayer < Distance) &&
         Actor_IsFacingPlayer(&this->actor, 0x5000)) {
         EnSlime_SetupTurnToPlayer(this);

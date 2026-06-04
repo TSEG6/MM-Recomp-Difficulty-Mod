@@ -5,7 +5,7 @@
 #include "z_en_crow.h"
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 
-
+// Increases attack time and speed
 RECOMP_HOOK_RETURN("EnCrow_SetupDiveAttack") void AttackGuay(EnCrow* this) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
