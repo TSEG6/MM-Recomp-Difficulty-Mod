@@ -14,6 +14,8 @@ void func_809340BC(EnFz* this, Vec3f* a, Vec3f* b, Vec3f* c, f32 arg4, f32 arg5,
 
 extern void func_80933014(EnFz*);
 
+// These two patches introduce a rotating attack instead of just aiming straight ahead, they're pretty much the same change for both
+
 RECOMP_PATCH void func_809338E0(EnFz* this, PlayState* play) {
     Vec3f sp64;
     Vec3f sp58;
@@ -74,7 +76,7 @@ RECOMP_PATCH void func_809338E0(EnFz* this, PlayState* play) {
     func_809340BC(this, &sp58, &sp4C, &sp40, 2.0f, 25.0f, sp3C, 0);
 }
 
-void func_809334B8(EnFz* this, PlayState* play) {
+RECOMP_PATCH void func_809334B8(EnFz* this, PlayState* play) {
     Vec3f sp64;
     Vec3f sp58;
     Vec3f sp4C;
