@@ -301,6 +301,12 @@ extern void Boss07_Remains_UpdateDamage(Boss07*, PlayState*);
 extern s32 Boss07_ArePlayerAndActorFacing(Boss07*, PlayState*);
 extern void Boss07_Wrath_SetupDamaged(Boss07*, PlayState*, u8, u8);
 extern void Boss07_Wrath_SpawnDustAtPos(PlayState*, Vec3f*, u8);
+extern void Boss07_UpdateDamageEffects(Boss07*, PlayState*);
+extern void Boss07_Wrath_SetupDeathCutscene(Boss07*, PlayState*);
+extern void Boss07_Wrath_CheckBombWhips(Boss07*, PlayState*);
+extern void Boss07_Wrath_JumpAwayFromExplosive(Boss07*, PlayState*);
+extern void Boss07_Wrath_CheckWhipCollisions(Vec3f*, f32, Boss07*, PlayState*);
+extern void Boss07_Wrath_SetupSidestep(Boss07*, PlayState*);
 
 typedef enum MajorasMaskTentacleState {
     /* 0 */ MAJORAS_MASK_TENTACLE_STATE_DEFAULT,
@@ -1199,7 +1205,7 @@ RECOMP_PATCH void Boss07_Wrath_UpdateDamage(Boss07* this, PlayState* play) {
     }
 }
 
-RECOMP_HOOK("Boss07_Wrath_SetupThrowTop") void yesdodgepartsomething(Boss07* this, PlayState* play) {
+RECOMP_HOOK_RETURN("Boss07_Wrath_SetupThrowTop") void yesdodgepartsomething(Boss07* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
@@ -1210,7 +1216,6 @@ RECOMP_HOOK("Boss07_Wrath_SetupThrowTop") void yesdodgepartsomething(Boss07* thi
         break;
 
     case 1:
-
         this->canEvade = true;
         this->skelAnime.playSpeed = 3.0f;
         break;
@@ -1500,6 +1505,157 @@ RECOMP_PATCH void Boss07_Mask_UpdateDamage(Boss07* this, PlayState* play) {
                 }
             }
         }
+    }
+}
+
+RECOMP_PATCH void Boss07_Wrath_Update(Actor* thisx, PlayState* play2) {
+    PlayState* play = play2;
+    Boss07* this = (Boss07*)thisx;
+    s32 i;
+    Player* player = GET_PLAYER(play);
+
+    play->envCtx.lightSetting = 2;
+    play->envCtx.prevLightSetting = 0;
+    this->actor.hintId = TATL_HINT_ID_MAJORAS_WRATH;
+    Math_ApproachF(&play->envCtx.lightBlend, 0.0f, 1.0f, 0.03f);
+    this->shouldUpdateTentaclesOrWhips = true;
+    Math_Vec3f_Copy(&sMajoraSfxPos, &this->actor.projectedPos);
+
+    if (KREG(63) == 0) {
+        this->frameCounter++;
+        Actor_SetScale(&this->actor, 0.015f);
+        Math_ApproachZeroF(&this->wrathLeanRotY, 1.0f, 0.02f);
+        Math_ApproachZeroF(&this->wrathLeanRotX, 1.0f, 0.02f);
+
+        for (i = 0; i < ARRAY_COUNT(this->timers); i++) {
+            DECR(this->timers[i]);
+        }
+
+        DECR(this->whipCollisionTimer);
+        DECR(this->disableCollisionTimer);
+        DECR(this->damagedTimer);
+        DECR(this->damagedFlashTimer);
+        DECR(this->landSfxTimer);
+
+        Math_ApproachZeroF(&this->shockOrbScale, 1.0f, 0.2f);
+        Math_ApproachZeroF(&this->shockSparkScale, 1.0f, 0.04f);
+
+        this->actionFunc(this, play);
+
+        Actor_MoveWithGravity(&this->actor);
+        Actor_UpdateBgCheckInfo(play, &this->actor, 50.0f, 100.0f, 100.0f,
+            UPDBGCHECKINFO_FLAG_1 | UPDBGCHECKINFO_FLAG_4);
+
+        if (this->whipCrackTimer != 0) {
+            this->whipCrackTimer--;
+
+            if ((this->actionFunc == Boss07_Wrath_Attack) && (this->whipCrackTimer == 0)) {
+                Audio_PlaySfx(NA_SE_EN_LAST3_ROD_FLOOR_OLD);
+            }
+        }
+    }
+    else {
+        sWhipLength = 45;
+    }
+
+    Boss07_Wrath_CheckWhipCollisions(this->rightWhip.pos, this->rightWhip.tension, this, play);
+    Boss07_Wrath_CheckWhipCollisions(this->leftWhip.pos, this->leftWhip.tension, this, play);
+
+    if (this->disableCollisionTimer != 0) {
+        for (i = 0; i < ARRAY_COUNT(this->bodyColliderElements); i++) {
+            this->bodyCollider.elements[i].base.acElemFlags &= ~ACELEM_HIT;
+        }
+    }
+
+    Boss07_Wrath_UpdateDamage(this, play);
+
+    if (this->damagedTimer != 0) {
+        this->whipTopIndex = 0;
+    }
+
+    CollisionCheck_SetOC(play, &play->colChkCtx, &this->bodyCollider.base);
+    CollisionCheck_SetAC(play, &play->colChkCtx, &this->bodyCollider.base);
+
+    if ((this->actionFunc == Boss07_Wrath_Attack) && (this->subAction == MAJORAS_WRATH_ATTACK_SUB_ACTION_KICK) &&
+        (this->frameCounter >= 6)) {
+        CollisionCheck_SetAT(play, &play->colChkCtx, &this->kickCollider.base);
+    }
+    else {
+        if (this->canEvade && Boss07_ArePlayerAndActorFacing(this, play)) {
+            if (player->unk_D57 == 4) {
+                if ((this->actor.xzDistToPlayer >= 400.0f) && (Rand_ZeroOne() < 0.5f)) {
+                    Boss07_Wrath_SetupSidestep(this, play);
+                }
+                else {
+                    Boss07_Wrath_ChooseJump(this, play, false);
+                }
+            }
+
+            if ((player->unk_ADC != 0) && (this->actor.xzDistToPlayer <= 150.0f)) {
+                Boss07_Wrath_ChooseJump(this, play, false);
+            }
+        }
+
+        if ((this->actionFunc != Boss07_Wrath_Stunned) && (this->actionFunc != Boss07_Wrath_Damaged)) {
+            if ((player->stateFlags3 & PLAYER_STATE3_1000) && !(player->stateFlags3 & PLAYER_STATE3_80000) &&
+                (this->actor.xzDistToPlayer <= 250.0f)) {
+                Boss07_Wrath_ChooseJump(this, play, false);
+            }
+        }
+    }
+
+    if (this->canEvade) {
+        Boss07_Wrath_JumpAwayFromExplosive(this, play);
+    }
+
+    Boss07_Wrath_CheckBombWhips(this, play);
+
+    if (KREG(88) || this->shouldStartDeath) {
+        KREG(88) = false;
+        this->shouldStartDeath = false;
+        Boss07_Wrath_SetupDeathCutscene(this, play);
+    }
+
+    if (this->maxDecayPixels != 0) {
+        u16* earTex = SEGMENTED_TO_K0(gMajorasWrathEarTex);
+        u16* stripesTex = SEGMENTED_TO_K0(gMajoraStripesTex);
+        u16* mouthTex = SEGMENTED_TO_K0(gMajorasWrathMouthTex);
+        u16* bloodshotEyeTex = SEGMENTED_TO_K0(gMajoraBloodshotEyeTex);
+        u16* eyeTex = SEGMENTED_TO_K0(gMajorasWrathEyeTex);
+        u16* maskTex = SEGMENTED_TO_K0(gMajorasMaskWithNormalEyesTex);
+        u16* veinsTex = SEGMENTED_TO_K0(gMajoraVeinsTex);
+        u16* handTex = SEGMENTED_TO_K0(gMajoraHandTex);
+        u16* bodyTex = SEGMENTED_TO_K0(gMajoraBodyTex);
+
+        for (i = 0; i < this->maxDecayPixels; i++) {
+            s32 rand32x64;
+            s32 rand32x16;
+            s32 rand32x32;
+            s32 rand16x16;
+
+            rand16x16 = Rand_ZeroFloat((16 * 16) - 0.01f);
+            rand32x16 = Rand_ZeroFloat((32 * 16) - 0.01f);
+            rand32x32 = Rand_ZeroFloat((32 * 32) - 0.01f);
+            rand32x64 = Rand_ZeroFloat((32 * 64) - 0.01f);
+
+            earTex[rand16x16] = stripesTex[rand32x16] = mouthTex[rand32x32] = bloodshotEyeTex[rand32x32] =
+                eyeTex[rand32x64] = maskTex[rand32x64] = veinsTex[rand32x64] = handTex[rand32x64] = bodyTex[rand32x64] =
+                0;
+        }
+    }
+
+    Boss07_UpdateDamageEffects(this, play);
+
+    if ((this->landSfxTimer == 1) || (this->landSfxTimer == 4)) {
+        Actor_PlaySfx(&this->actor, NA_SE_EN_LAST2_WALK2_OLD);
+    }
+
+    if ((player->actor.world.pos.y > 100.0f) && (player->actor.world.pos.z < (KREG(82) + -850.0f))) {
+        player->actor.world.pos.z = KREG(82) + -850.0f;
+    }
+
+    if (player->actor.world.pos.y < -300.0f) {
+        player->actor.world.pos.x = player->actor.world.pos.y = player->actor.world.pos.z = 0.0f;
     }
 }
 
