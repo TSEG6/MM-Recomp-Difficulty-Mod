@@ -91,7 +91,6 @@ RECOMP_PATCH void EnJso2_SetupStunned(EnJso2* this) {
     AudioSfx_SetChannelIO(&this->actor.projectedPos, NA_SE_EN_ANSATSUSYA_DASH_2, 0);
     EnJso2_ChangeAnim(this, EN_JSO2_ANIM_DAMAGED);
     this->timer = StunTimer;
-    this->actor.colorFilterTimer = StunTimer;
     this->bodyCollider.base.acFlags &= ~AC_HARD;
     this->actor.speed = 0.0f;
     Matrix_RotateYS(this->actor.yawTowardsPlayer, MTXMODE_NEW);
@@ -103,13 +102,11 @@ RECOMP_PATCH void EnJso2_SetupStunned(EnJso2* this) {
         (this->drawDmgEffAlpha == 0)) {
         this->drawDmgEffAlpha = 0;
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FIRE;
-        this->actor.colorFilterTimer = StunTimer;
     }
 
     if ((this->drawDmgEffType != ACTOR_DRAW_DMGEFF_FROZEN_SFX) &&
         (this->drawDmgEffType != ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX)) {
         this->timer = StunTimer * 2;
-        this->actor.colorFilterTimer = StunTimer;
     }
 
     this->action = EN_JSO2_ACTION_STUNNED;

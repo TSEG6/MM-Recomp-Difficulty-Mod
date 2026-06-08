@@ -244,7 +244,6 @@ RECOMP_PATCH void EnJso_SetupStunned(EnJso* this) {
         this->drawDmgEffType = ACTOR_DRAW_DMGEFF_FIRE;
     }
     this->timer = StunTimer;
-    this->actor.colorFilterTimer = StunTimer;
     Matrix_RotateYS(this->actor.yawTowardsPlayer, MTXMODE_NEW);
     Matrix_MultVecZ(-10.0f, &knockbackVelocity);
     Math_Vec3f_Copy(&this->knockbackVelocity, &knockbackVelocity);
