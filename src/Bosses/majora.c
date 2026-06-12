@@ -1051,6 +1051,51 @@ RECOMP_PATCH void Boss07_Wrath_Idle(Boss07* this, PlayState* play) {
     Math_ApproachS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 0xA, 0x1000);
 }
 
+RECOMP_PATCH void Boss07_Wrath_SetupSidestep(Boss07* this, PlayState* play) {
+    Vec3f direction;
+    s16 yawDiff;
+    Vec3f hitPos;
+    CollisionPoly* poly;
+    s32 bgId;
+
+    direction.x = -this->actor.world.pos.x;
+    direction.z = -this->actor.world.pos.z;
+    yawDiff = this->actor.yawTowardsPlayer - (s16)(Math_Atan2F_XY(direction.z, direction.x) * (0x8000 / M_PIf));
+    Matrix_RotateYS(this->actor.shape.rot.y, MTXMODE_NEW);
+
+    if (yawDiff < 0) {
+        direction.x = 300.0f;
+    }
+    else {
+        direction.x = -300.0f;
+    }
+
+    Matrix_MultVecX(direction.x, &this->targetPos);
+    this->targetPos.x += this->actor.world.pos.x;
+    this->targetPos.y = this->actor.world.pos.y;
+    this->targetPos.z += this->actor.world.pos.z;
+
+    if (BgCheck_EntityLineTest1(&play->colCtx, &this->actor.world.pos, &this->targetPos, &hitPos, &poly, true, false, false, true, &bgId)) {
+        Boss07_Wrath_ChooseJump(this, play, true);
+        return;
+    }
+
+    this->actionFunc = Boss07_Wrath_Sidestep;
+    Animation_MorphToLoop(&this->skelAnime, &gMajorasWrathSidestepAnim, -5.0f);
+
+    if (yawDiff < 0) {
+        this->skelAnime.playSpeed = 1.0f;
+    }
+    else {
+        this->skelAnime.playSpeed = -1.0f;
+    }
+
+    this->timers[1] = 21;
+    this->disableCollisionTimer = 10;
+    this->speedToTarget = 0.0f;
+    this->sfxTimer = 0;
+}
+
 RECOMP_PATCH void Boss07_Wrath_SetupStunned(Boss07* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
@@ -1222,6 +1267,10 @@ RECOMP_HOOK_RETURN("Boss07_Wrath_SetupThrowTop") void yesdodgepartsomething(Boss
 
     default:
         break;
+    }
+
+    if ((this->frameCounter >= (s16)(KREG(43) + 12)) && (this->frameCounter <= (s16)(KREG(44) + 17))) {
+        this->rightWhip.tension = KREG(6) + 500.0f;
     }
 }
 
@@ -1534,10 +1583,16 @@ RECOMP_HOOK("Boss07_Wrath_Update") void WrathUpdate(Actor* thisx, PlayState* pla
             }
 
             if ((player->unk_ADC != 0) && (this->actor.xzDistToPlayer <= 150.0f)) {
-               //Boss07_Wrath_ChooseJump(this, play, false);
+               Boss07_Wrath_ChooseJump(this, play, false);
             }
         }
     }
+}
+
+RECOMP_HOOK("Boss07_Wrath_Idle") void StayStill(Boss07* this, PlayState* play) {
+
+    this->speedToTarget = 0.0f;
+    this->actor.speed = 0.0f;
 
 }
 
