@@ -11,9 +11,9 @@
 #include "overlays/actors/ovl_Obj_Tsubo/z_obj_tsubo.h"
 #include "overlays/effects/ovl_Effect_Ss_Hahen/z_eff_ss_hahen.h"
 
-#define MAJORA_TENTACLE_COUNT 30
-#define MAJORA_WHIP_LENGTH 55
-#define MAJORA_EFFECT_COUNT 60
+#define MAJORA_TENTACLE_COUNT 25
+#define MAJORA_WHIP_LENGTH 44
+#define MAJORA_EFFECT_COUNT 50
 
 typedef enum MajoraEffectType {
     /* 0 */ MAJORA_EFFECT_NONE,
@@ -1049,6 +1049,14 @@ RECOMP_PATCH void Boss07_Wrath_Idle(Boss07* this, PlayState* play) {
         }
     }
     Math_ApproachS(&this->actor.shape.rot.y, this->actor.yawTowardsPlayer, 0xA, 0x1000);
+
+    if (this->frameCounter < (s16)(KREG(40) + 14)) {
+        this->whipTopIndex += 6;
+
+        if (this->whipTopIndex > MAJORA_WHIP_LENGTH) {
+            this->whipTopIndex = MAJORA_WHIP_LENGTH;
+        }
+    }
 }
 
 RECOMP_PATCH void Boss07_Wrath_SetupSidestep(Boss07* this, PlayState* play) {
@@ -1129,6 +1137,14 @@ RECOMP_PATCH void Boss07_Wrath_UpdateDamage(Boss07* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
+    if (Difficulty == 1 && this->damagedFlashTimer != 0) {
+        return;
+    }
+
+    if (this->damagedTimer != 0) {
+        return;
+    }
+
     switch (Difficulty) {
     case 0:
         this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage + 2) / 3;
@@ -1178,19 +1194,14 @@ RECOMP_PATCH void Boss07_Wrath_UpdateDamage(Boss07* this, PlayState* play) {
 
         case MAJORAS_WRATH_DMGEFF_LIGHT_ORB:
             this->drawDmgEffState = MAJORA_DRAW_DMGEFF_STATE_LIGHT_ORB_INIT;
-            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->actor.focus.pos.x, this->actor.focus.pos.y,
-                this->actor.focus.pos.z, 0, 0, 0, CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
             break;
 
         case MAJORAS_WRATH_DMGEFF_ELECTRIC_SPARKS:
             this->drawDmgEffState = MAJORA_DRAW_DMGEFF_STATE_ELECTRIC_SPARKS_INIT;
-            Actor_PlaySfx(&this->actor, NA_SE_EN_COMMON_FREEZE);
             break;
 
         case MAJORAS_WRATH_DMGEFF_BLUE_LIGHT_ORB:
             this->drawDmgEffState = MAJORA_DRAW_DMGEFF_STATE_BLUE_LIGHT_ORB_INIT;
-            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->actor.focus.pos.x, this->actor.focus.pos.y,
-                this->actor.focus.pos.z, 0, 0, 3, CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
             break;
 
         default:
@@ -1200,15 +1211,16 @@ RECOMP_PATCH void Boss07_Wrath_UpdateDamage(Boss07* this, PlayState* play) {
         damage = this->actor.colChkInfo.damage;
 
         if (Difficulty == 1) {
-            this->damagedTimer = (this->actor.colChkInfo.damageEffect == MAJORAS_WRATH_DMGEFF_EXPLOSIVE) ? 30 : 20;
-            this->damagedFlashTimer = this->damagedTimer;
-
             u8 isGrabbingPlayer = (&this->actor == player->actor.parent);
+
             if (this->actor.colChkInfo.health > damage && !isGrabbingPlayer) {
+                this->damagedFlashTimer = (this->actor.colChkInfo.damageEffect == MAJORAS_WRATH_DMGEFF_EXPLOSIVE) ? 30 : 20;
                 this->actor.colChkInfo.health -= damage;
                 Actor_PlaySfx(&this->actor, NA_SE_EN_LAST3_VOICE_DAMAGE2_OLD);
             }
             else {
+                this->damagedTimer = (this->actor.colChkInfo.damageEffect == MAJORAS_WRATH_DMGEFF_EXPLOSIVE) ? 30 : 20;
+                this->damagedFlashTimer = this->damagedTimer;
                 Boss07_Wrath_SetupDamaged(this, play, damage, this->actor.colChkInfo.damageEffect);
             }
 
@@ -1256,21 +1268,15 @@ RECOMP_HOOK_RETURN("Boss07_Wrath_SetupThrowTop") void yesdodgepartsomething(Boss
 
     switch (Difficulty) {
     case 0:
-        if (Rand_ZeroOne() < 0.3) this->canEvade = true;
-        this->skelAnime.playSpeed = 2.0f;
+        this->skelAnime.playSpeed = 1.1f;
         break;
 
     case 1:
-        this->canEvade = true;
-        this->skelAnime.playSpeed = 3.0f;
+        this->skelAnime.playSpeed = 1.25f;
         break;
 
     default:
         break;
-    }
-
-    if ((this->frameCounter >= (s16)(KREG(43) + 12)) && (this->frameCounter <= (s16)(KREG(44) + 17))) {
-        this->rightWhip.tension = KREG(6) + 500.0f;
     }
 }
 
@@ -1564,9 +1570,24 @@ RECOMP_HOOK("Boss07_Wrath_Update") void WrathUpdate(Actor* thisx, PlayState* pla
     Player* player = GET_PLAYER(play);
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
+    static s32 idleTimer = 0;
+    bool inCutscene = (play->csCtx.state != 0) || (CutsceneManager_GetCurrentCsId() != CS_ID_NONE);
+
+    if (!inCutscene && (this->actor.speed < 0.1f) && (this->actionFunc != Boss07_Wrath_Attack) && (this->actor.xzDistToPlayer <= 400.0f)) {
+        idleTimer++;
+        if (idleTimer >= 60) { 
+            Boss07_Wrath_ChooseJump(this, play, false);
+            idleTimer = 0;
+        }
+    }
+    else {
+        idleTimer = 0;
+    }
 
     if (KREG(63) == 0) {
-        if (Difficulty == 1) this->canEvade = true;
+        if (Difficulty == 1) {
+            if (Rand_ZeroOne() < 0.2f) this->canEvade = true;
+        }
     }
 
     if ((this->actionFunc == Boss07_Wrath_Attack) && (this->subAction == MAJORAS_WRATH_ATTACK_SUB_ACTION_KICK) &&
@@ -1585,7 +1606,18 @@ RECOMP_HOOK("Boss07_Wrath_Update") void WrathUpdate(Actor* thisx, PlayState* pla
             }
 
             if ((player->unk_ADC != 0) && (this->actor.xzDistToPlayer <= 150.0f)) {
-               Boss07_Wrath_ChooseJump(this, play, false);
+                Boss07_Wrath_ChooseJump(this, play, false);
+            }
+        }
+    }
+
+    if (this->actionFunc != Boss07_Wrath_ThrowTop) {
+        if ((this->frameCounter >= (s16)(KREG(40) + 14)) &&
+            ((this->frameCounter <= (s16)(KREG(41) + 17)) || (this->frameCounter >= (s16)(KREG(42) + 21)))) {
+            this->whipTopIndex -= KREG(39) + 5;
+
+            if (this->whipTopIndex < 0) {
+                this->whipTopIndex = 0;
             }
         }
     }
@@ -1595,7 +1627,6 @@ RECOMP_HOOK("Boss07_Wrath_Idle") void StayStill(Boss07* this, PlayState* play) {
 
     this->speedToTarget = 0.0f;
     this->actor.speed = 0.0f;
-
 }
 
 RECOMP_HOOK("Boss07_Mask_Update") void MaskDefense(Actor* thisx, PlayState* play2) {
