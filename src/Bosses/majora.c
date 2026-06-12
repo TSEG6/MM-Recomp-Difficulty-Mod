@@ -1194,14 +1194,19 @@ RECOMP_PATCH void Boss07_Wrath_UpdateDamage(Boss07* this, PlayState* play) {
 
         case MAJORAS_WRATH_DMGEFF_LIGHT_ORB:
             this->drawDmgEffState = MAJORA_DRAW_DMGEFF_STATE_LIGHT_ORB_INIT;
+            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->actor.focus.pos.x, this->actor.focus.pos.y,
+                this->actor.focus.pos.z, 0, 0, 0, CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
             break;
 
         case MAJORAS_WRATH_DMGEFF_ELECTRIC_SPARKS:
             this->drawDmgEffState = MAJORA_DRAW_DMGEFF_STATE_ELECTRIC_SPARKS_INIT;
+            Actor_PlaySfx(&this->actor, NA_SE_EN_COMMON_FREEZE);
             break;
 
         case MAJORAS_WRATH_DMGEFF_BLUE_LIGHT_ORB:
             this->drawDmgEffState = MAJORA_DRAW_DMGEFF_STATE_BLUE_LIGHT_ORB_INIT;
+            Actor_Spawn(&play->actorCtx, play, ACTOR_EN_CLEAR_TAG, this->actor.focus.pos.x, this->actor.focus.pos.y,
+                this->actor.focus.pos.z, 0, 0, 3, CLEAR_TAG_PARAMS(CLEAR_TAG_LARGE_LIGHT_RAYS));
             break;
 
         default:
