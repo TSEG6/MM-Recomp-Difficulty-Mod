@@ -1563,8 +1563,10 @@ RECOMP_HOOK("Boss07_Wrath_Update") void WrathUpdate(Actor* thisx, PlayState* pla
     s32 i;
     Player* player = GET_PLAYER(play);
 
+    int Difficulty = (int)recomp_get_config_double("diff_option");
+
     if (KREG(63) == 0) {
-        this->canEvade = true;
+        if (Difficulty == 1) this->canEvade = true;
     }
 
     if ((this->actionFunc == Boss07_Wrath_Attack) && (this->subAction == MAJORAS_WRATH_ATTACK_SUB_ACTION_KICK) &&
