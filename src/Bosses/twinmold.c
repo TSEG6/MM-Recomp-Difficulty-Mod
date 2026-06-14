@@ -668,6 +668,6 @@ RECOMP_HOOK("Boss02_Twinmold_Update") void TwinUpdate(Actor* thisx, PlayState* p
 
 	Boss02* this = (Boss02*)thisx;
 	sCanSkipMaskOnCs = true;
-	if (this->actor.colChkInfo.damage < 3) this->actor.colChkInfo.damage = 3;
+	if (this->actor.colChkInfo.damage > 3) this->actor.colChkInfo.damage = 3;
 	// winning (not winning)
 }
