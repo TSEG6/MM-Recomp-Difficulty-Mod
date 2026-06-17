@@ -111,12 +111,18 @@ static s32 FindNearestDestructibleObject(PlayState* play, Boss02* this, Vec3f* o
     }
 }*/
 
-static void ApplyRedTargetBias(Boss02* this, Vec3f* target, Player* player, float redAimBias) {
+static void ApplyRedTargetBias(Boss02* this, Vec3f* target, Player* player, float redAimBias, PlayState* play) {
+
+    u8 isCutscene;
+    isCutscene = (play->csCtx.state != 0) || (play->csCtx.state == 10) || (play->csCtx.state == 12) || (this->unk_0144 >= 20);
 
     if ((target == NULL) || (this == NULL) || (player == NULL)) {
         return;
     }
     if (TWINMOLD_GET_TYPE(&this->actor) != TWINMOLD_TYPE_RED) {
+        return;
+    }
+    if (isCutscene) {
         return;
     }
 
@@ -135,10 +141,16 @@ static void ApplyRedTargetBias(Boss02* this, Vec3f* target, Player* player, floa
 
 static void ApplyBlueTargetBias(PlayState* play, Boss02* this, Vec3f* target) {
 
+    u8 isCutscene;
+    isCutscene = (play->csCtx.state != 0) || (play->csCtx.state == 10) || (play->csCtx.state == 12) || (this->unk_0144 >= 20);
+
     if ((target == NULL) || (this == NULL)) {
         return;
     }
     if (TWINMOLD_GET_TYPE(&this->actor) != TWINMOLD_TYPE_BLUE) {
+        return;
+    }
+    if (isCutscene) {
         return;
     }
 
@@ -224,7 +236,7 @@ RECOMP_PATCH void func_809DAB78(Boss02* this, PlayState* play) {
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
-    isCutscene = (play->csCtx.state != 0) || (this->unk_0144 >= 20);
+    isCutscene = (play->csCtx.state != 0) || (play->csCtx.state == 10) || (play->csCtx.state == 12) || (this->unk_0144 >= 20);
 
     s16 newMaxTurnStep = 0x600;
 
@@ -402,7 +414,7 @@ RECOMP_PATCH void func_809DAB78(Boss02* this, PlayState* play) {
         this->unk_01B0.x = this->actor.world.pos.x;
         this->unk_01B0.y = this->actor.world.pos.y + (1000.0f * sGiantModeScaleFactor);
         this->unk_01B0.z = this->actor.world.pos.z;
-        ApplyRedTargetBias(this, &this->unk_01B0, player, (this->unk_0144 == 20) ? redAimBias : 0.0f);
+        ApplyRedTargetBias(this, &this->unk_01B0, player, (this->unk_0144 == 20) ? redAimBias : 0.0f, play);
         ApplyBlueTargetBias(play, this, &this->unk_01B0);
         this->unk_0146[0] = (s16)(100.0f / redAggroMult);
         this->unk_0144 = 1;
@@ -431,7 +443,7 @@ RECOMP_PATCH void func_809DAB78(Boss02* this, PlayState* play) {
                 this->unk_01B0.y = Rand_ZeroFloat(800.0f * sGiantModeScaleFactor) + (200.0f * sGiantModeScaleFactor);
                 if (sIsInGiantMode) this->unk_01B0.y += 3150.0f;
 
-                ApplyRedTargetBias(this, &this->unk_01B0, player, 0.0f);
+                ApplyRedTargetBias(this, &this->unk_01B0, player, 0.0f, play);
                 ApplyBlueTargetBias(play, this, &this->unk_01B0);
             }
             this->unk_0164 = 0.0f;
@@ -444,7 +456,7 @@ RECOMP_PATCH void func_809DAB78(Boss02* this, PlayState* play) {
             this->unk_0144 = 3;
             this->unk_01B0.y = -3000.0f * sGiantModeScaleFactor;
             if (sIsInGiantMode) this->unk_01B0.y += 3150.0f;
-            ApplyRedTargetBias(this, &this->unk_01B0, player, (this->unk_0144 == 20) ? redAimBias : 0.0f);
+            ApplyRedTargetBias(this, &this->unk_01B0, player, (this->unk_0144 == 20) ? redAimBias : 0.0f, play);
             ApplyBlueTargetBias(play, this, &this->unk_01B0);
             this->unk_0146[0] = (s16)(150.0f / redAggroMult);
             this->unk_0164 = 0.0f;
@@ -457,7 +469,7 @@ RECOMP_PATCH void func_809DAB78(Boss02* this, PlayState* play) {
         this->unk_01B0.x = player->actor.world.pos.x;
         this->unk_01B0.y = player->actor.world.pos.y + (100.0f * sGiantModeScaleFactor);
         this->unk_01B0.z = player->actor.world.pos.z;
-        ApplyRedTargetBias(this, &this->unk_01B0, player, 0.0f);
+        ApplyRedTargetBias(this, &this->unk_01B0, player, 0.0f, play);
         ApplyBlueTargetBias(play, this, &this->unk_01B0);
         if (this->unk_0146[0] == 0) {
             this->unk_0144 = 3;
@@ -465,7 +477,7 @@ RECOMP_PATCH void func_809DAB78(Boss02* this, PlayState* play) {
             this->unk_01B0.y = -3000.0f * sGiantModeScaleFactor;
             if (sIsInGiantMode) this->unk_01B0.y += 3150.0f;
             this->unk_01B0.z = Rand_CenteredFloat(500.0f * sGiantModeScaleFactor) + this->actor.world.pos.z;
-            ApplyRedTargetBias(this, &this->unk_01B0, player, (this->unk_0144 == 20) ? redAimBias : 0.0f);
+            ApplyRedTargetBias(this, &this->unk_01B0, player, (this->unk_0144 == 20) ? redAimBias : 0.0f, play);
             ApplyBlueTargetBias(play, this, &this->unk_01B0);
             this->unk_0146[0] = (s16)(150.0f / redAggroMult);
             this->unk_0164 = 0.0f;
@@ -523,7 +535,7 @@ RECOMP_PATCH void func_809DAB78(Boss02* this, PlayState* play) {
                 this->unk_01B0.y = D_809DFA2C[this->unk_1D1A].y;
                 this->unk_01B0.z = D_809DFA2C[this->unk_1D1A].z;
             }
-            ApplyRedTargetBias(this, &this->unk_01B0, player, 0.0f);
+            ApplyRedTargetBias(this, &this->unk_01B0, player, 0.0f, play);
             ApplyBlueTargetBias(play, this, &this->unk_01B0);
         }
         return;
@@ -668,6 +680,10 @@ RECOMP_HOOK("Boss02_Twinmold_Update") void TwinUpdate(Actor* thisx, PlayState* p
 
 	Boss02* this = (Boss02*)thisx;
 	sCanSkipMaskOnCs = true;
-	if (this->actor.colChkInfo.damage > 3) this->actor.colChkInfo.damage = 3;
+    if (this->actor.colChkInfo.damage > 3) this->actor.colChkInfo.damage = 3;
+    // u8 isCutscene;
+    // isCutscene = (play->csCtx.state != 0) || (play->csCtx.state == 10) || (play->csCtx.state == 12) || (this->unk_0144 >= 20);
+    // recomp_printf("CurrentTask: %d\n", this->unk_0144);
+    // recomp_printf("Cutscene: %d\n", isCutscene);
 	// winning (not winning)
 }
