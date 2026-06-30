@@ -13,7 +13,7 @@ This is a mod that allows you to make the game more difficult by buffing all the
 - Additional enemy variants for almost all enemies
 - Improved & new enemy behaviours
 - Additonal config settings for various behaviors and changes
-- Extreme difficulty mode for an even harder expirence
+- Extreme difficulty mode for an even harder experience
 - And more...
 
 ### Writing mods
