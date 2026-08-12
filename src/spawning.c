@@ -6,34 +6,60 @@
 #include "globalobjects_api.h"
 
 #define PLAYER_PRINT_INTERVAL 60
-#define TIME_VARIANCE 500 
+#define TIME_VARIANCE 250 
 
 static uintptr_t sPHEnemy;
+static uintptr_t sWFEnemy;
+static uintptr_t sBOEnemy;
 
 GLOBAL_OBJECTS_CALLBACK_ON_READY void onGlobalObjectsReady() {
     sPHEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_PH);
+    sWFEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_WF);
+    sBOEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_MKK);
 }
-
 
 RECOMP_HOOK_RETURN("Actor_LoadOverlay") void on_return_Actor_LoadOverlay() {
     ActorProfile* profile = recomphook_get_return_ptr();
     if (profile != NULL && profile->id == ACTOR_EN_PEEHAT) {
         profile->objectId = GAMEPLAY_KEEP;
     }
+    if (profile != NULL && profile->id == ACTOR_EN_WF) {
+        profile->objectId = GAMEPLAY_KEEP;
+    }
+    if (profile != NULL && profile->id == ACTOR_EN_MKK) {
+        profile->objectId = GAMEPLAY_KEEP;
+    }
 }
-
 
 RECOMP_HOOK("EnPeehat_Init")
 void PH_Init(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sPHEnemy);
 }
 
+RECOMP_HOOK("EnWf_Init")
+void WF_Init(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sWFEnemy);
+}
+
+RECOMP_HOOK("EnMkk_Init")
+void BO_Init(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sBOEnemy);
+}
 
 RECOMP_HOOK("EnPeehat_Update")
 void PH_Update(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sPHEnemy);
 }
 
+RECOMP_HOOK("EnWf_Update")
+void WF_Update(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sWFEnemy);
+}
+
+RECOMP_HOOK("EnMkk_Update")
+void BO_Update(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sBOEnemy);
+}
 
 RECOMP_HOOK("EnPeehat_Draw")
 void PH_Draw(Actor* thisx, PlayState* play) {
@@ -45,6 +71,26 @@ void PH_Draw(Actor* thisx, PlayState* play) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
+RECOMP_HOOK("EnWf_Draw")
+void WF_Draw(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sWFEnemy);
+
+    OPEN_DISPS(play->state.gfxCtx);
+    gSPSegment(POLY_OPA_DISP++, 0x06, sWFEnemy);
+    gSPSegment(POLY_XLU_DISP++, 0x06, sWFEnemy);
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+RECOMP_HOOK("EnMkk_Draw")
+void BO_Draw(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sBOEnemy);
+
+    OPEN_DISPS(play->state.gfxCtx);
+    gSPSegment(POLY_OPA_DISP++, 0x06, sBOEnemy);
+    gSPSegment(POLY_XLU_DISP++, 0x06, sBOEnemy);
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
 typedef enum {
     NORMAL,
     HARD,
@@ -53,7 +99,7 @@ typedef enum {
 } SpawnDifficulty;
 
 typedef struct {
-    const char* spawnId; // It's funny, but not really useful for other mods, see line 143 for the real ID's
+    const char* spawnId; // It's funny, but not really useful for other mods, see spawn system for the real ID's
     s16 sceneId;
     s8 roomNum;
     Vec3f pos;
@@ -83,17 +129,52 @@ static EnemySpawn sEnemySpawns[] = {
 
         // Leevers
 
+     {"tf_leever_1", SCENE_00KEIKOKU, 0, {-3423.05f, -296.53f, 1263.18f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, NORMAL, 0, 0},
+     {"tf_leever_2", SCENE_00KEIKOKU, 0, {-3998.87f, -303.58f, 1129.72f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, NORMAL, 0, 0},
+     {"tf_leever_3", SCENE_00KEIKOKU, 0, {-5164.51f, -281.0f, -420.34f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, HARD, 0, 0},
+     {"tf_leever_4", SCENE_00KEIKOKU, 0, {-3367.45f, -281.0f, -1791.78f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, NORMAL, 0, 0},
+     {"tf_leever_5", SCENE_00KEIKOKU, 0, {-3919.20f, -281.0f, -1827.81f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, NORMAL, 0, 0},
+     {"tf_leever_6", SCENE_00KEIKOKU, 0, {-5519.02f, -281.0f, -626.59f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, NORMAL, 0, 0},
+     {"tf_leever_7", SCENE_00KEIKOKU, 0, {-6016.58f, -281.0f, -436.55f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, NORMAL, 0, 0},
+     {"tf_leever_8", SCENE_00KEIKOKU, 0, {-6697.46f, -356.30f, -682.33f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, NORMAL, 0, 0},
+
         // Bombchus
 
         // Dodongos
 
         // Wolfos
 
-        // Boes
+     {"tf_wolfos_1", SCENE_00KEIKOKU, 0, {-3342.42f, 48.45f, 153.84f}, 0, 0, ACTOR_EN_WF, 0x0000, HARD, 0, 0},
+     {"tf_wolfos_2", SCENE_00KEIKOKU, 0, {-3342.42f, 48.45f, -959.24f}, 0, 0, ACTOR_EN_WF, 0x0000, HARD, 0, 0},
+     {"tf_wolfos_3", SCENE_00KEIKOKU, 0, {3166.50f, 40.15f, -2453.21f}, 0, 0, ACTOR_EN_WF, 0x0000, HARD, 0, 0},
+
+        // Boes (Currently crashes when killed)
+
+     //{"tf_boe_1", SCENE_00KEIKOKU, 0, {2653.50f, 328.0f, 1753.45f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, 0, 0},
+     //{"tf_boe_2", SCENE_00KEIKOKU, 0, {3280.52f, 328.0f, 1038.16f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, 0, 0},
 };
 
 #define ENEMY_SPAWN_COUNT (sizeof(sEnemySpawns) / sizeof(EnemySpawn))
-static bool EnemiesSpawned = false;
+
+// Has it spawned already
+static bool IsEnemySpawned(PlayState* play, size_t spawnIndex) {
+    s16 customId = (s16)(spawnIndex + 10000);
+
+    for (int i = 0; i < ACTORCAT_MAX; i++) {
+        Actor* actor = play->actorCtx.actorLists[i].first;
+
+        while (actor != NULL) {
+            if (actor->home.rot.z == customId &&
+                actor->id == sEnemySpawns[spawnIndex].actorId) {
+                return true;
+            }
+
+            actor = actor->next;
+        }
+    }
+
+    return false;
+}
 
 // Spawning Enemies
 static void SpawnEnemies(PlayState* play) {
@@ -117,22 +198,28 @@ static void SpawnEnemies(PlayState* play) {
 
         switch (sEnemySpawns[i].difficulty) {
         case NORMAL:
-                shouldSpawn = true;
+            shouldSpawn = true;
             break;
+
         case HARD:
             if (Difficulty == 1) {
                 shouldSpawn = true;
             }
             break;
+
         case BOTH:
             shouldSpawn = true;
             break;
+
         case RANDOM:
             if (gSaveContext.save.day == sEnemySpawns[i].day) {
                 u16 currentTime = gSaveContext.save.time;
                 u16 targetTime = sEnemySpawns[i].time;
 
-                u16 timeDiff = (currentTime > targetTime) ? (currentTime - targetTime) : (targetTime - currentTime);
+                u16 timeDiff =
+                    (currentTime > targetTime)
+                    ? (currentTime - targetTime)
+                    : (targetTime - currentTime);
 
                 if (timeDiff <= TIME_VARIANCE) {
                     shouldSpawn = true;
@@ -141,25 +228,28 @@ static void SpawnEnemies(PlayState* play) {
             break;
         }
 
-        if (shouldSpawn) {
-            Actor* spawnedEnemy = Actor_Spawn(
-                &play->actorCtx,
-                play,
-                sEnemySpawns[i].actorId,
-                sEnemySpawns[i].pos.x,
-                sEnemySpawns[i].pos.y,
-                sEnemySpawns[i].pos.z,
-                sEnemySpawns[i].rotX,
-                sEnemySpawns[i].rotY,
-                0,
-                sEnemySpawns[i].params
-            );
+        if (!shouldSpawn)
+            continue;
 
-            // Custom ID for enemy using Z Rotation (sadly it's not text lol) (but the ID's are in the 10000s, so the first peahat is 10000 and the second is 10001)
-            // Maybe in the future I'll move it over to use the actual text but for now it's purely for fun (I don't know enough or I forgot about how I could share that info to other mods lol feel free to help)
-            if (spawnedEnemy != NULL) {
-                spawnedEnemy->world.rot.z = (s16)(i + 10000);
-            }
+        if (IsEnemySpawned(play, i))
+            continue;
+
+        Actor* spawnedEnemy = Actor_Spawn(
+            &play->actorCtx,
+            play,
+            sEnemySpawns[i].actorId,
+            sEnemySpawns[i].pos.x,
+            sEnemySpawns[i].pos.y,
+            sEnemySpawns[i].pos.z,
+            sEnemySpawns[i].rotX,
+            sEnemySpawns[i].rotY,
+            0,
+            sEnemySpawns[i].params
+        );
+
+        if (spawnedEnemy != NULL) {
+            // ID Given
+            spawnedEnemy->home.rot.z = (s16)(i + 10000);
         }
     }
 }
@@ -184,7 +274,7 @@ static void PrintPlayerPosition(PlayState* play) {
             Actor* actor = play->actorCtx.actorLists[i].first;
             while (actor != NULL) {
 
-                s16 index = actor->world.rot.z - 10000;
+                s16 index = actor->home.rot.z - 10000;
 
                 if (index >= 0 && index < (s16)ENEMY_SPAWN_COUNT) {
                     const char* customId = sEnemySpawns[index].spawnId;
@@ -206,20 +296,10 @@ static void PrintPlayerPosition(PlayState* play) {
 // Hooking into Play_Update
 RECOMP_HOOK("Play_Update")
 void EnemySpawner_PlayUpdateHook(PlayState* play) {
-    static s16 lastScene = -1;
-    static s16 lastRoom = -1;
-
     int AllowedSpawn = (int)recomp_get_config_double("enemy_spawner");
 
-    if (lastScene != play->sceneId || lastRoom != play->roomCtx.curRoom.num) {
-        EnemiesSpawned = false;
-        lastScene = play->sceneId;
-        lastRoom = play->roomCtx.curRoom.num;
-    }
-
-    if (!EnemiesSpawned && AllowedSpawn == 0) {
+    if (AllowedSpawn == 0) {
         SpawnEnemies(play);
-        EnemiesSpawned = true;
     }
 
     PrintPlayerPosition(play);
