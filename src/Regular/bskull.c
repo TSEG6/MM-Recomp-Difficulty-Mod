@@ -6,19 +6,14 @@
 #include "overlays/actors/ovl_En_Clear_Tag/z_en_clear_tag.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-RECOMP_HOOK("EnSt_Init") void WeirdRoute(Actor* thisx, PlayState* play) {
-    thisx->world.rot.z = thisx->world.rot.y;
-}
-
 // Slightly more rare turn around and much faster turn back to player
 RECOMP_PATCH s16 func_808A5BEC(EnSt* this) {
     s16 ret;
+
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
-    s16 originalYaw = this->actor.world.rot.z;
-
     if (!(this->unk_18C & 4) || (this->actor.xzDistToPlayer > 180.0f)) {
-        ret = originalYaw;
+        ret = this->actor.home.rot.y;
     }
     else {
         ret = this->actor.yawTowardsPlayer;

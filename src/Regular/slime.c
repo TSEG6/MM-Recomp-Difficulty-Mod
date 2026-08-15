@@ -7,11 +7,10 @@
 #include "z_en_slime.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
+// doing funnies with home rotation so I can skip doing global variables in case you were curious
+
 #define ICE_BLOCK_TIMER_MAX 254
 #define ICE_BLOCK_UNUSED (ICE_BLOCK_TIMER_MAX + 1)
-#define SLIME_REVIVE_FLAG       0x8000
-#define SLIME_REVIVE_COUNTER    0x4000
-#define SLIME_BASE_HEALTH       1
 
 void EnSlime_Damaged(EnSlime* this, PlayState* play);
 void EnSlime_Revive(EnSlime* this, PlayState* play);
@@ -68,14 +67,16 @@ void SlimeBuff(Actor* thisx, PlayState* play) {
     float Distance = 30000.0f;
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
-    this->reviveTime &= 0x3FFF;
+    this->actor.home.rot.x = 0;
+    this->actor.home.rot.y = 0;
+    this->actor.home.rot.z = this->actor.colChkInfo.health;
 
     switch (Difficulty) {
     case 0: {
         Distance = 60000.0f;
         reviveTimeSeconds = 10;
         this->reviveTime = (reviveTimeSeconds * 10) + 100;
-        this->actor.colChkInfo.health = SLIME_BASE_HEALTH * 2;
+        this->actor.colChkInfo.health = this->actor.home.rot.z * 2;
         break;
     }
 
@@ -83,13 +84,13 @@ void SlimeBuff(Actor* thisx, PlayState* play) {
         Distance = 90000.0f;
         reviveTimeSeconds = 5;
         this->reviveTime = (reviveTimeSeconds * 5);
-        this->actor.colChkInfo.health = SLIME_BASE_HEALTH * 4;
+        this->actor.colChkInfo.health = this->actor.home.rot.z * 4;
         break;
     }
 
     default: {
         Distance = 30000.0f;
-        this->actor.colChkInfo.health = SLIME_BASE_HEALTH;
+        this->actor.colChkInfo.health = this->actor.home.rot.z;
         break;
     }
     }
@@ -104,36 +105,37 @@ void SlimeBuff(Actor* thisx, PlayState* play) {
 
 // Weirdly done health related fixes
 RECOMP_HOOK("EnSlime_SetupRevive") void ReviveBuff(EnSlime* this) {
-    this->reviveTime |= SLIME_REVIVE_FLAG;
+    this->actor.home.rot.y = 1;
 }
 
 RECOMP_HOOK("EnSlime_Revive") void ReviveBuff2(EnSlime* this) {
-    this->reviveTime |= SLIME_REVIVE_FLAG;
+    this->actor.home.rot.y = 1;
 }
 
 // Random chance for it's home to move around & health buffs
 RECOMP_HOOK("EnSlime_Update") void ReviveBuffFix(EnSlime* this) {
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
-    if (this->reviveTime & SLIME_REVIVE_FLAG) {
-        if (!(this->reviveTime & SLIME_REVIVE_COUNTER)) {
-            this->reviveTime |= SLIME_REVIVE_COUNTER;
-        }
-        else if (this->actor.colChkInfo.health > 0) {
-            switch (Difficulty) {
-            case 0:
-                this->actor.colChkInfo.health = SLIME_BASE_HEALTH * 2;
-                break;
+    if (this->actor.home.rot.y) {
+        this->actor.home.rot.x++;
 
-            case 1:
-                this->actor.colChkInfo.health = SLIME_BASE_HEALTH * 5;
-                break;
+        if (this->actor.home.rot.x >= 2) {
+            if (this->actor.colChkInfo.health > 0) {
+                switch (Difficulty) {
+                case 0:
+                    this->actor.colChkInfo.health = this->actor.home.rot.z * 2;
+                    break;
 
-            default:
-                break;
+                case 1:
+                    this->actor.colChkInfo.health = this->actor.home.rot.z * 5;
+                    break;
+
+                default:
+                    break;
+                }
+                this->actor.home.rot.x = 0;
+                this->actor.home.rot.y = 0;
             }
-
-            this->reviveTime &= ~(SLIME_REVIVE_FLAG | SLIME_REVIVE_COUNTER);
         }
     }
 

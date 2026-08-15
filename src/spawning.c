@@ -4,6 +4,7 @@
 #include "recompconfig.h"
 #include "recomputils.h"
 #include "globalobjects_api.h"
+#include "z64recomp_api.h"
 
 #define PLAYER_PRINT_INTERVAL 60 // Can cause lag in termina field, Gaster takes a moment to find all the enemies
 
@@ -11,6 +12,34 @@ static uintptr_t sPHEnemy;
 static uintptr_t sWFEnemy;
 static uintptr_t sBOEnemy;
 static uintptr_t sCHEnemy;
+
+static ActorExtensionId sDifficultyModEnemyId;
+
+RECOMP_CALLBACK("*", recomp_on_init) void DifficultyMod_OnRecompInit(void) {
+    sDifficultyModEnemyId = z64recomp_extend_actor_all(sizeof(s16));
+}
+
+RECOMP_EXPORT s16 DifficultyMod_GetEnemyId(Actor* actor) {
+    s16* customId;
+
+    if (actor == NULL) {
+        return 0;
+    }
+
+    customId = z64recomp_get_extended_actor_data(actor, sDifficultyModEnemyId);
+    return *customId;
+}
+
+static void DifficultyMod_SetEnemyId(Actor* actor, s16 customId) {
+    s16* actorCustomId;
+
+    if (actor == NULL) {
+        return;
+    }
+
+    actorCustomId = z64recomp_get_extended_actor_data(actor, sDifficultyModEnemyId);
+    *actorCustomId = customId;
+}
 
 GLOBAL_OBJECTS_CALLBACK_ON_READY void onGlobalObjectsReady() {
     sPHEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_PH);
@@ -159,6 +188,7 @@ static EnemySpawn sEnemySpawns[] = {
     {"tf_peahat_3", SCENE_00KEIKOKU, 0, {-1977.13f, -222.0f, 4232.04f}, 0, 0, ACTOR_EN_PEEHAT, 0x0000, HARD, ALWAYS},
     {"tf_peahat_4", SCENE_00KEIKOKU, 0, {-2590.39f, -222.0f, 2852.47f}, 0, 0, ACTOR_EN_PEEHAT, 0x0000, HARD, ALWAYS},
     {"tf_peahat_5", SCENE_00KEIKOKU, 0, {3168.22f, 206.45f, 719.55f}, 0, 0, ACTOR_EN_PEEHAT, 0x0000, HARD, ALWAYS},
+    {"tf_peahat_6", SCENE_00KEIKOKU, 0, {-1710.30f, -90.49f, 2032.69f}, 0, 0, ACTOR_EN_PEEHAT, 0x0000, HARD, ALWAYS},
 
         // Chuchus
 
@@ -208,6 +238,18 @@ static EnemySpawn sEnemySpawns[] = {
     {"tf_eeno_2", SCENE_00KEIKOKU, 0, {-419.39f, 48.0f, -3319.45f}, 0, 0, ACTOR_EN_SNOWMAN, 0x0000, HARD, NIGHT},
     {"tf_eeno_3", SCENE_00KEIKOKU, 0, {1678.83f, -142.11f, -3415.26f}, 0, 0, ACTOR_EN_SNOWMAN, 0x0000, NORMAL, NIGHT},
 
+        // Boes (Still crashes when killed :( )
+
+    //{"tf_boe_1", SCENE_00KEIKOKU, 0, {2653.50f, 328.0f, 1753.45f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, NIGHT},
+    //{"tf_boe_2", SCENE_00KEIKOKU, 0, {3280.52f, 328.0f, 1038.16f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, NIGHT},
+
+    // Real Bombchu
+
+    {"tf_rbombchu_1", SCENE_00KEIKOKU, 0, {2981.17f, 49.47f, 68.98f}, 0, 0, ACTOR_EN_RAT, 0x0000, NORMAL, DAY},
+    {"tf_rbombchu_2", SCENE_00KEIKOKU, 0, {3386.22f, 51.04f, -723.74f}, 0, 0, ACTOR_EN_RAT, 0x0000, NORMAL, DAY},
+    {"tf_rbombchu_3", SCENE_00KEIKOKU, 0, {2841.90f, 2.50f, -2446.90f}, 0, 0, ACTOR_EN_RAT, 0x0000, NORMAL, DAY},
+    {"tf_rbombchu_4", SCENE_00KEIKOKU, 0, {1932.99f, -77.12f, -2580.33f}, 0, 0, ACTOR_EN_RAT, 0x0000, NORMAL, DAY},
+
 };
 
 #define ENEMY_SPAWN_COUNT (sizeof(sEnemySpawns) / sizeof(EnemySpawn))
@@ -232,7 +274,7 @@ static void CheckEnemyDeaths(PlayState* play) {
         Actor* actor = play->actorCtx.actorLists[i].first;
 
         while (actor != NULL) {
-            s16 index = actor->home.rot.y - 100;
+            s16 index = DifficultyMod_GetEnemyId(actor) - 100;
 
             if (index >= 0 && index < (s16)ENEMY_SPAWN_COUNT) {
                 if (actor->id == sEnemySpawns[index].actorId) {
@@ -251,7 +293,7 @@ static void CheckEnemyDeaths(PlayState* play) {
 RECOMP_HOOK("Actor_Kill")
 void EnemySpawner_OnActorKill(Actor* actor) {
     if (actor != NULL) {
-        s16 index = actor->home.rot.y - 100;
+        s16 index = DifficultyMod_GetEnemyId(actor) - 100;
 
         if (index >= 0 && index < (s16)ENEMY_SPAWN_COUNT) {
             if (actor->id == sEnemySpawns[index].actorId) {
@@ -271,7 +313,7 @@ static bool IsEnemySpawned(PlayState* play, size_t spawnIndex) {
         Actor* actor = play->actorCtx.actorLists[i].first;
 
         while (actor != NULL) {
-            if (actor->home.rot.y == customId &&
+            if (DifficultyMod_GetEnemyId(actor) == customId &&
                 actor->id == sEnemySpawns[spawnIndex].actorId) {
                 return true;
             }
@@ -360,8 +402,8 @@ static void SpawnEnemies(PlayState* play) {
         );
 
         if (spawnedEnemy != NULL) {
-            // The custom ID (use this) (Not a fan of using world.rot.z but it's the only thing I've found to not break anything)
-            spawnedEnemy->home.rot.y = (s16)(i + 100);
+            // The custom ID (use this)
+            DifficultyMod_SetEnemyId(spawnedEnemy, (s16)(i + 100));
         }
     }
 }
@@ -386,7 +428,7 @@ static void PrintPlayerPosition(PlayState* play) {
             Actor* actor = play->actorCtx.actorLists[i].first;
             while (actor != NULL) {
 
-                s16 index = actor->home.rot.y - 100;
+                s16 index = DifficultyMod_GetEnemyId(actor) - 100;
 
                 if (index >= 0 && index < (s16)ENEMY_SPAWN_COUNT) {
                     const char* customId = sEnemySpawns[index].spawnId;
@@ -397,7 +439,7 @@ static void PrintPlayerPosition(PlayState* play) {
                         actor->world.pos.x,
                         actor->world.pos.y,
                         actor->world.pos.z,
-                        actor->home.rot.y
+                        DifficultyMod_GetEnemyId(actor)
                     );
                 }
                 actor = actor->next;

@@ -7,6 +7,8 @@
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 #include "eztr_api.h"
 
+// doing funnies with home rotation so I can skip doing global variables in case you were curious
+
 void EnBb_SetupFlyIdle(EnBb* this);
 void EnBb_Attack(EnBb* this, PlayState* play);
 void EnBb_Down(EnBb* this, PlayState* play);
@@ -103,44 +105,42 @@ RECOMP_HOOK_RETURN("EnBb_Init") void BBBuff(Actor* thisx, PlayState* play) {
     EnBb* this = (EnBb*)thisx;
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
-    float attackDist = 400.0f;
+    s16 baseHealth = this->actor.colChkInfo.health;
 
     switch (Difficulty) {
     case 0:
-        attackDist = 350.0f;
+        this->attackRange = 400.0f;
         break;
 
     case 1:
-        attackDist = 500.0f;
+        this->attackRange = 800.0f;
         break;
 
     default:
         break;
     }
-
-    this->attackRange = attackDist;
 }
 
 // Randomly selects a variant to use
 RECOMP_HOOK("EnBb_Init") void SetType(Actor* thisx, PlayState* play) {
+
     EnBb* this = (EnBb*)thisx;
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
-    s16 variantType = 0;
-    s16 healthMultiplier = 1;
-
     if (Difficulty == 1) {
-        variantType = (s16)(Rand_ZeroOne() * 3.0f);
-        healthMultiplier = 3;
-    }
-    else if (Difficulty == 0) {
-        healthMultiplier = 2;
-    }
 
-    this->variant = variantType;
+        if (this->actor.home.rot.x == 0) {
+            if (Difficulty == 1) {
+                this->actor.home.rot.z = (Rand_ZeroOne() * 3.0f);
+            }
+            else {
+                this->actor.home.rot.z = 0;
+            }
 
-    if (Difficulty <= 1) {
-        this->actor.colChkInfo.health = (variantType > 0 ? variantType : 1) * healthMultiplier;
+            this->variant = this->actor.home.rot.z;
+
+            this->actor.home.rot.x = 1;
+        }
     }
 }
 
@@ -250,6 +250,29 @@ RECOMP_HOOK("EnBb_Update") void Updating(Actor* thisx, PlayState* play) {
         }
     }
 
+    if (this->actor.home.rot.y & 1) {
+        this->actor.home.rot.x++;
+
+        if (this->actor.home.rot.x >= 5) {
+            switch (Difficulty) {
+            case 0:
+                this->attackRange = 350.0f;
+                this->actor.colChkInfo.health = this->actor.home.rot.z * 2;
+                break;
+
+            case 1:
+                this->attackRange = 500.0f;
+                this->actor.colChkInfo.health = this->actor.home.rot.z * 3;
+                break;
+
+            default:
+                break;
+            }
+
+            this->actor.home.rot.x = 0;
+            this->actor.home.rot.y &= ~1;
+        }
+    }
     switch (Difficulty) {
     case 0:
         this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
