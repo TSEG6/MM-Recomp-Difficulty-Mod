@@ -5,7 +5,7 @@
 #include "recomputils.h"
 #include "globalobjects_api.h"
 
-#define PLAYER_PRINT_INTERVAL 60
+#define PLAYER_PRINT_INTERVAL 60 // Can cause lag in termina field, Gaster takes a moment to find all the enemies
 
 static uintptr_t sPHEnemy;
 static uintptr_t sWFEnemy;
@@ -17,6 +17,8 @@ GLOBAL_OBJECTS_CALLBACK_ON_READY void onGlobalObjectsReady() {
     sWFEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_WF);
     sBOEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_MKK);
     sCHEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_SLIME);
+    // Add Bubbles
+    // Add Eeno
 }
 
 RECOMP_HOOK_RETURN("Actor_LoadOverlay") void on_return_Actor_LoadOverlay() {
@@ -124,7 +126,6 @@ void CH_Draw(Actor* thisx, PlayState* play) {
 typedef enum {
     NORMAL,
     HARD,
-    BOTH
 } SpawnDifficulty;
 
 typedef enum {
@@ -154,9 +155,9 @@ static EnemySpawn sEnemySpawns[] = {
         // Peahats
 
     {"tf_peahat_1", SCENE_00KEIKOKU, 0, {1087.20f, -89.48f, 1734.11f}, 0, 0, ACTOR_EN_PEEHAT, 0x0000, HARD, ALWAYS},
-    {"tf_peahat_2", SCENE_00KEIKOKU, 0, {725.89f, -222.00f, 3645.10f}, 0, 0, ACTOR_EN_PEEHAT, 0x0000, HARD, ALWAYS},
-    {"tf_peahat_3", SCENE_00KEIKOKU, 0, {-1977.13f, -222.00f, 4232.04f}, 0, 0, ACTOR_EN_PEEHAT, 0x0000, HARD, ALWAYS},
-    {"tf_peahat_4", SCENE_00KEIKOKU, 0, {-2590.39f, -222.00f, 2852.47f}, 0, 0, ACTOR_EN_PEEHAT, 0x0000, HARD, ALWAYS},
+    {"tf_peahat_2", SCENE_00KEIKOKU, 0, {725.89f, -222.0f, 3645.10f}, 0, 0, ACTOR_EN_PEEHAT, 0x0000, HARD, ALWAYS},
+    {"tf_peahat_3", SCENE_00KEIKOKU, 0, {-1977.13f, -222.0f, 4232.04f}, 0, 0, ACTOR_EN_PEEHAT, 0x0000, HARD, ALWAYS},
+    {"tf_peahat_4", SCENE_00KEIKOKU, 0, {-2590.39f, -222.0f, 2852.47f}, 0, 0, ACTOR_EN_PEEHAT, 0x0000, HARD, ALWAYS},
     {"tf_peahat_5", SCENE_00KEIKOKU, 0, {3168.22f, 206.45f, 719.55f}, 0, 0, ACTOR_EN_PEEHAT, 0x0000, HARD, ALWAYS},
 
         // Chuchus
@@ -176,11 +177,15 @@ static EnemySpawn sEnemySpawns[] = {
     {"tf_leever_5", SCENE_00KEIKOKU, 0, {-3919.20f, -281.0f, -1827.81f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, NORMAL, ALWAYS},
     {"tf_leever_6", SCENE_00KEIKOKU, 0, {-5519.02f, -281.0f, -626.59f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, NORMAL, ALWAYS},
     {"tf_leever_7", SCENE_00KEIKOKU, 0, {-6016.58f, -281.0f, -436.55f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, NORMAL, ALWAYS},
-    {"tf_leever_8", SCENE_00KEIKOKU, 0, {-6697.46f, -356.30f, -682.33f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, NORMAL, ALWAYS},
-
-        // Bombchus
+    {"tf_leever_8", SCENE_00KEIKOKU, 0, {-6697.46f, -356.3f, -682.33f}, 0, 0, ACTOR_EN_NEO_REEBA , 0x0000, NORMAL, ALWAYS},
 
         // Dodongos
+
+    {"tf_dodongo_1", SCENE_00KEIKOKU, 0, {5.97f, -260.82f, -3744.91f}, 0, 0, ACTOR_EN_DODONGO , 0x0001, HARD, DAY},
+    {"tf_dodongo_2", SCENE_00KEIKOKU, 0, {-328.10f, 48.0f, -4447.87f}, 0, 0, ACTOR_EN_DODONGO , 0x0000, HARD, DAY},
+    {"tf_dodongo_3", SCENE_00KEIKOKU, 0, {-2129.18f, -281.0f, -4330.03f}, 0,-200, ACTOR_EN_DODONGO , 0x0001, HARD, DAY},
+    {"tf_dodongo_4", SCENE_00KEIKOKU, 0, {-1934.86f, -281.0f, -3214.58f}, 0, 0, ACTOR_EN_DODONGO , 0x0001, HARD, DAY},
+    {"tf_dodongo_5", SCENE_00KEIKOKU, 0, {-2949.36f, -281.0f, -2569.73f}, 0, -13178, ACTOR_EN_DODONGO , 0x0000, NORMAL, DAY},
 
         // Wolfos
 
@@ -188,10 +193,21 @@ static EnemySpawn sEnemySpawns[] = {
     {"tf_wolfos_2", SCENE_00KEIKOKU, 0, {-3342.42f, 48.45f, -959.24f}, 0, 0, ACTOR_EN_WF, 0x0000, HARD, NIGHT},
     {"tf_wolfos_3", SCENE_00KEIKOKU, 0, {3166.50f, 40.15f, -2453.21f}, 0, 0, ACTOR_EN_WF, 0x0000, HARD, ALWAYS},
 
-        // Boes (when killed they crash the game, it's quite funny) (commented out until I figure out why)
+        // Bubbles
 
-    //{"tf_boe_1", SCENE_00KEIKOKU, 0, {2653.50f, 328.0f, 1753.45f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, NIGHT},
-    //{"tf_boe_2", SCENE_00KEIKOKU, 0, {3280.52f, 328.0f, 1038.16f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, NIGHT},
+    {"tf_bubble_1", SCENE_00KEIKOKU, 0, {-2286.17f, -77.0f, 1734.95f}, 0, 0, ACTOR_EN_BB, 0x0000, NORMAL, NIGHT},
+    {"tf_bubble_2", SCENE_00KEIKOKU, 0, {526.18f, -125.38f, 2334.78f}, 0, 0, ACTOR_EN_BB, 0x0000, NORMAL, NIGHT},
+    {"tf_bubble_3", SCENE_00KEIKOKU, 0, {3323.15f, 219.0f, 1280.21f}, 0, 0, ACTOR_EN_BB, 0x0000, NORMAL, NIGHT},
+    {"tf_bubble_4", SCENE_00KEIKOKU, 0, {1557.62f, 48.0f, -2040.0f}, 0, 0, ACTOR_EN_BB, 0x0000, NORMAL, NIGHT},
+    {"tf_bubble_5", SCENE_00KEIKOKU, 0, {-2232.35f, 48.0f, -2114.93f}, 0, 0, ACTOR_EN_BB, 0x0000, NORMAL, NIGHT},
+    {"tf_bubble_6", SCENE_00KEIKOKU, 0, {-3584.28f, -251.12f, 2431.98f}, 0, 0, ACTOR_EN_BB, 0x0000, NORMAL, NIGHT},
+
+        // Eenos
+
+    {"tf_eeno_1", SCENE_00KEIKOKU, 0, {-320.72f, 48.0f, -4335.97f}, 0, 0, ACTOR_EN_SNOWMAN, 0x0001, NORMAL, NIGHT},
+    {"tf_eeno_2", SCENE_00KEIKOKU, 0, {-419.39f, 48.0f, -3319.45f}, 0, 0, ACTOR_EN_SNOWMAN, 0x0000, HARD, NIGHT},
+    {"tf_eeno_3", SCENE_00KEIKOKU, 0, {1678.83f, -142.11f, -3415.26f}, 0, 0, ACTOR_EN_SNOWMAN, 0x0000, NORMAL, NIGHT},
+
 };
 
 #define ENEMY_SPAWN_COUNT (sizeof(sEnemySpawns) / sizeof(EnemySpawn))
@@ -216,7 +232,7 @@ static void CheckEnemyDeaths(PlayState* play) {
         Actor* actor = play->actorCtx.actorLists[i].first;
 
         while (actor != NULL) {
-            s16 index = actor->world.rot.z - 100;
+            s16 index = actor->home.rot.y - 100;
 
             if (index >= 0 && index < (s16)ENEMY_SPAWN_COUNT) {
                 if (actor->id == sEnemySpawns[index].actorId) {
@@ -235,7 +251,7 @@ static void CheckEnemyDeaths(PlayState* play) {
 RECOMP_HOOK("Actor_Kill")
 void EnemySpawner_OnActorKill(Actor* actor) {
     if (actor != NULL) {
-        s16 index = actor->world.rot.z - 100;
+        s16 index = actor->home.rot.y - 100;
 
         if (index >= 0 && index < (s16)ENEMY_SPAWN_COUNT) {
             if (actor->id == sEnemySpawns[index].actorId) {
@@ -255,7 +271,7 @@ static bool IsEnemySpawned(PlayState* play, size_t spawnIndex) {
         Actor* actor = play->actorCtx.actorLists[i].first;
 
         while (actor != NULL) {
-            if (actor->world.rot.z == customId &&
+            if (actor->home.rot.y == customId &&
                 actor->id == sEnemySpawns[spawnIndex].actorId) {
                 return true;
             }
@@ -322,10 +338,6 @@ static void SpawnEnemies(PlayState* play) {
                 shouldSpawn = true;
             }
             break;
-
-        case BOTH:
-            shouldSpawn = true;
-            break;
         }
 
         if (!shouldSpawn)
@@ -349,7 +361,7 @@ static void SpawnEnemies(PlayState* play) {
 
         if (spawnedEnemy != NULL) {
             // The custom ID (use this) (Not a fan of using world.rot.z but it's the only thing I've found to not break anything)
-            spawnedEnemy->world.rot.z = (s16)(i + 100);
+            spawnedEnemy->home.rot.y = (s16)(i + 100);
         }
     }
 }
@@ -374,7 +386,7 @@ static void PrintPlayerPosition(PlayState* play) {
             Actor* actor = play->actorCtx.actorLists[i].first;
             while (actor != NULL) {
 
-                s16 index = actor->world.rot.z - 100;
+                s16 index = actor->home.rot.y - 100;
 
                 if (index >= 0 && index < (s16)ENEMY_SPAWN_COUNT) {
                     const char* customId = sEnemySpawns[index].spawnId;
@@ -385,7 +397,7 @@ static void PrintPlayerPosition(PlayState* play) {
                         actor->world.pos.x,
                         actor->world.pos.y,
                         actor->world.pos.z,
-                        actor->world.rot.z
+                        actor->home.rot.y
                     );
                 }
                 actor = actor->next;
@@ -412,12 +424,6 @@ void EnemySpawner_PlayUpdateHook(PlayState* play) {
     }
 
     CheckEnemyDeaths(play);
-
-    int AllowedSpawn = (int)recomp_get_config_double("enemy_spawner");
-
-    if (AllowedSpawn == 0) {
-        SpawnEnemies(play);
-    }
-
+    SpawnEnemies(play);
     PrintPlayerPosition(play);
 }
