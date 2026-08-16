@@ -54,11 +54,11 @@ RECOMP_PATCH void func_808BDA4C(EnDekunuts* this, PlayState* play) {
 
     if (Difficulty == 1) {
         projectileSpeed = 20.0f;
-        predictFactor = 0.9f;
+        predictFactor = 0.8f;
     }
     else {
         projectileSpeed = 13.0f;
-        predictFactor = 0.6f;
+        predictFactor = 0.4f;
     }
 
     f32 dx = player->actor.world.pos.x - this->actor.world.pos.x;
@@ -68,7 +68,7 @@ RECOMP_PATCH void func_808BDA4C(EnDekunuts* this, PlayState* play) {
 
     targetPos.x = player->actor.world.pos.x + (player->actor.velocity.x * travelTime * predictFactor);
     targetPos.z = player->actor.world.pos.z + (player->actor.velocity.z * travelTime * predictFactor);
-    targetPos.y = player->actor.world.pos.y + 40.0f;
+    targetPos.y = player->actor.world.pos.y + 40.0f + (player->actor.velocity.y * travelTime * predictFactor);
 
     s16 targetYaw = Math_Vec3f_Yaw(&this->actor.world.pos, &targetPos);
 
@@ -77,7 +77,7 @@ RECOMP_PATCH void func_808BDA4C(EnDekunuts* this, PlayState* play) {
     if (this->actor.params == ENDEKUNUTS_GET_FF00_2) {
 
         pitch = Actor_WorldPitchTowardPoint(&this->actor, &targetPos);
-        pitch = CLAMP(pitch, -0x3800, -0x2000);
+        pitch = CLAMP(pitch, -0x3800, 0);
 
         if (this->skelAnime.curFrame < 7.0f) {
             Math_ScaledStepToS(&this->actor.world.rot.x, pitch, 0x800);
