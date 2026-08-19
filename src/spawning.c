@@ -12,6 +12,8 @@ static uintptr_t sPHEnemy;
 static uintptr_t sWFEnemy;
 static uintptr_t sBOEnemy;
 static uintptr_t sCHEnemy;
+static uintptr_t sBBEnemy;
+static uintptr_t sIRKEnemy;
 
 static ActorExtensionId sDifficultyModEnemyId;
 
@@ -46,7 +48,8 @@ GLOBAL_OBJECTS_CALLBACK_ON_READY void onGlobalObjectsReady() {
     sWFEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_WF);
     sBOEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_MKK);
     sCHEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_SLIME);
-    // Add Bubbles
+    sBBEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_BB);
+    sIRKEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_IK);
     // Add Eeno
 }
 
@@ -64,6 +67,12 @@ RECOMP_HOOK_RETURN("Actor_LoadOverlay") void on_return_Actor_LoadOverlay() {
     if (profile != NULL && profile->id == ACTOR_EN_SLIME) {
         profile->objectId = GAMEPLAY_KEEP;
     }
+    if (profile != NULL && profile->id == ACTOR_EN_BB) {
+        profile->objectId = GAMEPLAY_KEEP;
+    }
+    /*if (profile != NULL && profile->id == ACTOR_EN_IK) {
+        profile->objectId = GAMEPLAY_KEEP;
+    }*/
 }
 
 // GO Init
@@ -88,6 +97,16 @@ void CH_Init(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sCHEnemy);
 }
 
+RECOMP_HOOK("EnBb_Init")
+void BB_Init(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sBBEnemy);
+}
+
+/*RECOMP_HOOK("EnIk_Init")
+void IRK_Init(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sIRKEnemy);
+}*/
+
 // GO Update
 
 RECOMP_HOOK("EnPeehat_Update")
@@ -109,6 +128,16 @@ RECOMP_HOOK("EnSlime_Update")
 void CH_Update(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sCHEnemy);
 }
+
+RECOMP_HOOK("EnBb_Update")
+void BB_Update(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sBBEnemy);
+}
+
+/*RECOMP_HOOK("EnIk_Update")
+void IRK_Update(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sIRKEnemy);
+}*/
 
 // GO Draw
 
@@ -151,6 +180,26 @@ void CH_Draw(Actor* thisx, PlayState* play) {
     gSPSegment(POLY_XLU_DISP++, 0x06, sCHEnemy);
     CLOSE_DISPS(play->state.gfxCtx);
 }
+
+RECOMP_HOOK("EnBb_Draw")
+void BB_Draw(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sBBEnemy);
+
+    OPEN_DISPS(play->state.gfxCtx);
+    gSPSegment(POLY_OPA_DISP++, 0x06, sBBEnemy);
+    gSPSegment(POLY_XLU_DISP++, 0x06, sBBEnemy);
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+/*RECOMP_HOOK("EnIk_Draw")
+void IRK_Draw(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sIRKEnemy);
+
+    OPEN_DISPS(play->state.gfxCtx);
+    gSPSegment(POLY_OPA_DISP++, 0x06, sIRKEnemy);
+    gSPSegment(POLY_XLU_DISP++, 0x06, sIRKEnemy);
+    CLOSE_DISPS(play->state.gfxCtx);
+}*/
 
 typedef enum {
     NORMAL,
@@ -243,12 +292,57 @@ static EnemySpawn sEnemySpawns[] = {
     //{"tf_boe_1", SCENE_00KEIKOKU, 0, {2653.50f, 328.0f, 1753.45f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, NIGHT},
     //{"tf_boe_2", SCENE_00KEIKOKU, 0, {3280.52f, 328.0f, 1038.16f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, NIGHT},
 
-    // Real Bombchu
+        // Real Bombchu
 
     {"tf_rbombchu_1", SCENE_00KEIKOKU, 0, {2981.17f, 49.47f, 68.98f}, 0, 0, ACTOR_EN_RAT, 0x0000, NORMAL, DAY},
     {"tf_rbombchu_2", SCENE_00KEIKOKU, 0, {3386.22f, 51.04f, -723.74f}, 0, 0, ACTOR_EN_RAT, 0x0000, NORMAL, DAY},
     {"tf_rbombchu_3", SCENE_00KEIKOKU, 0, {2841.90f, 2.50f, -2446.90f}, 0, 0, ACTOR_EN_RAT, 0x0000, NORMAL, DAY},
     {"tf_rbombchu_4", SCENE_00KEIKOKU, 0, {1932.99f, -77.12f, -2580.33f}, 0, 0, ACTOR_EN_RAT, 0x0000, NORMAL, DAY},
+
+    // Milk Road
+
+        // Bubbles
+
+    {"mr_bubble_1", SCENE_ROMANYMAE, 0, {-3832.08f, 0.0f, 1559.07f}, 0, 0, ACTOR_EN_BB, 0x0000, HARD, NIGHT},
+    {"mr_bubble_2", SCENE_ROMANYMAE, 0, {-4747.68f, 1.0f, 1393.93f}, 0, 0, ACTOR_EN_BB, 0x0000, HARD, NIGHT},
+    {"mr_bubble_3", SCENE_KOEPONARACE, 0, {-1909.58f, -106.0f, -772.07f}, 0, 0, ACTOR_EN_BB, 0x0000, HARD, NIGHT},
+    {"mr_bubble_4", SCENE_KOEPONARACE, 0, {-1872.21f, -116.0f, 4287.50f}, 0, 0, ACTOR_EN_BB, 0x0000, HARD, NIGHT},
+
+        // Chuchus
+
+    {"mr_chuchu_1", SCENE_ROMANYMAE, 0, {-4699.17f, 0.0f, 1197.56f}, 0, -283, ACTOR_EN_SLIME, 0x0002, NORMAL, DAY},
+
+    // Bombers Hideout
+
+        // Big Skulltula
+
+    {"bh_big_skulltula_1", SCENE_TENMON_DAI, 0, {-143.66f, -480.0f, 1127.60f}, 0, 0, ACTOR_EN_ST, 0x0000, NORMAL, ALWAYS},
+    {"bh_big_skulltula_2", SCENE_TENMON_DAI, 0, {271.64f, -480.0f, 1127.60f}, 0, 0, ACTOR_EN_ST, 0x0000, NORMAL, ALWAYS},
+    {"bh_big_skulltula_3", SCENE_TENMON_DAI, 0, {58.59f, -360.0f, 699.12f}, 0, 0, ACTOR_EN_ST, 0x0000, HARD, ALWAYS},
+
+    // Road to Southern Swamp
+
+        // Wolfos
+
+    {"rtss_wolfos_1", SCENE_24KEMONOMITI, 0, {1552.38f, -182.0f, 2242.14f}, 0, 0, ACTOR_EN_WF, 0x0000, NORMAL, NIGHT},
+    {"rtss_wolfos_2", SCENE_24KEMONOMITI, 0, {2195.20f, -182.0f, 2599.52f}, 0, 0, ACTOR_EN_WF, 0x0000, NORMAL, NIGHT},
+
+        // Deku Baba
+
+    {"rtss_dekubaba_1", SCENE_24KEMONOMITI, 0, {2962.98f, -182.0f, 2756.40f}, 0, -13850, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+
+        // Bubbles
+
+    {"rtss_bubble_1", SCENE_24KEMONOMITI, 0, {2701.86f, -182.0f, 2958.06f}, 0, 0, ACTOR_EN_BB, 0x0000, HARD, NIGHT},
+    {"rtss_bubble_2", SCENE_24KEMONOMITI, 0, {536.43f, -237.0f, 2909.57f}, 0, 0, ACTOR_EN_BB, 0x0000, HARD, NIGHT},
+    {"rtss_bubble_3", SCENE_24KEMONOMITI, 0, {516.35f, -237.0f, 3600.84f}, 0, 0, ACTOR_EN_BB, 0x0000, HARD, NIGHT},
+
+        // Chuchus
+
+    {"rtss_chuchu_1", SCENE_24KEMONOMITI, 0, {426.34f, -237.0f, 3270.93f}, 0, -30446, ACTOR_EN_SLIME, 0x0001, NORMAL, ALWAYS},
+    {"rtss_chuchu_2", SCENE_24KEMONOMITI, 0, {699.58f, -182.0f, 1452.88f}, 0, -30408, ACTOR_EN_SLIME, 0x0003, NORMAL, ALWAYS},
+    {"rtss_chuchu_3", SCENE_24KEMONOMITI, 0, {1359.86f, -182.0f, 2387.14f}, 0, 8912, ACTOR_EN_SLIME, 0x0002, NORMAL, ALWAYS},
+    {"rtss_chuchu_4", SCENE_24KEMONOMITI, 0, {2115.71f, -182.0f, 2584.52f}, 0, 12031, ACTOR_EN_SLIME, 0x0002, NORMAL, ALWAYS},
 
 };
 
