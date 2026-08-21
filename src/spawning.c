@@ -344,6 +344,50 @@ static EnemySpawn sEnemySpawns[] = {
     {"rtss_chuchu_3", SCENE_24KEMONOMITI, 0, {1359.86f, -182.0f, 2387.14f}, 0, 8912, ACTOR_EN_SLIME, 0x0002, NORMAL, ALWAYS},
     {"rtss_chuchu_4", SCENE_24KEMONOMITI, 0, {2115.71f, -182.0f, 2584.52f}, 0, 12031, ACTOR_EN_SLIME, 0x0002, NORMAL, ALWAYS},
 
+    // Southern Swamp
+
+        // Deku Baba
+
+    {"ss_dekubaba_1", SCENE_20SICHITAI, 0, {-565.83f, 58.23f, -937.67f}, 0, 7281, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"ss_dekubaba_2", SCENE_20SICHITAI, 0, {497.42f, 6.21f, -539.46f}, 0, -21452, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"ss_dekubaba_3", SCENE_20SICHITAI, 0, {1724.20f, 11.50f, -151.56f}, 0, -4343, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"ss_dekubaba_4", SCENE_20SICHITAI, 2, {3361.14f, 38.88f, -293.75f}, 0, -25868, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"ss_dekubaba_5", SCENE_20SICHITAI, 2, {3232.96f, 12.42f, -1646.05f}, 0, 4552, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"ss_dekubaba_6", SCENE_20SICHITAI, 2, {4203.39f, 21.64f, -1542.03f}, 0, -10995, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"ss_dekubaba_7", SCENE_20SICHITAI, 1, {-996.03f, 20.20f, 3726.11f}, 0, 12413, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"ss_dekubaba_8", SCENE_20SICHITAI, 1, {-401.44f, 19.77f, 4129.57f}, 0, -20315, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"ss_dekubaba_9", SCENE_20SICHITAI, 1, {-1632.99f, 38.00f, 1873.64f}, 0, -14598, ACTOR_EN_DEKUBABA, 0x0000, HARD, ALWAYS},
+
+        // Bubbles
+
+    {"ss_bubble_1", SCENE_20SICHITAI, 0, {54.61f, 38.62f, -761.56f}, 0, 15176, ACTOR_EN_BB, 0x0000, HARD, NIGHT},
+    {"ss_bubble_2", SCENE_20SICHITAI, 0, {-602.32f, 13.84f, -601.82f}, 0, -1993, ACTOR_EN_BB, 0x0000, HARD, NIGHT},
+
+        // Octoroks
+
+    {"ss_octorok_1", SCENE_20SICHITAI, 0, {1317.91f, -40.0f, 548.46f}, 0, -22709, ACTOR_EN_OKUTA, 0x0000, HARD, ALWAYS},
+    {"ss_octorok_2", SCENE_20SICHITAI, 0, {1782.74f, -40.0f, 1011.67f}, 0, 23822, ACTOR_EN_OKUTA, 0x0000, HARD, ALWAYS},
+    {"ss_octorok_3", SCENE_20SICHITAI, 0, {1765.95f, -40.0f, 1575.81f}, 0, 19620, ACTOR_EN_OKUTA, 0x0000, NORMAL, ALWAYS},
+    {"ss_octorok_4", SCENE_20SICHITAI, 0, {3209.17f, -40.0f, 2181.63f}, 0, -19042, ACTOR_EN_OKUTA, 0x0000, NORMAL, ALWAYS},
+    {"ss_octorok_5", SCENE_20SICHITAI, 0, {2627.45f, -40.0f, 3552.87f}, 0, -28389, ACTOR_EN_OKUTA, 0x0000, NORMAL, ALWAYS},
+    {"ss_octorok_6", SCENE_20SICHITAI, 1, {-1073.82f, -40.0f, 2503.07f}, 0, 11994, ACTOR_EN_OKUTA, 0x0000, HARD, ALWAYS},
+    {"ss_octorok_7", SCENE_20SICHITAI, 1, {-706.50f, -40.0f, 1819.55f}, 0, -1587, ACTOR_EN_OKUTA, 0x0000, HARD, ALWAYS},
+
+        // DragonFlys
+
+    {"ss_dragonfly_1", SCENE_20SICHITAI, 1, {-203.81f, 346.02f, 3313.85f}, 0, -1587, ACTOR_EN_GRASSHOPPER, 0x0000, NORMAL, ALWAYS},
+    {"ss_dragonfly_2", SCENE_20SICHITAI, 0, {2008.88f, 286.02f, 3550.80f}, 0,  27382, ACTOR_EN_GRASSHOPPER, 0x0000, HARD, ALWAYS},
+
+    // Woods Of Mystery
+
+        // Snappers
+
+    {"wow_snapper_1", SCENE_26SARUNOMORI, 1, {-27.85f, 0.0f, -165.17f}, 0, 5602, ACTOR_EN_KAME, 0x0000, HARD, ALWAYS}, // Evil
+    {"wow_snapper_2", SCENE_26SARUNOMORI, 2, {-91.97f, 0.0f, -992.51f}, 0, 7561, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
+    {"wow_snapper_3", SCENE_26SARUNOMORI, 8, {-1652.92f, 0.0f, -779.77f}, 0, -23853, ACTOR_EN_KAME, 0x0000, HARD, ALWAYS},
+    {"wow_snapper_4", SCENE_26SARUNOMORI, 3, {-1014.55f, 0.0f, 1002.0f}, 0, 25676, ACTOR_EN_KAME, 0x0000, HARD, ALWAYS},
+    {"wow_snapper_5", SCENE_26SARUNOMORI, 0, {37.77f, 0.0f, 875.25f}, 0, -28347, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
+    {"wow_snapper_6", SCENE_26SARUNOMORI, 7, {-1636.31f, 0.0f, -104.57f}, 0, -9058, ACTOR_EN_KAME, 0x0000, HARD, ALWAYS},
 };
 
 #define ENEMY_SPAWN_COUNT (sizeof(sEnemySpawns) / sizeof(EnemySpawn))
