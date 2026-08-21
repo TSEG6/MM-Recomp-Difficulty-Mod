@@ -29,10 +29,10 @@ RECOMP_HOOK("EnDodongo_Update") void DinoUpdate(Actor* thisx, PlayState* play2) 
     bool use_speed = true;
 
     if (!(this->actor.flags & Health_Buffed)) {
-        if (difficulty == 1) {
+        if (difficulty == 0) {
             this->actor.colChkInfo.health *= 2;
         }
-        else if (difficulty == 2) {
+        else if (difficulty == 1) {
             this->actor.colChkInfo.health *= 4;
         }
         this->actor.flags |= Health_Buffed;
