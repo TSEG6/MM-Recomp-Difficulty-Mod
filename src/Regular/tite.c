@@ -105,12 +105,12 @@ RECOMP_PATCH void func_80894638(EnTite* this, PlayState* play) {
 
     switch (Difficulty) {
     case 0:
-        rotationStep *= 2;
+        rotationStep *= 3;
         animSpeed *= 1.4f;
         break;
 
     case 1:
-        rotationStep *= 3;
+        rotationStep *= 4;
         animSpeed *= 1.4f;
         break;
 
@@ -244,10 +244,10 @@ RECOMP_PATCH void func_8089408C(EnTite* this, PlayState* play) {
         this->actor.world.rot.y = this->actor.shape.rot.y;
         this->actor.shape.shadowDraw = ActorShadow_DrawCircle;
         this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
-        this->actor.velocity.y = 10.0f;
+        this->actor.velocity.y = 8.0f;
     }
     else {
-        this->actor.velocity.y = 8.0f;
+        this->actor.velocity.y = 6.0f;
         this->actor.world.rot.y = targetYaw;
         this->actor.shape.rot.y = targetYaw;
     }

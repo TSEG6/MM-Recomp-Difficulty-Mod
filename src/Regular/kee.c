@@ -51,7 +51,7 @@ RECOMP_HOOK("EnFirefly_DiveAttack") void mcqueenbat(Actor* thisx, PlayState* pla
         break;
     }
 
-    if (this->actor.speed <= 4.0f) {
+    if (this->actor.speed <= 2.5f) {
         this->actor.speed *= speedMultiplier;
     }
 
@@ -66,11 +66,11 @@ RECOMP_HOOK("EnFirefly_FlyIdle") void greaterattackkee(EnFirefly* this, PlayStat
 
     switch (Difficulty) {
     case 0:
-        AtkDistance = 400.0f;
+        AtkDistance = 300.0f;
         break;
 
     case 1:
-        AtkDistance = 600.0f;
+        AtkDistance = 400.0f;
         break;
 
     default:

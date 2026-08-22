@@ -98,7 +98,7 @@ RECOMP_HOOK("func_80897F44") void IamSpeedPeahat(EnPeehat* this, PlayState* play
         break;
 
     case 1:
-        this->actor.speed = Rand_ZeroFloat(1.0f) + 16.0f;
+        this->actor.speed = Rand_ZeroFloat(1.0f) + 13.0f;
         this->actor.world.rot.y += this->unk_2B6;
         this->actor.shape.rot.y += 0x15E * 6;
         break;
