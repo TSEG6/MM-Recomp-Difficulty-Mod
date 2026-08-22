@@ -581,7 +581,7 @@ RECOMP_HOOK("BossHakugin_Update") void DmgRedGoat(Actor* thisx, PlayState* play)
     BossHakugin* this = (BossHakugin*)thisx;
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
-    static s32 callCounter = 0;
+    static s32 healCounter = 0;
 
     switch (Difficulty) {
     case 0:
@@ -605,16 +605,16 @@ RECOMP_HOOK("BossHakugin_Update") void DmgRedGoat(Actor* thisx, PlayState* play)
     this->skelAnime.playSpeed = 1.0f;
 
     if (this->actor.colChkInfo.health > 0) {
-        callCounter++;
+        healCounter++;
 
-        if (callCounter >= 400) {
+        if (healCounter >= 400) {
             this->actor.colChkInfo.health++;
 
             if (this->actor.colChkInfo.health > GOHT_MAX_HEALTH) {
                 this->actor.colChkInfo.health = GOHT_MAX_HEALTH;
             }
 
-            callCounter = 0;
+            healCounter = 0;
         }
     }
 }

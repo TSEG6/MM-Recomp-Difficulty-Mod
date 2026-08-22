@@ -268,7 +268,7 @@ RECOMP_HOOK("Boss01_Update") void OdolwaUpdate(Actor* thisx, PlayState* play2) {
 
     Boss01* this = (Boss01*)thisx;
 
-    static s32 callCounter = 0;
+    static s32 healCounter = 0;
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float speedMultiplier = 1.0f;
@@ -293,16 +293,16 @@ RECOMP_HOOK("Boss01_Update") void OdolwaUpdate(Actor* thisx, PlayState* play2) {
     }
 
     if (this->actor.colChkInfo.health > 0) {
-        callCounter++;
+        healCounter++;
 
-        if (callCounter >= 240) {
+        if (healCounter >= 360) {
             this->actor.colChkInfo.health += (Difficulty == 1) ? 2 : 1;
 
             if (this->actor.colChkInfo.health > ODOLWA_MAX_HEALTH) {
                 this->actor.colChkInfo.health = ODOLWA_MAX_HEALTH;
             }
 
-            callCounter = 0;
+            healCounter = 0;
         }
     }
 }
