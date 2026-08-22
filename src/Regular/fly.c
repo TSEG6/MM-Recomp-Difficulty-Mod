@@ -23,7 +23,7 @@ RECOMP_HOOK_RETURN("EnGrasshopper_Init") void DFlyHealthBoost(Actor* thisx, Play
         break;
 
     case 1: {
-        this->actor.colChkInfo.health = baseHealth * 4;
+        this->actor.colChkInfo.health = baseHealth * 3;
         break;
     }
     default:

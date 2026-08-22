@@ -163,10 +163,10 @@ RECOMP_HOOK("EnDinofos_Update") void DinoFUpdate(Actor* thisx, PlayState* play2)
     if (!(this->actor.params & HEALTH_SCALED_FLAG)) {
         switch (Difficulty) {
         case 0:
-            this->actor.colChkInfo.health = (this->actor.colChkInfo.health * 1.5f);
+            this->actor.colChkInfo.health = (this->actor.colChkInfo.health * 1.33f);
             break;
         case 1:
-            this->actor.colChkInfo.health = (this->actor.colChkInfo.health * 2.0f);
+            this->actor.colChkInfo.health = (this->actor.colChkInfo.health * 1.66f);
             break;
         default:
             break;

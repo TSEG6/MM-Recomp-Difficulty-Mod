@@ -14,6 +14,8 @@ static uintptr_t sBOEnemy;
 static uintptr_t sCHEnemy;
 static uintptr_t sBBEnemy;
 static uintptr_t sIRKEnemy;
+static uintptr_t sDBEnemy;
+static uintptr_t sHPEnemy;
 
 static ActorExtensionId sDifficultyModEnemyId;
 
@@ -50,6 +52,8 @@ GLOBAL_OBJECTS_CALLBACK_ON_READY void onGlobalObjectsReady() {
     sCHEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_SLIME);
     sBBEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_BB);
     sIRKEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_IK);
+    sDBEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_DEKUBABA);
+    sHPEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_PP);
     // Add Eeno
 }
 
@@ -68,6 +72,12 @@ RECOMP_HOOK_RETURN("Actor_LoadOverlay") void on_return_Actor_LoadOverlay() {
         profile->objectId = GAMEPLAY_KEEP;
     }
     if (profile != NULL && profile->id == ACTOR_EN_BB) {
+        profile->objectId = GAMEPLAY_KEEP;
+    }
+    if (profile != NULL && profile->id == ACTOR_EN_DEKUBABA) {
+        profile->objectId = GAMEPLAY_KEEP;
+    }
+    if (profile != NULL && profile->id == ACTOR_EN_PP) {
         profile->objectId = GAMEPLAY_KEEP;
     }
     /*if (profile != NULL && profile->id == ACTOR_EN_IK) {
@@ -102,6 +112,16 @@ void BB_Init(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sBBEnemy);
 }
 
+RECOMP_HOOK("EnDekubaba_Init")
+void DB_Init(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sDBEnemy);
+}
+
+RECOMP_HOOK("EnPp_Init")
+void HP_Init(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sHPEnemy);
+}
+
 /*RECOMP_HOOK("EnIk_Init")
 void IRK_Init(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sIRKEnemy);
@@ -132,6 +152,16 @@ void CH_Update(Actor* thisx, PlayState* play) {
 RECOMP_HOOK("EnBb_Update")
 void BB_Update(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sBBEnemy);
+}
+
+RECOMP_HOOK("EnDekubaba_Update")
+void DB_Update(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sDBEnemy);
+}
+
+RECOMP_HOOK("EnPp_Update")
+void HP_Update(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sHPEnemy);
 }
 
 /*RECOMP_HOOK("EnIk_Update")
@@ -191,6 +221,26 @@ void BB_Draw(Actor* thisx, PlayState* play) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
+RECOMP_HOOK("EnDekubaba_Draw")
+void DB_Draw(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sDBEnemy);
+
+    OPEN_DISPS(play->state.gfxCtx);
+    gSPSegment(POLY_OPA_DISP++, 0x06, sDBEnemy);
+    gSPSegment(POLY_XLU_DISP++, 0x06, sDBEnemy);
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+RECOMP_HOOK("EnPp_Draw")
+void HP_Draw(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sHPEnemy);
+
+    OPEN_DISPS(play->state.gfxCtx);
+    gSPSegment(POLY_OPA_DISP++, 0x06, sHPEnemy);
+    gSPSegment(POLY_XLU_DISP++, 0x06, sHPEnemy);
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
 /*RECOMP_HOOK("EnIk_Draw")
 void IRK_Draw(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sIRKEnemy);
@@ -213,7 +263,7 @@ typedef enum {
 } SpawnTime;
 
 typedef struct {
-    const char* spawnId; // It's funny, but not really useful for other mods, see spawn system for the real ID's
+    const char* spawnId; // Not real ID
     s16 sceneId;
     s8 roomNum;
     Vec3f pos;
@@ -382,12 +432,69 @@ static EnemySpawn sEnemySpawns[] = {
 
         // Snappers
 
-    {"wow_snapper_1", SCENE_26SARUNOMORI, 1, {-27.85f, 0.0f, -165.17f}, 0, 5602, ACTOR_EN_KAME, 0x0000, HARD, ALWAYS}, // Evil
-    {"wow_snapper_2", SCENE_26SARUNOMORI, 2, {-91.97f, 0.0f, -992.51f}, 0, 7561, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
-    {"wow_snapper_3", SCENE_26SARUNOMORI, 8, {-1652.92f, 0.0f, -779.77f}, 0, -23853, ACTOR_EN_KAME, 0x0000, HARD, ALWAYS},
-    {"wow_snapper_4", SCENE_26SARUNOMORI, 3, {-1014.55f, 0.0f, 1002.0f}, 0, 25676, ACTOR_EN_KAME, 0x0000, HARD, ALWAYS},
-    {"wow_snapper_5", SCENE_26SARUNOMORI, 0, {37.77f, 0.0f, 875.25f}, 0, -28347, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
-    {"wow_snapper_6", SCENE_26SARUNOMORI, 7, {-1636.31f, 0.0f, -104.57f}, 0, -9058, ACTOR_EN_KAME, 0x0000, HARD, ALWAYS},
+    {"wom_snapper_1", SCENE_26SARUNOMORI, 1, {-27.85f, 0.0f, -165.17f}, 0, 5602, ACTOR_EN_KAME, 0x0000, HARD, ALWAYS}, // Evil
+    {"wom_snapper_2", SCENE_26SARUNOMORI, 2, {-91.97f, 0.0f, -992.51f}, 0, 7561, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
+    {"wom_snapper_3", SCENE_26SARUNOMORI, 8, {-1652.92f, 0.0f, -779.77f}, 0, -23853, ACTOR_EN_KAME, 0x0000, HARD, ALWAYS},
+    {"wom_snapper_4", SCENE_26SARUNOMORI, 3, {-1014.55f, 0.0f, 1002.0f}, 0, 25676, ACTOR_EN_KAME, 0x0000, HARD, ALWAYS},
+    {"wom_snapper_5", SCENE_26SARUNOMORI, 0, {37.77f, 0.0f, 875.25f}, 0, -28347, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
+    {"wom_snapper_6", SCENE_26SARUNOMORI, 7, {-1636.31f, 0.0f, -104.57f}, 0, -9058, ACTOR_EN_KAME, 0x0000, HARD, ALWAYS},
+
+    // Woodfall
+
+        // DragonFlys
+
+    {"wf_dragonfly_1", SCENE_21MITURINMAE, 0, {-948.87f, 412.0f, -448.24f}, 0, -15585, ACTOR_EN_GRASSHOPPER, 0x0000, NORMAL, ALWAYS},
+    {"wf_dragonfly_2", SCENE_21MITURINMAE, 0, {268.40f, 412.0f, -1142.49f}, 0, 9058, ACTOR_EN_GRASSHOPPER, 0x0000, HARD, ALWAYS},
+
+        // Hiploop
+
+    {"wf_hiploop_1", SCENE_21MITURINMAE, 0, {-943.71f, 158.25f, 956.58f}, 0, -22775, ACTOR_EN_PP, 0x0001, NORMAL, ALWAYS},
+    {"wf_hiploop_2", SCENE_21MITURINMAE, 0, {1108.34f, 142.49f, -626.70f}, 0, -5396, ACTOR_EN_PP, 0x0001, NORMAL, ALWAYS},
+
+        // Deku Baba
+
+    {"wf_dekubaba_1", SCENE_21MITURINMAE, 0, {0.0f, 213.0f, 968.02f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, HARD, ALWAYS}, // Also Evil
+
+    // Woodfall Temple
+
+        // Deku Baba
+
+    {"wft_dekubaba_1", SCENE_MITURIN, 2, {-72.53f, -1485.0f, 1721.33f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"wft_dekubaba_2", SCENE_MITURIN, 1, {0.0f, -1185.0f, 348.07f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, HARD, ALWAYS},
+    {"wft_dekubaba_3", SCENE_MITURIN, 1, {570.88f, -1485.0f, 630.91f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"wft_dekubaba_4", SCENE_MITURIN, 1, {0.0f, -1172.0f, -390.03f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"wft_dekubaba_5", SCENE_MITURIN, 5, {1229.91f, -1172.0f, 572.94f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, HARD, ALWAYS},
+    {"wft_dekubaba_6", SCENE_MITURIN, 6, {2026.79f, -1414.0f, -133.77f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, HARD, ALWAYS},
+
+        // Dragonflys
+
+    {"wft_dragonfly_1", SCENE_MITURIN, 2, {127.23f, -1125.0f, 1371.99f}, 0, 0, ACTOR_EN_GRASSHOPPER, 0x0000, NORMAL, ALWAYS},
+    {"wft_dragonfly_2", SCENE_MITURIN, 2, {-399.45f, -1125.0f, 1781.70f}, 0, 0, ACTOR_EN_GRASSHOPPER, 0x0000, HARD, ALWAYS},
+    {"wft_dragonfly_3", SCENE_MITURIN, 1, {0.0f, -972.0f, 0.0f}, 0, 0, ACTOR_EN_GRASSHOPPER, 0x0000, HARD, ALWAYS},
+    {"wft_dragonfly_4", SCENE_MITURIN, 5, {1229.91f, -972.0f, 0.0f}, 0, -3175, ACTOR_EN_GRASSHOPPER, 0x0000, NORMAL, ALWAYS},
+    {"wft_dragonfly_5", SCENE_MITURIN, 6, {2286.15f, -1200.0f, -34.63f}, 0, -16350, ACTOR_EN_GRASSHOPPER, 0x0000, HARD, ALWAYS},
+    {"wft_dragonfly_6", SCENE_MITURIN, 6, {2286.15f, -1200.0f, -34.63f}, 0, 16350, ACTOR_EN_GRASSHOPPER, 0x0000, HARD, ALWAYS},
+    {"wft_dragonfly_7", SCENE_MITURIN, 7, {895.91f, -985.0f, 884.45f}, 0, 9011, ACTOR_EN_GRASSHOPPER, 0x0000, HARD, ALWAYS},
+
+        // Skulltulas
+
+    {"wft_big_skulltula_1", SCENE_MITURIN, 2, {0.0f, -885.0f, 769.66f}, 0, 0, ACTOR_EN_ST, 0x0000, HARD, ALWAYS},
+    {"wft_big_skulltula_2", SCENE_MITURIN, 2, {-252.42f, -885.0f, 1704.47f}, 0, 0, ACTOR_EN_ST, 0x0000, NORMAL, ALWAYS},
+
+        // Hiploops
+
+    {"wft_hiploop_1", SCENE_MITURIN, 1, {626.85f, -1185.0f, -198.73f}, 0, -32500, ACTOR_EN_PP, 0x0001, NORMAL, ALWAYS},
+    {"wft_hiploop_2", SCENE_MITURIN, 5, {822.52f, -1185.0f, 363.04f}, 0, 32500, ACTOR_EN_PP, 0x0001, NORMAL, ALWAYS},
+
+        // Wolfos
+
+    {"wft_wolfos_1", SCENE_MITURIN, 1, {595.70f, -1485.0f, 0.0f}, 0, -16418, ACTOR_EN_WF, 0x0000, HARD, ALWAYS},
+    {"wft_wolfos_2", SCENE_MITURIN, 5, {1738.72f, -1425.0f, 0.0f}, 0, -16418, ACTOR_EN_WF, 0x0000, NORMAL, ALWAYS},
+
+        // Dinolfos
+
+    {"wft_dinolfos_1", SCENE_MITURIN, 7, {1372.11f, -1211.92f, 1539.29f}, 0, -11597, ACTOR_EN_DINOFOS, 0x0000, HARD, ALWAYS},
+
 };
 
 #define ENEMY_SPAWN_COUNT (sizeof(sEnemySpawns) / sizeof(EnemySpawn))
