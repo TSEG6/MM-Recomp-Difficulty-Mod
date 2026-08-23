@@ -608,7 +608,7 @@ RECOMP_HOOK("BossHakugin_Update") void DmgRedGoat(Actor* thisx, PlayState* play)
     if (this->actor.colChkInfo.health > 0) {
         healCounter++;
 
-        if (healCounter >= 300) {
+        if (healCounter >= 500) {
             this->actor.colChkInfo.health++;
 
             if (this->actor.colChkInfo.health > GOHT_MAX_HEALTH) {
