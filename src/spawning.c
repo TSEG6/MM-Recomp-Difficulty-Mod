@@ -10,12 +10,13 @@
 
 static uintptr_t sPHEnemy;
 static uintptr_t sWFEnemy;
-static uintptr_t sBOEnemy;
+// static uintptr_t sBOEnemy;
 static uintptr_t sCHEnemy;
 static uintptr_t sBBEnemy;
 static uintptr_t sIRKEnemy;
 static uintptr_t sDBEnemy;
 static uintptr_t sHPEnemy;
+static uintptr_t sOCTEnemy;
 
 static ActorExtensionId sDifficultyModEnemyId;
 
@@ -48,12 +49,13 @@ static void DifficultyMod_SetEnemyId(Actor* actor, s16 customId) {
 GLOBAL_OBJECTS_CALLBACK_ON_READY void onGlobalObjectsReady() {
     sPHEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_PH);
     sWFEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_WF);
-    sBOEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_MKK);
+    //sBOEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_MKK);
     sCHEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_SLIME);
     sBBEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_BB);
     sIRKEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_IK);
     sDBEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_DEKUBABA);
     sHPEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_PP);
+    sOCTEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_OKUTA);
     // Add Eeno
 }
 
@@ -65,9 +67,9 @@ RECOMP_HOOK_RETURN("Actor_LoadOverlay") void on_return_Actor_LoadOverlay() {
     if (profile != NULL && profile->id == ACTOR_EN_WF) {
         profile->objectId = GAMEPLAY_KEEP;
     }
-    if (profile != NULL && profile->id == ACTOR_EN_MKK) {
+    /*if (profile != NULL && profile->id == ACTOR_EN_MKK) {
         profile->objectId = GAMEPLAY_KEEP;
-    }
+    }*/
     if (profile != NULL && profile->id == ACTOR_EN_SLIME) {
         profile->objectId = GAMEPLAY_KEEP;
     }
@@ -78,6 +80,9 @@ RECOMP_HOOK_RETURN("Actor_LoadOverlay") void on_return_Actor_LoadOverlay() {
         profile->objectId = GAMEPLAY_KEEP;
     }
     if (profile != NULL && profile->id == ACTOR_EN_PP) {
+        profile->objectId = GAMEPLAY_KEEP;
+    }
+    if (profile != NULL && profile->id == ACTOR_EN_OKUTA) {
         profile->objectId = GAMEPLAY_KEEP;
     }
     /*if (profile != NULL && profile->id == ACTOR_EN_IK) {
@@ -97,10 +102,10 @@ void WF_Init(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sWFEnemy);
 }
 
-RECOMP_HOOK("EnMkk_Init")
+/*RECOMP_HOOK("EnMkk_Init")
 void BO_Init(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sBOEnemy);
-}
+}*/
 
 RECOMP_HOOK("EnSlime_Init")
 void CH_Init(Actor* thisx, PlayState* play) {
@@ -122,6 +127,11 @@ void HP_Init(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sHPEnemy);
 }
 
+RECOMP_HOOK("EnOkuta_Init")
+void OCT_Init(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sOCTEnemy);
+}
+
 /*RECOMP_HOOK("EnIk_Init")
 void IRK_Init(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sIRKEnemy);
@@ -139,10 +149,10 @@ void WF_Update(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sWFEnemy);
 }
 
-RECOMP_HOOK("EnMkk_Update")
+/*RECOMP_HOOK("EnMkk_Update")
 void BO_Update(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sBOEnemy);
-}
+}*/
 
 RECOMP_HOOK("EnSlime_Update")
 void CH_Update(Actor* thisx, PlayState* play) {
@@ -162,6 +172,11 @@ void DB_Update(Actor* thisx, PlayState* play) {
 RECOMP_HOOK("EnPp_Update")
 void HP_Update(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sHPEnemy);
+}
+
+RECOMP_HOOK("EnOkuta_Update")
+void OCT_Update(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sOCTEnemy);
 }
 
 /*RECOMP_HOOK("EnIk_Update")
@@ -191,7 +206,7 @@ void WF_Draw(Actor* thisx, PlayState* play) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-RECOMP_HOOK("EnMkk_Draw")
+/*RECOMP_HOOK("EnMkk_Draw")
 void BO_Draw(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sBOEnemy);
 
@@ -199,7 +214,7 @@ void BO_Draw(Actor* thisx, PlayState* play) {
     gSPSegment(POLY_OPA_DISP++, 0x06, sBOEnemy);
     gSPSegment(POLY_XLU_DISP++, 0x06, sBOEnemy);
     CLOSE_DISPS(play->state.gfxCtx);
-}
+}*/
 
 RECOMP_HOOK("EnSlime_Draw")
 void CH_Draw(Actor* thisx, PlayState* play) {
@@ -238,6 +253,16 @@ void HP_Draw(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx);
     gSPSegment(POLY_OPA_DISP++, 0x06, sHPEnemy);
     gSPSegment(POLY_XLU_DISP++, 0x06, sHPEnemy);
+    CLOSE_DISPS(play->state.gfxCtx);
+}
+
+RECOMP_HOOK("EnOkuta_Draw")
+void OCT_Draw(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sOCTEnemy);
+
+    OPEN_DISPS(play->state.gfxCtx);
+    gSPSegment(POLY_OPA_DISP++, 0x06, sOCTEnemy);
+    gSPSegment(POLY_XLU_DISP++, 0x06, sOCTEnemy);
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
@@ -337,7 +362,7 @@ static EnemySpawn sEnemySpawns[] = {
     {"tf_eeno_2", SCENE_00KEIKOKU, 0, {-419.39f, 48.0f, -3319.45f}, 0, 0, ACTOR_EN_SNOWMAN, 0x0000, HARD, NIGHT},
     {"tf_eeno_3", SCENE_00KEIKOKU, 0, {1678.83f, -142.11f, -3415.26f}, 0, 0, ACTOR_EN_SNOWMAN, 0x0000, NORMAL, NIGHT},
 
-        // Boes (Still crashes when killed :( )
+        // Boes (crashes when killed because of global objects)
 
     //{"tf_boe_1", SCENE_00KEIKOKU, 0, {2653.50f, 328.0f, 1753.45f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, NIGHT},
     //{"tf_boe_2", SCENE_00KEIKOKU, 0, {3280.52f, 328.0f, 1038.16f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, NIGHT},
@@ -465,6 +490,8 @@ static EnemySpawn sEnemySpawns[] = {
     {"wft_dekubaba_4", SCENE_MITURIN, 1, {0.0f, -1172.0f, -390.03f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
     {"wft_dekubaba_5", SCENE_MITURIN, 5, {1229.91f, -1172.0f, 572.94f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, HARD, ALWAYS},
     {"wft_dekubaba_6", SCENE_MITURIN, 6, {2026.79f, -1414.0f, -133.77f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, HARD, ALWAYS},
+    {"wft_dekubaba_7", SCENE_MITURIN, 3, {-814.13f, -1185.0f, -134.94f}, 0, -16356, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"wft_dekubaba_8", SCENE_MITURIN, 6, {2026.47f, -1425.0f, 208.62f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, HARD, ALWAYS},
 
         // Dragonflys
 
@@ -480,11 +507,15 @@ static EnemySpawn sEnemySpawns[] = {
 
     {"wft_big_skulltula_1", SCENE_MITURIN, 2, {0.0f, -885.0f, 769.66f}, 0, 0, ACTOR_EN_ST, 0x0000, HARD, ALWAYS},
     {"wft_big_skulltula_2", SCENE_MITURIN, 2, {-252.42f, -885.0f, 1704.47f}, 0, 0, ACTOR_EN_ST, 0x0000, NORMAL, ALWAYS},
+    {"wft_big_skulltula_3", SCENE_MITURIN, 3, {-1113.78f, -1025.0f, -127.96f}, 0, -16590, ACTOR_EN_ST, 0x0000, HARD, ALWAYS},
+    {"wft_big_skulltula_4", SCENE_MITURIN, 3, {-1110.77f, -1105.0f, -527.60f}, 0, 0, ACTOR_EN_ST, 0x0000, NORMAL, ALWAYS},
+    {"wft_big_skulltula_5", SCENE_MITURIN, 3, {-1111.30f, -1105.0f, 328.98f}, 0, -32663, ACTOR_EN_ST, 0x0000, NORMAL, ALWAYS},
 
         // Hiploops
 
     {"wft_hiploop_1", SCENE_MITURIN, 1, {626.85f, -1185.0f, -198.73f}, 0, -32500, ACTOR_EN_PP, 0x0001, NORMAL, ALWAYS},
     {"wft_hiploop_2", SCENE_MITURIN, 5, {822.52f, -1185.0f, 363.04f}, 0, 32500, ACTOR_EN_PP, 0x0001, NORMAL, ALWAYS},
+    {"wft_hiploop_3", SCENE_MITURIN, 3, {-1414.84f, -1370.21f, 191.53f}, 0, 0, ACTOR_EN_PP, 0x0001, HARD, ALWAYS},
 
         // Wolfos
 
@@ -494,6 +525,22 @@ static EnemySpawn sEnemySpawns[] = {
         // Dinolfos
 
     {"wft_dinolfos_1", SCENE_MITURIN, 7, {1372.11f, -1211.92f, 1539.29f}, 0, -11597, ACTOR_EN_DINOFOS, 0x0000, HARD, ALWAYS},
+
+        // Octoroks
+
+    {"wft_octorok_1", SCENE_MITURIN, 3, {-854.66f, -1605.76f, 489.39f}, 0, -27981, ACTOR_EN_OKUTA, 0x0000, NORMAL, ALWAYS},
+    {"wft_octorok_2", SCENE_MITURIN, 3, {-1011.80f, -1605.76f, -521.78f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, NORMAL, ALWAYS},
+    {"wft_octorok_3", SCENE_MITURIN, 1, {-420.01f, -1605.76f, -369.19f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, HARD, ALWAYS},
+    {"wft_octorok_4", SCENE_MITURIN, 1, {470.21f, -1605.76f, -487.37f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, HARD, ALWAYS},
+    {"wft_octorok_5", SCENE_MITURIN, 1, {231.28f, -1605.76f, 546.14f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, NORMAL, ALWAYS},
+    {"wft_octorok_6", SCENE_MITURIN, 5, {1089.86f, -1605.76f, 0.0f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, NORMAL, ALWAYS},
+    {"wft_octorok_7", SCENE_MITURIN, 5, {1236.98f, -1605.76f, 470.92f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, NORMAL, ALWAYS},
+    {"wft_octorok_8", SCENE_MITURIN, 5, {1236.98f, -1605.76f, -347.71f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, HARD, ALWAYS},
+
+        // Snappers
+
+    {"wft_snapper_1", SCENE_MITURIN, 6, {2160.98f, -1439.54f, -243.12f}, 0, 12949, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
+    {"wft_snapper_2", SCENE_MITURIN, 6, {2438.11f, -1425.0f, 263.36f}, 0, -19036, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
 
 };
 
@@ -542,9 +589,7 @@ void EnemySpawner_OnActorKill(Actor* actor) {
 
         if (index >= 0 && index < (s16)ENEMY_SPAWN_COUNT) {
             if (actor->id == sEnemySpawns[index].actorId) {
-                if (actor->colChkInfo.health == 0) {
-                    sEnemyStates[index].killed = true;
-                }
+                sEnemyStates[index].killed = true;
             }
         }
     }
