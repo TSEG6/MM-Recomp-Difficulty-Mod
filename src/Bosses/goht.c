@@ -16,6 +16,8 @@
 
 #define GOHT_MAX_HEALTH 30
 
+static s32 healCounter = 0;
+
 void BossHakugin_Run(BossHakugin* this, PlayState* play);
 void BossHakugin_Charge(BossHakugin* this, PlayState* play);
 void BossHakugin_Downed(BossHakugin* this, PlayState* play);
@@ -581,7 +583,6 @@ RECOMP_HOOK("BossHakugin_Update") void DmgRedGoat(Actor* thisx, PlayState* play)
     BossHakugin* this = (BossHakugin*)thisx;
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
-    static s32 healCounter = 0;
 
     switch (Difficulty) {
     case 0:
@@ -607,7 +608,7 @@ RECOMP_HOOK("BossHakugin_Update") void DmgRedGoat(Actor* thisx, PlayState* play)
     if (this->actor.colChkInfo.health > 0) {
         healCounter++;
 
-        if (healCounter >= 400) {
+        if (healCounter >= 300) {
             this->actor.colChkInfo.health++;
 
             if (this->actor.colChkInfo.health > GOHT_MAX_HEALTH) {
@@ -615,6 +616,58 @@ RECOMP_HOOK("BossHakugin_Update") void DmgRedGoat(Actor* thisx, PlayState* play)
             }
 
             healCounter = 0;
+        }
+    }
+}
+
+// Added to healtimer when damaged
+RECOMP_HOOK("BossHakugin_UpdateDamage")
+void DamagedResetTimer(BossHakugin* this, PlayState* play) {
+    if (this->bodyCollider.base.acFlags & AC_HIT) {
+        s32 i;
+
+        for (i = 0; i < GOHT_COLLIDER_BODYPART_MAX; i++) {
+            if (this->bodyCollider.elements[i].base.acElemFlags & ACELEM_HIT) {
+                break;
+            }
+        }
+
+        if (i == GOHT_COLLIDER_BODYPART_MAX) {
+            return;
+        }
+
+        if ((this->drawDmgEffType == ACTOR_DRAW_DMGEFF_FROZEN_NO_SFX) &&
+            (this->bodyCollider.elements[i].base.acHitElem->atDmgInfo.dmgFlags & 0x000DB0B3)) {
+            return;
+        }
+
+        if (this->actionFunc == BossHakugin_Downed) {
+            if (Actor_ApplyDamage(&this->actor) == 0) {
+
+            }
+            else {
+                healCounter = healCounter - 100;
+                if (healCounter <= 0) healCounter = 0;
+            }
+        }
+        else if (((this->actor.colChkInfo.damageEffect == GOHT_DMGEFF_GORON_SPIKES) ||
+            (this->actor.colChkInfo.damageEffect == GOHT_DMGEFF_NONE) ||
+            (this->actor.colChkInfo.damageEffect == GOHT_DMGEFF_FIRE) ||
+            (this->actor.colChkInfo.damageEffect == GOHT_DMGEFF_FREEZE) ||
+            (this->actor.colChkInfo.damageEffect == GOHT_DMGEFF_LIGHT_ORB) ||
+            (this->actor.colChkInfo.damageEffect == GOHT_DMGEFF_BLUE_LIGHT_ORB) ||
+            (this->actor.colChkInfo.damageEffect == GOHT_DMGEFF_EXPLOSIVE)) &&
+            ((this->actionFunc == BossHakugin_Run) ||
+                (this->actionFunc == BossHakugin_ShootLightning) ||
+                (this->actionFunc == BossHakugin_Wait) ||
+                (this->actionFunc == BossHakugin_Charge))) {
+
+            if (Actor_ApplyDamage(&this->actor) == 0) {
+            }
+            else {
+                healCounter = healCounter - 20;
+                if (healCounter <= 0) healCounter = 0;
+            }
         }
     }
 }

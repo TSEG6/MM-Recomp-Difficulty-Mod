@@ -15,6 +15,8 @@
 #define TIMER_CURRENT_ACTION 0
 #define ODOLWA_MAX_HEALTH 20
 
+static s32 healCounter = 0;
+
 static Color_RGBA8 sDustPrimColor = { 60, 50, 20, 255 };
 
 static Color_RGBA8 sDustEnvColor = { 40, 30, 30, 255 };
@@ -268,7 +270,6 @@ RECOMP_HOOK("Boss01_Update") void OdolwaUpdate(Actor* thisx, PlayState* play2) {
 
     Boss01* this = (Boss01*)thisx;
 
-    static s32 healCounter = 0;
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
     float speedMultiplier = 1.0f;
@@ -324,11 +325,14 @@ RECOMP_PATCH void Boss01_SetupDamaged(Boss01* this, PlayState* play, u8 damageEf
     }
     else if (damageEffect == ODOLWA_DMGEFF_DAMAGE_TIMER_CHECK) {
         if (this->timers[TIMER_CURRENT_ACTION] > 5) {
-            this->disableCollisionTimer = 20;
+            this->disableCollisionTimer = 30;
         }
         else {
             this->timers[TIMER_CURRENT_ACTION] = 20;
         }
+
+        healCounter = healCounter - 30;
+        if (healCounter <= 0) healCounter = 0;
     }
 }
 

@@ -15,7 +15,9 @@
 #define WORK_TIMER_STUNNED 2
 #define PLATFORM_HEIGHT 440.0f
 #define WATER_HEIGHT 430.0f
-#define GYORG_MAX_HEALTH 10
+#define GYORG_MAX_HEALTH 15
+
+static s32 healCounter = 0;
 
 void func_809E344C(Boss03* this, PlayState* play);
 void Boss03_SetupChasePlayer(Boss03* this, PlayState* play);
@@ -182,7 +184,6 @@ RECOMP_HOOK("Boss03_Update") void FishUpdate(Actor* thisx, PlayState* play2) {
     this->waterHeight = WATER_HEIGHT;
     PlayState* play = play2;
     Player* player = GET_PLAYER(play);
-    static s32 callCounter = 0;
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
 
@@ -235,16 +236,24 @@ RECOMP_HOOK("Boss03_Update") void FishUpdate(Actor* thisx, PlayState* play2) {
     if (this->workTimer[WORK_TIMER_UNK1_A] <= 0) this->workTimer[WORK_TIMER_UNK1_A] = 0;
 
     if (this->actor.colChkInfo.health > 0) {
-        callCounter++;
+        healCounter++;
 
-        if (callCounter >= 600) {
+        if (healCounter >= 300) {
             this->actor.colChkInfo.health += 1;
 
             if (this->actor.colChkInfo.health > GYORG_MAX_HEALTH) {
                 this->actor.colChkInfo.health = GYORG_MAX_HEALTH;
             }
 
-            callCounter = 0;
+            healCounter = 0;
         }
     }
+}
+
+// Added to healtimer when damaged
+RECOMP_HOOK("Boss03_Damaged") void boss3damaged(Boss03* this, PlayState* play) {
+
+    healCounter = healCounter - 30;
+    if (healCounter <= 0) healCounter = 0;
+
 }
