@@ -583,12 +583,14 @@ RECOMP_HOOK("BossHakugin_Update") void DmgRedGoat(Actor* thisx, PlayState* play)
     BossHakugin* this = (BossHakugin*)thisx;
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
+    int healamountneeded = 500;
 
     switch (Difficulty) {
     case 0:
         if (this->actor.colChkInfo.damage > 0) {
             int reducedDamage = this->actor.colChkInfo.damage / 2;
             this->actor.colChkInfo.damage = (reducedDamage > 1) ? reducedDamage : 1;
+            healamountneeded = 600;
         }
         break;
 
@@ -596,6 +598,7 @@ RECOMP_HOOK("BossHakugin_Update") void DmgRedGoat(Actor* thisx, PlayState* play)
         if (this->actor.colChkInfo.damage > 0) {
             int reducedDamage = (this->actor.colChkInfo.damage + 2) / 3;
             this->actor.colChkInfo.damage = (reducedDamage > 1) ? reducedDamage : 1;
+            healamountneeded = 300;
         }
         break;
 
@@ -608,7 +611,7 @@ RECOMP_HOOK("BossHakugin_Update") void DmgRedGoat(Actor* thisx, PlayState* play)
     if (this->actor.colChkInfo.health > 0) {
         healCounter++;
 
-        if (healCounter >= 500) {
+        if (healCounter >= healamountneeded) {
             this->actor.colChkInfo.health++;
 
             if (this->actor.colChkInfo.health > GOHT_MAX_HEALTH) {
