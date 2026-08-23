@@ -36,7 +36,8 @@ dependencies = [
 # Example dependency:
 	"yazmt_mm_global_objects",
 	"MM_EZ_Text_Replacer_API:2.0.0",
-	"ProxyMM_CustomActor"
+	"ProxyMM_CustomActor",
+	"mm_recomp_buffer_increase"
 ]
 
 # Optional dependency mods. This has the same format as `dependencies`, but the game will still start if dependencies in this
