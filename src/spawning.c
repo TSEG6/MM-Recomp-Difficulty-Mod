@@ -492,6 +492,11 @@ static EnemySpawn sEnemySpawns[] = {
     {"wft_dekubaba_6", SCENE_MITURIN, 6, {2026.79f, -1414.0f, -133.77f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, HARD, ALWAYS},
     {"wft_dekubaba_7", SCENE_MITURIN, 3, {-814.13f, -1185.0f, -134.94f}, 0, -16356, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
     {"wft_dekubaba_8", SCENE_MITURIN, 6, {2026.47f, -1425.0f, 208.62f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, HARD, ALWAYS},
+    {"wft_dekubaba_9", SCENE_MITURIN, 10, {-21.71f, -330.0f, -63.58f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"wft_dekubaba_10", SCENE_MITURIN, 10, {-399.23f, -330.0f, 277.98f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"wft_dekubaba_11", SCENE_MITURIN, 0, {243.52f, -1485.0f, -911.54f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"wft_dekubaba_12", SCENE_MITURIN, 0, {502.07f, -1365.00f, -1008.41f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"wft_dekubaba_13", SCENE_MITURIN, 0, {-500.88f, -1365.00f, -1013.23f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS },
 
         // Dragonflys
 
@@ -502,6 +507,7 @@ static EnemySpawn sEnemySpawns[] = {
     {"wft_dragonfly_5", SCENE_MITURIN, 6, {2286.15f, -1200.0f, -34.63f}, 0, -16350, ACTOR_EN_GRASSHOPPER, 0x0000, HARD, ALWAYS},
     {"wft_dragonfly_6", SCENE_MITURIN, 6, {2286.15f, -1200.0f, -34.63f}, 0, 16350, ACTOR_EN_GRASSHOPPER, 0x0000, HARD, ALWAYS},
     {"wft_dragonfly_7", SCENE_MITURIN, 7, {895.91f, -985.0f, 884.45f}, 0, 9011, ACTOR_EN_GRASSHOPPER, 0x0000, HARD, ALWAYS},
+    {"wft_dragonfly_8", SCENE_MITURIN, 0, {0.0f, -878.68f, -1263.86f}, 0, 0, ACTOR_EN_GRASSHOPPER, 0x0000, HARD, ALWAYS},
 
         // Skulltulas
 
@@ -510,17 +516,20 @@ static EnemySpawn sEnemySpawns[] = {
     {"wft_big_skulltula_3", SCENE_MITURIN, 3, {-1113.78f, -1025.0f, -127.96f}, 0, -16590, ACTOR_EN_ST, 0x0000, HARD, ALWAYS},
     {"wft_big_skulltula_4", SCENE_MITURIN, 3, {-1110.77f, -1105.0f, -527.60f}, 0, 0, ACTOR_EN_ST, 0x0000, NORMAL, ALWAYS},
     {"wft_big_skulltula_5", SCENE_MITURIN, 3, {-1111.30f, -1105.0f, 328.98f}, 0, -32663, ACTOR_EN_ST, 0x0000, NORMAL, ALWAYS},
+    {"wft_big_skulltula_6", SCENE_MITURIN, 10, {579.37f, 300.0f, -650.58f}, 0, 0, ACTOR_EN_ST, 0x0000, HARD, ALWAYS},
+    {"wft_big_skulltula_7", SCENE_MITURIN, 0, {0.0f, -845.0f, -2232.65f}, 0, 0, ACTOR_EN_ST, 0x0000, NORMAL, ALWAYS},
+    {"wft_big_skulltula_7", SCENE_MITURIN, 0, {-628.84f, -1085.0f, -1262.53f}, 0, 16535, ACTOR_EN_ST, 0x0000, NORMAL, ALWAYS},
 
         // Hiploops
 
     {"wft_hiploop_1", SCENE_MITURIN, 1, {626.85f, -1185.0f, -198.73f}, 0, -32500, ACTOR_EN_PP, 0x0001, NORMAL, ALWAYS},
     {"wft_hiploop_2", SCENE_MITURIN, 5, {822.52f, -1185.0f, 363.04f}, 0, 32500, ACTOR_EN_PP, 0x0001, NORMAL, ALWAYS},
-    {"wft_hiploop_3", SCENE_MITURIN, 3, {-1414.84f, -1370.21f, 191.53f}, 0, 0, ACTOR_EN_PP, 0x0001, HARD, ALWAYS},
 
         // Wolfos
 
     {"wft_wolfos_1", SCENE_MITURIN, 1, {595.70f, -1485.0f, 0.0f}, 0, -16418, ACTOR_EN_WF, 0x0000, HARD, ALWAYS},
     {"wft_wolfos_2", SCENE_MITURIN, 5, {1738.72f, -1425.0f, 0.0f}, 0, -16418, ACTOR_EN_WF, 0x0000, NORMAL, ALWAYS},
+    {"wft_wolfos_3", SCENE_MITURIN, 9, {-1062.02f, 0.0f, 0.0f}, 0, 32534, ACTOR_EN_WF, 0x0000, HARD, ALWAYS},
 
         // Dinolfos
 
@@ -536,11 +545,16 @@ static EnemySpawn sEnemySpawns[] = {
     {"wft_octorok_6", SCENE_MITURIN, 5, {1089.86f, -1605.76f, 0.0f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, NORMAL, ALWAYS},
     {"wft_octorok_7", SCENE_MITURIN, 5, {1236.98f, -1605.76f, 470.92f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, NORMAL, ALWAYS},
     {"wft_octorok_8", SCENE_MITURIN, 5, {1236.98f, -1605.76f, -347.71f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, HARD, ALWAYS},
+    {"wft_octorok_9", SCENE_MITURIN, 0, {0.0f, -1838.68f, -1263.86f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, HARD, ALWAYS},
 
         // Snappers
 
     {"wft_snapper_1", SCENE_MITURIN, 6, {2160.98f, -1439.54f, -243.12f}, 0, 12949, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
     {"wft_snapper_2", SCENE_MITURIN, 6, {2438.11f, -1425.0f, 263.36f}, 0, -19036, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
+
+        // Boes
+
+    {"wft_boe_1", SCENE_MITURIN, 10, {-47.53f, -330.0f, -617.20f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, ALWAYS},
 
 };
 

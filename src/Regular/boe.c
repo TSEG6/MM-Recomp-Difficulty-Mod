@@ -8,7 +8,7 @@
 void func_80A4E58C(EnMkk* this);
 
 // Spawns in friends based on difficulty (1 on normal and 2 on hard)
-RECOMP_HOOK("EnMkk_Init") void YoureSeeingDouble(Actor* thisx, PlayState* play) {
+/*RECOMP_HOOK("EnMkk_Init") void YoureSeeingDouble(Actor* thisx, PlayState* play) {
     EnMkk* this = (EnMkk*)thisx;
 
     if (this->actor.params & 0x8000) {
@@ -39,7 +39,7 @@ RECOMP_HOOK("EnMkk_Init") void YoureSeeingDouble(Actor* thisx, PlayState* play) 
     default:
         break;
     }
-}
+}*/
 
 // Increases speed and randomly enables the hitbox
 RECOMP_HOOK("EnMkk_Update") void BoeUpdate(Actor* thisx, PlayState* play) {
