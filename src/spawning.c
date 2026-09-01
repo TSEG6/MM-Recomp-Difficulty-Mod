@@ -17,6 +17,7 @@ static uintptr_t sIRKEnemy;
 static uintptr_t sDBEnemy;
 static uintptr_t sHPEnemy;
 static uintptr_t sOCTEnemy;
+static uintptr_t sWMEnemy;
 
 static ActorExtensionId sDifficultyModEnemyId;
 
@@ -56,6 +57,7 @@ GLOBAL_OBJECTS_CALLBACK_ON_READY void onGlobalObjectsReady() {
     sDBEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_DEKUBABA);
     sHPEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_PP);
     sOCTEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_OKUTA);
+    sWMEnemy = (uintptr_t)GlobalObjects_getGlobalObject(OBJECT_WALLMASTER);
     // Add Eeno
 }
 
@@ -88,6 +90,9 @@ RECOMP_HOOK_RETURN("Actor_LoadOverlay") void on_return_Actor_LoadOverlay() {
     /*if (profile != NULL && profile->id == ACTOR_EN_IK) {
         profile->objectId = GAMEPLAY_KEEP;
     }*/
+    if (profile != NULL && profile->id == ACTOR_EN_WALLMAS) {
+        profile->objectId = GAMEPLAY_KEEP;
+    }
 }
 
 // GO Init
@@ -137,6 +142,11 @@ void IRK_Init(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sIRKEnemy);
 }*/
 
+RECOMP_HOOK("EnWallmas_Init")
+void WM_Init(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sWMEnemy);
+}
+
 // GO Update
 
 RECOMP_HOOK("EnPeehat_Update")
@@ -183,6 +193,11 @@ void OCT_Update(Actor* thisx, PlayState* play) {
 void IRK_Update(Actor* thisx, PlayState* play) {
     gSegments[0x06] = OS_K0_TO_PHYSICAL(sIRKEnemy);
 }*/
+
+RECOMP_HOOK("EnWallmas_Update")
+void WM_Update(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sWMEnemy);
+}
 
 // GO Draw
 
@@ -275,6 +290,16 @@ void IRK_Draw(Actor* thisx, PlayState* play) {
     gSPSegment(POLY_XLU_DISP++, 0x06, sIRKEnemy);
     CLOSE_DISPS(play->state.gfxCtx);
 }*/
+
+RECOMP_HOOK("EnWallmas_Draw")
+void WM_Draw(Actor* thisx, PlayState* play) {
+    gSegments[0x06] = OS_K0_TO_PHYSICAL(sWMEnemy);
+
+    OPEN_DISPS(play->state.gfxCtx);
+    gSPSegment(POLY_OPA_DISP++, 0x06, sWMEnemy);
+    gSPSegment(POLY_XLU_DISP++, 0x06, sWMEnemy);
+    CLOSE_DISPS(play->state.gfxCtx);
+}
 
 typedef enum {
     NORMAL,
@@ -373,6 +398,12 @@ static EnemySpawn sEnemySpawns[] = {
     {"tf_rbombchu_2", SCENE_00KEIKOKU, 0, {3386.22f, 51.04f, -723.74f}, 0, 0, ACTOR_EN_RAT, 0x0000, NORMAL, DAY},
     {"tf_rbombchu_3", SCENE_00KEIKOKU, 0, {2841.90f, 2.50f, -2446.90f}, 0, 0, ACTOR_EN_RAT, 0x0000, NORMAL, DAY},
     {"tf_rbombchu_4", SCENE_00KEIKOKU, 0, {1932.99f, -77.12f, -2580.33f}, 0, 0, ACTOR_EN_RAT, 0x0000, NORMAL, DAY},
+
+        // Octoroks
+
+    {"tf_octorok_1", SCENE_00KEIKOKU, 0, {-4440.08f, -412.0f, 1512.70f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, NORMAL, ALWAYS},
+    {"tf_octorok_2", SCENE_00KEIKOKU, 0, {-4220.67f, -412.0f, 1741.77f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, HARD, ALWAYS},
+    {"tf_octorok_3", SCENE_00KEIKOKU, 0, {-4692.44f, -412.0f, 1669.25f}, 0, 0, ACTOR_EN_OKUTA, 0x0000, HARD, ALWAYS},
 
     // Milk Road
 
@@ -495,8 +526,10 @@ static EnemySpawn sEnemySpawns[] = {
     {"wft_dekubaba_9", SCENE_MITURIN, 10, {-21.71f, -330.0f, -63.58f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
     {"wft_dekubaba_10", SCENE_MITURIN, 10, {-399.23f, -330.0f, 277.98f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
     {"wft_dekubaba_11", SCENE_MITURIN, 0, {243.52f, -1485.0f, -911.54f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
-    {"wft_dekubaba_12", SCENE_MITURIN, 0, {502.07f, -1365.00f, -1008.41f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
-    {"wft_dekubaba_13", SCENE_MITURIN, 0, {-500.88f, -1365.00f, -1013.23f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS },
+    {"wft_dekubaba_12", SCENE_MITURIN, 0, {502.07f, -1365.0f, -1008.41f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"wft_dekubaba_13", SCENE_MITURIN, 0, {-500.88f, -1365.0f, -1013.23f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
+    {"wft_dekubaba_14", SCENE_MITURIN, 4, {-1259.36f, -1507.96f, 1016.84f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, HARD, ALWAYS},
+    {"wft_dekubaba_15", SCENE_MITURIN, 4, {-907.93f, -1491.56f, 846.60f}, 0, 0, ACTOR_EN_DEKUBABA, 0x0000, NORMAL, ALWAYS},
 
         // Dragonflys
 
@@ -551,10 +584,17 @@ static EnemySpawn sEnemySpawns[] = {
 
     {"wft_snapper_1", SCENE_MITURIN, 6, {2160.98f, -1439.54f, -243.12f}, 0, 12949, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
     {"wft_snapper_2", SCENE_MITURIN, 6, {2438.11f, -1425.0f, 263.36f}, 0, -19036, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
+    {"wft_snapper_3", SCENE_MITURIN, 4, {-1079.09f, -1508.0f, 1137.14f}, 0, 0, ACTOR_EN_KAME, 0x0000, NORMAL, ALWAYS},
 
         // Boes
 
     {"wft_boe_1", SCENE_MITURIN, 10, {-47.53f, -330.0f, -617.20f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, ALWAYS},
+    {"wft_boe_2", SCENE_MITURIN, 9, {-1093.73f, 0.0f, -406.34f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, ALWAYS},
+    {"wft_boe_3", SCENE_MITURIN, 9, {-1033.95f, 0.0f, -640.02f}, 0, 0, ACTOR_EN_MKK, 0x0000, NORMAL, ALWAYS},
+
+        // Wallmasters
+
+    {"wft_wallmaster_1", SCENE_MITURIN, 9, {-946.48f, 0.0f, -31.18f}, 0, 0, ACTOR_EN_WALLMAS, 0x0000, HARD, ALWAYS},
 
 };
 
@@ -595,16 +635,15 @@ static void CheckEnemyDeaths(PlayState* play) {
     }
 }
 
-// I wonder what this does (it's obvious) (it's when an actor dies)
-RECOMP_HOOK("Actor_Kill")
-void EnemySpawner_OnActorKill(Actor* actor) {
-    if (actor != NULL) {
-        s16 index = DifficultyMod_GetEnemyId(actor) - 100;
+// I wonder what this does (it's obvious) (it's when an actor dies) (non broken edition)
+RECOMP_HOOK("Enemy_StartFinishingBlow")
+void EnemySpawner_OnFinishingBlow(PlayState* play, Actor* actor) {
 
-        if (index >= 0 && index < (s16)ENEMY_SPAWN_COUNT) {
-            if (actor->id == sEnemySpawns[index].actorId) {
-                sEnemyStates[index].killed = true;
-            }
+    s16 index = DifficultyMod_GetEnemyId(actor) - 100;
+
+    if (index >= 0 && index < (s16)ENEMY_SPAWN_COUNT) {
+        if (actor->id == sEnemySpawns[index].actorId) {
+            sEnemyStates[index].killed = true;
         }
     }
 }
@@ -706,7 +745,7 @@ static void SpawnEnemies(PlayState* play) {
         );
 
         if (spawnedEnemy != NULL) {
-            // The custom ID (use this)
+            // Actually giving the enemy it's custom ID
             DifficultyMod_SetEnemyId(spawnedEnemy, (s16)(i + 100));
         }
     }
@@ -772,4 +811,11 @@ void EnemySpawner_PlayUpdateHook(PlayState* play) {
     CheckEnemyDeaths(play);
     SpawnEnemies(play);
     PrintPlayerPosition(play);
+}
+
+// Player voided out (Player skill issue check)
+RECOMP_HOOK_RETURN("func_80169FDC")
+void PlayerVoid() {
+
+    sPlayerWasDead = true;
 }
