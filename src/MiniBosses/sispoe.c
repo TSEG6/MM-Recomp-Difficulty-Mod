@@ -335,7 +335,9 @@ RECOMP_HOOK("EnPoSisters_Update") void NeoDefense(Actor* thisx, PlayState* play)
             break;
 
         case 1:
-            this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage + 1) / 2;
+            if (this->actor.colChkInfo.damage != 1) {
+                this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+            }
             break;
 
         default:

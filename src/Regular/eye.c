@@ -288,7 +288,9 @@ RECOMP_HOOK("EnEgol_Update") void EyegoreUpdate(Actor* thisx, PlayState* play) {
         break;
 
     case 1:
-        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        if (this->actor.colChkInfo.damage != 1) {
+            this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        }
         break;
 
     default:

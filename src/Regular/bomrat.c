@@ -30,7 +30,7 @@ RECOMP_HOOK("EnRat_Init") void RatStart(Actor* thisx, PlayState* play) {
 }
 
 // Rare chance for the home to move around on Hard
-RECOMP_HOOK("EnRat_Update") void RatUpdate(Actor* thisx, PlayState* play) {
+/*RECOMP_HOOK("EnRat_Update") void RatUpdate(Actor* thisx, PlayState* play) {
 
     EnRat* this = (EnRat*)thisx;
 
@@ -44,7 +44,7 @@ RECOMP_HOOK("EnRat_Update") void RatUpdate(Actor* thisx, PlayState* play) {
             this->actor.home.pos.z = this->actor.world.pos.z + Rand_CenteredFloat(300.0f);
         }
     }
-}
+}*/
 
 // Sight increase and faster idle movement
 RECOMP_HOOK("EnRat_Idle") void RatIdle(Actor* thisx, PlayState* play) {

@@ -189,7 +189,9 @@ RECOMP_HOOK("EnFloormas_Update") void FMUpdate(Actor* thisx, PlayState* play) {
 
     switch (Difficulty) {
     case 0:
-        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        if (this->actor.colChkInfo.damage != 1) {
+            this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        }
         break;
 
     case 1:

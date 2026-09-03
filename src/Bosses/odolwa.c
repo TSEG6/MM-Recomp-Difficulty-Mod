@@ -16,6 +16,7 @@
 #define ODOLWA_MAX_HEALTH 20
 
 static s32 healCounter = 0;
+static s32 dodgeTimer = 0;
 
 static Color_RGBA8 sDustPrimColor = { 60, 50, 20, 255 };
 
@@ -28,6 +29,7 @@ void Boss01_SetupSpinAttack(Boss01* this, PlayState* play);
 void Boss01_SetupDanceBeforeAttack(Boss01* this, PlayState* play);
 void Boss01_Run(Boss01* this, PlayState* play);
 void Boss01_Jump(Boss01* this, PlayState* play);
+void Boss01_JumpLand(Boss01* this, PlayState* play);
 void Boss01_SetupVerticalSlash(Boss01* this, PlayState* play);
 void Boss01_SetupHorizontalSlash(Boss01* this, PlayState* play);
 void Boss01_SetupKick(Boss01* this, PlayState* play);
@@ -105,39 +107,73 @@ typedef enum {
     /* 2 */ ODOLWA_SWORD_STATE_HORIZONTAL_SLASH
 } OdolwaSwordState;
 
-f32 sOdolwaSwordTrailPosX;
-f32 sOdolwaSwordTrailPosY;
-f32 sOdolwaSwordTrailPosZ;
-f32 sOdolwaSwordTrailRotX;
-f32 sOdolwaSwordTrailRotY;
-f32 sOdolwaSwordTrailRotZ;
-f32 sOdolwaSwordTrailAlpha;
+extern f32 sOdolwaSwordTrailPosX;
+extern f32 sOdolwaSwordTrailPosY;
+extern f32 sOdolwaSwordTrailPosZ;
+extern f32 sOdolwaSwordTrailRotX;
+extern f32 sOdolwaSwordTrailRotY;
+extern f32 sOdolwaSwordTrailRotZ;
+extern f32 sOdolwaSwordTrailAlpha;
 
 static f32 sSwordTrailAngularRangeDivisor = 10.0f;
+
+extern void Boss01_SpawnDustAtFeet(Boss01* this, PlayState* play, u8 dustSpawnFrameMask);
+
+RECOMP_HOOK("Boss01_DanceBeforeAttack") void DanceLess(Boss01* this, PlayState* play) {
+
+    int Difficulty = (int)recomp_get_config_double("diff_option");
+
+    switch (Difficulty) {
+    case 0:
+        this->timers[TIMER_CURRENT_ACTION]--;
+        break;
+
+    case 1:
+        this->timers[TIMER_CURRENT_ACTION] = 0;
+        break;
+
+    default:
+        break;
+    }
+}
+
 
 RECOMP_PATCH void Boss01_SelectAttack(Boss01* this, PlayState* play, u8 mustAttack) {
     Player* player = GET_PLAYER(play);
 
-    int difficulty = (int)recomp_get_config_double("diff_option");
+    int Difficulty = (int)recomp_get_config_double("diff_option");
 
-    float danceChance = 0.20f;
-    if (difficulty == 0) {
+    float danceChance = 0.2f;
+    float closeRangeDistance = 150.0f;
+    float spinChance = 0.75f;
+
+    switch (Difficulty) {
+    case 0:
+        danceChance = 0.15f;
+        closeRangeDistance = 150.0f;
+        spinChance = 0.825f;
+        break;
+
+    case 1:
         danceChance = 0.10f;
-    }
-    else if (difficulty >= 1) {
-        danceChance = 0.05f;
+        closeRangeDistance = 150.0f;
+        spinChance = 0.90f;
+        break;
+
+    default:
+        break;
     }
 
-    if (player->actor.world.pos.y > 200.0f && difficulty < 1) {
+    if (player->actor.world.pos.y > 200.0f) {
         Boss01_SetupWait(this, play, ODOLWA_WAIT_RANDOM);
     }
-    else if (!mustAttack && (Rand_ZeroOne() < danceChance)) {
+    else if ((Rand_ZeroOne() < danceChance) && !mustAttack) {
         // When Odolwa is done dancing, this function calls Boss01_SelectAttack with mustAttack set to true, so he will
         // be guaranteed to choose an attack later, so long as the player isn't too far off the ground.
         Boss01_SetupDanceBeforeAttack(this, play);
     }
     else if (this->actor.xzDistToPlayer <= 250.0f) {
-        if (this->actor.xzDistToPlayer <= 150.0f) {
+        if (this->actor.xzDistToPlayer <= closeRangeDistance) {
             if (Rand_ZeroOne() < 0.5f) {
                 Boss01_SetupKick(this, play);
             }
@@ -149,35 +185,11 @@ RECOMP_PATCH void Boss01_SelectAttack(Boss01* this, PlayState* play, u8 mustAtta
             Boss01_SetupHorizontalSlash(this, play);
         }
     }
-    else if (((s8)this->actor.colChkInfo.health < 8) && (Rand_ZeroOne() < 0.75f)) {
+    else if (((s8)this->actor.colChkInfo.health < (ODOLWA_MAX_HEALTH /2)) && (Rand_ZeroOne() < spinChance)) {
         Boss01_SetupSpinAttack(this, play);
     }
     else {
         Boss01_SetupVerticalSlash(this, play);
-    }
-}
-
-void Boss01_SpawnDustAtFeet(Boss01* this, PlayState* play, u8 dustSpawnFrameMask) {
-    u8 i;
-    Vec3f pos;
-    Vec3f velocity;
-    Vec3f accel;
-
-    if (((this->frameCounter & dustSpawnFrameMask) == 0) &&
-        ((this->additionalVelocityX > 1.0f) || (this->additionalVelocityZ > 1.0f) || (dustSpawnFrameMask == 0) ||
-            (this->actor.speed > 1.0f))) {
-        for (i = 0; i < ARRAY_COUNT(this->feetPos); i++) {
-            velocity.x = Rand_CenteredFloat(5.0f);
-            velocity.y = Rand_ZeroFloat(2.0f) + 1.0f;
-            velocity.z = Rand_CenteredFloat(5.0f);
-            accel.y = -0.1f;
-            accel.x = accel.z = 0.0f;
-            pos.x = this->feetPos[i].x + Rand_CenteredFloat(20.0f);
-            pos.y = Rand_ZeroFloat(10.0f) + 3.0f;
-            pos.z = this->feetPos[i].z + Rand_CenteredFloat(20.0f);
-            func_800B0EB0(play, &pos, &velocity, &accel, &sDustPrimColor, &sDustEnvColor,
-                Rand_ZeroFloat(150.0f) + 350.0f, 10, Rand_ZeroFloat(5.0f) + 14.0f);
-        }
     }
 }
 
@@ -189,28 +201,29 @@ RECOMP_PATCH void Boss01_VerticalSlash(Boss01* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
-    f32 predictFactor = (Difficulty == 1) ? 0.9f : 0.66f;
-    f32 distanceFactor = (Difficulty == 1) ? 2.75f : 1.75f;
 
-    if (this->skelAnime.curFrame < 7.0f) {
+    f32 predictFactor = (Difficulty == 1) ? 1.0f : 0.66f;
+    f32 distanceFactor = (Difficulty == 1) ? 3.0f : 2.0f;
+    f32 dashSpeed = 25.0f * distanceFactor;
+
+    if (this->skelAnime.curFrame < 10.0f) {
         Vec3f predictedPos;
         f32 dx = player->actor.world.pos.x - this->actor.world.pos.x;
         f32 dz = player->actor.world.pos.z - this->actor.world.pos.z;
         f32 distance = sqrtf(SQ(dx) + SQ(dz));
-
-        f32 chargeSpeed = 20.0f;
-        f32 travelTime = distance / chargeSpeed;
-
+        f32 travelTime = distance / dashSpeed;
 
         travelTime = CLAMP(travelTime, 0.0f, 15.0f);
 
-        predictedPos.x = player->actor.world.pos.x + (player->actor.velocity.x * travelTime * predictFactor);
+        predictedPos.x = player->actor.world.pos.x +
+            (player->actor.velocity.x * travelTime * predictFactor);
         predictedPos.y = player->actor.world.pos.y;
-        predictedPos.z = player->actor.world.pos.z + (player->actor.velocity.z * travelTime * predictFactor);
+        predictedPos.z = player->actor.world.pos.z +
+            (player->actor.velocity.z * travelTime * predictFactor);
 
         s16 targetYaw = Math_Vec3f_Yaw(&this->actor.world.pos, &predictedPos);
 
-        Math_SmoothStepToS(&this->actor.world.rot.y, targetYaw, 5, 0x1000, 0x100);
+        Math_SmoothStepToS(&this->actor.world.rot.y, targetYaw, 5, 0x4000, 0x100);
         this->actor.shape.rot.y = this->actor.world.rot.y;
     }
 
@@ -219,9 +232,27 @@ RECOMP_PATCH void Boss01_VerticalSlash(Boss01* this, PlayState* play) {
     }
 
     if ((this->timers[TIMER_CURRENT_ACTION] >= 7) && (this->timers[TIMER_CURRENT_ACTION] < 13)) {
+        Vec3f predictedPos;
+        f32 dx = player->actor.world.pos.x - this->actor.world.pos.x;
+        f32 dz = player->actor.world.pos.z - this->actor.world.pos.z;
+        f32 distance = sqrtf(SQ(dx) + SQ(dz));
+        f32 travelTime = distance / dashSpeed;
+
+        travelTime = CLAMP(travelTime, 0.0f, 15.0f);
+
+        predictedPos.x = player->actor.world.pos.x +
+            (player->actor.velocity.x * travelTime * predictFactor);
+        predictedPos.y = player->actor.world.pos.y;
+        predictedPos.z = player->actor.world.pos.z +
+            (player->actor.velocity.z * travelTime * predictFactor);
+
+        s16 targetYaw = Math_Vec3f_Yaw(&this->actor.world.pos, &predictedPos);
+
+        Math_SmoothStepToS(&this->actor.world.rot.y, targetYaw, 5, 0x4000, 0x100);
+        this->actor.shape.rot.y = this->actor.world.rot.y;
 
         Matrix_RotateYF(BINANG_TO_RAD_ALT(this->actor.world.rot.y), MTXMODE_NEW);
-        Matrix_MultVecZ((20.0f * distanceFactor), &additionalVelocity);
+        Matrix_MultVecZ(dashSpeed, &additionalVelocity);
         this->additionalVelocityX = additionalVelocity.x;
         this->additionalVelocityZ = additionalVelocity.z;
         Boss01_SpawnDustAtFeet(this, play, 0);
@@ -266,23 +297,122 @@ RECOMP_PATCH void Boss01_VerticalSlash(Boss01* this, PlayState* play) {
 }
 
 
+RECOMP_PATCH void Boss01_JumpSquat(Boss01* this, PlayState* play) {
+    s32 pad[2];
+    u8 i;
+    Vec3f additionalVelocity;
+    Player* player = GET_PLAYER(play);
+
+    SkelAnime_Update(&this->skelAnime);
+
+    int Difficulty = (f32)recomp_get_config_double("diff_option");
+
+    if (this->timers[TIMER_CURRENT_ACTION] == 0) {
+        f32 flightTime;
+        f32 dx;
+        f32 dz;
+        f32 distance;
+        f32 target = this->shouldPerformFallingSlash ? 12.0f : 10.0f;
+
+        this->actionFunc = Boss01_Jump;
+        Animation_MorphToPlayOnce(&this->skelAnime, &gOdolwaJumpAnim, this->animMorphFrames1);
+        this->actor.velocity.y = 35.0f;
+        this->actor.gravity = -2.5f;
+        Matrix_RotateYS(this->actor.world.rot.y, MTXMODE_NEW);
+
+        dx = player->actor.world.pos.x - this->actor.world.pos.x;
+        dz = player->actor.world.pos.z - this->actor.world.pos.z;
+        distance = sqrtf((dx * dx) + (dz * dz));
+
+        if (distance > 150.0f) {
+            flightTime = (this->actor.velocity.y + sqrtf(
+                (this->actor.velocity.y * this->actor.velocity.y) -
+                (2.0f * this->actor.gravity * (40.0f - this->actor.world.pos.y)))) /
+                -this->actor.gravity;
+
+            dx = player->actor.world.pos.x + player->actor.velocity.x * flightTime - this->actor.world.pos.x;
+            dz = player->actor.world.pos.z + player->actor.velocity.z * flightTime - this->actor.world.pos.z;
+
+            dx *= (Difficulty == 1.0f) ? 1.0f : 0.6f;
+            dz *= (Difficulty == 1.0f) ? 1.0f : 0.6f;
+
+            this->additionalVelocityX = dx / flightTime;
+            this->additionalVelocityZ = dz / flightTime;
+        }
+        else {
+            Matrix_MultVecZ(target, &additionalVelocity);
+            this->additionalVelocityX = additionalVelocity.x;
+            this->additionalVelocityZ = additionalVelocity.z;
+        }
+
+        for (i = 0; i < 5; i++) {
+            Boss01_SpawnDustAtFeet(this, play, 0);
+        }
+
+        Actor_PlaySfx(&this->actor, NA_SE_EN_MIBOSS_JUMP1);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_MIBOSS_JUMP2 - SFX_FLAG);
+        this->disableCollisionTimer = 5;
+    }
+
+    this->swordAndShieldCollisionEnabled = true;
+}
+
+
+RECOMP_HOOK("Boss01_Run") void RunningInThe90s(Boss01* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    int Difficulty = (int)recomp_get_config_double("diff_option");
+
+    f32 diffX;
+    f32 diffZ;
+    f32 targetDist;
+    f32 targetX;
+    f32 targetZ;
+    s16 targetYaw;
+
+    f32 offset = 75.0f;
+    f32 sinY = Math_SinS(player->actor.world.rot.y);
+    f32 cosY = Math_CosS(player->actor.world.rot.y);
+
+    targetX = player->actor.world.pos.x + (cosY * offset);
+    targetZ = player->actor.world.pos.z - (sinY * offset);
+
+    diffX = targetX - this->actor.world.pos.x;
+    diffZ = targetZ - this->actor.world.pos.z;
+    targetDist = sqrtf((diffX * diffX) + (diffZ * diffZ));
+
+    if (Actor_WorldDistXZToPoint(&this->actor, &player->actor.world.pos) <
+        ((Difficulty == 1) ? 350.0f : 300.0f) &&
+        targetDist > 80.0f) {
+        targetYaw = Math_Atan2S_XY(diffZ, diffX);
+
+        Math_ApproachS(&this->actor.world.rot.y, targetYaw, 0xA, 0x1000);
+    }
+}
+
+
 RECOMP_HOOK("Boss01_Update") void OdolwaUpdate(Actor* thisx, PlayState* play2) {
 
     Boss01* this = (Boss01*)thisx;
 
 
     int Difficulty = (int)recomp_get_config_double("diff_option");
+
     float speedMultiplier = 1.0f;
+    s32 dtMax;
 
     switch (Difficulty) {
     case 0:
-        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
         speedMultiplier = 1.33f;
+        dtMax = 120;
         break;
 
     case 1:
-        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage + 2) / 3;
+        if (this->actor.colChkInfo.damage != 1) {
+            this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        }
         speedMultiplier = 2.0f;
+        dtMax = 60;
         break;
 
     default:
@@ -295,6 +425,7 @@ RECOMP_HOOK("Boss01_Update") void OdolwaUpdate(Actor* thisx, PlayState* play2) {
 
     if (this->actor.colChkInfo.health > 0) {
         healCounter++;
+        dodgeTimer++;
 
         if (healCounter >= 360) {
             this->actor.colChkInfo.health += (Difficulty == 1) ? 2 : 1;
@@ -305,12 +436,18 @@ RECOMP_HOOK("Boss01_Update") void OdolwaUpdate(Actor* thisx, PlayState* play2) {
 
             healCounter = 0;
         }
+
+        if (dodgeTimer >= dtMax) {
+            this->canGuardOrEvade = true;
+            dodgeTimer = 0;
+        }
     }
+    recomp_printf("Odolwa Health: %d\n", this->actor.colChkInfo.health);
 }
+
 
 RECOMP_PATCH void Boss01_SetupDamaged(Boss01* this, PlayState* play, u8 damageEffect) {
 
-    int difficulty = (int)recomp_get_config_double("diff_option");
     if (this->disableCollisionTimer > 0) {
         return;
     }
@@ -336,6 +473,13 @@ RECOMP_PATCH void Boss01_SetupDamaged(Boss01* this, PlayState* play, u8 damageEf
     }
 }
 
+
+RECOMP_HOOK("Boss01_Damaged") void GoAwayLink(Boss01* this, PlayState* play) {
+
+    this->timers[TIMER_CURRENT_ACTION]--;
+}
+
+
 RECOMP_HOOK("Boss01_Bug_Update") void DamageReductionBug(Actor* thisx, PlayState* play) {
 
     Boss01* this = (Boss01*)thisx;
@@ -344,7 +488,9 @@ RECOMP_HOOK("Boss01_Bug_Update") void DamageReductionBug(Actor* thisx, PlayState
 
     switch (Difficulty) {
     case 0:
-        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        if (this->actor.colChkInfo.damage != 1) {
+            this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        }
         break;
 
     case 1:
@@ -354,5 +500,4 @@ RECOMP_HOOK("Boss01_Bug_Update") void DamageReductionBug(Actor* thisx, PlayState
     default:
         break;
     }
-
 }

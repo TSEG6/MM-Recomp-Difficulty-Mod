@@ -116,7 +116,9 @@ RECOMP_HOOK("EnBigpo_Update") void BPoeUpdate(Actor* thisx, PlayState* play) {
         break;
 
     case 1:
-        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        if (this->actor.colChkInfo.damage != 1) {
+            this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        }
         break;
 
     default:

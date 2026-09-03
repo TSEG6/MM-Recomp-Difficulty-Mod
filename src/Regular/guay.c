@@ -12,12 +12,12 @@ RECOMP_HOOK_RETURN("EnCrow_SetupDiveAttack") void AttackGuay(EnCrow* this) {
 
     switch (Difficulty) {
     case 0:
-        this->timer = 500;
+        this->timer = 300;
         this->actor.speed = 6.0f;
         break;
 
     case 1:
-        this->timer = 700;
+        this->timer = 500;
         this->actor.speed = 8.0f;
         break;
 

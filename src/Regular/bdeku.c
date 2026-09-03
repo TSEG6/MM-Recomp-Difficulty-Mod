@@ -103,7 +103,9 @@ RECOMP_HOOK("Boss05_Update") void BBabaUpdate(Actor* thisx, PlayState* play) {
     switch (Difficulty) {
     case 0:
         speedMultiplier = 1.5f;
-        this->dyna.actor.colChkInfo.damage = (this->dyna.actor.colChkInfo.damage) / 2;
+        if (this->dyna.actor.colChkInfo.damage != 1) {
+            this->dyna.actor.colChkInfo.damage = (this->dyna.actor.colChkInfo.damage) / 2;
+        }
         break;
 
     case 1:

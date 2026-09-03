@@ -29,7 +29,7 @@ RECOMP_HOOK_RETURN("EnOkuta_Init") void OctoInit(Actor* thisx, PlayState* play2)
         break;
 
     case 1: {
-        this->actor.colChkInfo.health = baseHealth * 4;
+        this->actor.colChkInfo.health = baseHealth * 3;
         break;
     }
     default:

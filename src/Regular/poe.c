@@ -148,7 +148,9 @@ RECOMP_HOOK("EnPoh_Update") void PoeDefense(Actor* thisx, PlayState* play2) {
 
     switch (Difficulty) {
     case 0:
-        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        if (this->actor.colChkInfo.damage != 1) {
+            this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        }
         break;
 
     case 1:

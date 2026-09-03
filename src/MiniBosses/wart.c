@@ -101,7 +101,9 @@ RECOMP_HOOK("Boss04_Update") void WartUpdate(Actor* thisx, PlayState* play2) {
         speedMultiplier = 1.75f;
         respawnChance = 0.25f;
         respawnTimer = 60;
-        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        if (this->actor.colChkInfo.damage != 1) {
+            this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        }
         break;
 
     case 1:
@@ -119,7 +121,7 @@ RECOMP_HOOK("Boss04_Update") void WartUpdate(Actor* thisx, PlayState* play2) {
         this->skelAnime.playSpeed = speedMultiplier;
     }
 
-    if (this->actor.speed <= 6.0f) {
+    if (this->actor.speed <= 3.0f) {
         this->actor.speed *= speedMultiplier;
     }
 

@@ -204,7 +204,9 @@ RECOMP_HOOK("EnTalkGibud_Update") void GibdoTalkUpdate(Actor* thisx, PlayState* 
     switch (Difficulty) {
     case 0:
         speedMultiplier = 1.5f;
-        this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        if (this->actor.colChkInfo.damage != 1) {
+            this->actor.colChkInfo.damage = (this->actor.colChkInfo.damage) / 2;
+        }
         break;
 
     case 1:

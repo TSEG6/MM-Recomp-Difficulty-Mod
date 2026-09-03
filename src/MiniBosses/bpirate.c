@@ -207,7 +207,9 @@ RECOMP_HOOK("EnKaizoku_Update") void PirateBossUpdate(Actor* thisx, PlayState* p
     switch (Difficulty) {
     case 0:
         speedMultiplier = 1.1f;
-        this->picto.actor.colChkInfo.damage = (this->picto.actor.colChkInfo.damage) / 2;
+        if (this->picto.actor.colChkInfo.damage != 1) {
+            this->picto.actor.colChkInfo.damage = (this->picto.actor.colChkInfo.damage) / 2;
+        }
         break;
 
     case 1:
