@@ -444,6 +444,29 @@ RECOMP_HOOK("Boss01_Update") void OdolwaUpdate(Actor* thisx, PlayState* play2) {
     }
 }
 
+RECOMP_PATCH void Boss01_SetupDamaged(Boss01* this, PlayState* play, u8 damageEffect) {
+
+    if (this->disableCollisionTimer > 0) {
+        return;
+    }
+
+    if (this->actionFunc != Boss01_Damaged) {
+        this->timers[TIMER_CURRENT_ACTION] = 20;
+        Animation_MorphToPlayOnce(&this->skelAnime, &gOdolwaDamagedStartAnim, 0.0f);
+        this->animEndFrame = Animation_GetLastFrame(&gOdolwaDamagedStartAnim);
+        this->actionFunc = Boss01_Damaged;
+
+        this->disableCollisionTimer = 15;
+    }
+    else if (damageEffect == ODOLWA_DMGEFF_DAMAGE_TIMER_CHECK) {
+        if (this->timers[TIMER_CURRENT_ACTION] > 5) {
+            this->disableCollisionTimer = 30;
+        }
+        else {
+            this->timers[TIMER_CURRENT_ACTION] = 20;
+        }
+    }
+}
 
 
 RECOMP_HOOK("Boss01_Damaged") void GoAwayLink(Boss01* this, PlayState* play) {
